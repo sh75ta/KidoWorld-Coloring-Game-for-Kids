@@ -1,5 +1,7 @@
 # Unity environment verification
 
+> **First Play implementation update:** See [BUILD_STATUS.md](BUILD_STATUS.md) and the root README for current source/artwork status and actual validation results. This earlier planning baseline remains for traceability.
+
 ## Findings in the accessible workspace
 
 Checked 18 October 2026:

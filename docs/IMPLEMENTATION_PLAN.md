@@ -1,5 +1,7 @@
 # Implementation plan
 
+> **First Play implementation update:** See [BUILD_STATUS.md](BUILD_STATUS.md) and the root README for current source/artwork status and actual validation results. This earlier planning baseline remains for traceability.
+
 All entries below describe proposed work. They are not claims that these systems have been implemented or tested.
 
 ## Milestones

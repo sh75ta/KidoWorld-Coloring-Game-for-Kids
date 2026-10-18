@@ -1,5 +1,7 @@
 # Acceptance checklist
 
+> **First Play implementation update:** See [BUILD_STATUS.md](BUILD_STATUS.md) and the root README for current source/artwork status and actual validation results. This earlier planning baseline remains for traceability.
+
 All checks are currently **not run**, except documentation/catalog validation described in the handoff. Passing these requires the actual Unity game and, where specified, physical devices/store sandboxes.
 
 ## M0 — Environment

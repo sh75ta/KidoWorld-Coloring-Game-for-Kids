@@ -1,0 +1,212 @@
+[
+  {
+    "id": "christmas_winter_santa_gift_sack",
+    "width": 512,
+    "height": 512,
+    "regions": 21,
+    "paintable_pixels": 69784
+  },
+  {
+    "id": "christmas_winter_reindeer_big_nose",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 42979
+  },
+  {
+    "id": "christmas_winter_christmas_tree",
+    "width": 512,
+    "height": 512,
+    "regions": 19,
+    "paintable_pixels": 52744
+  },
+  {
+    "id": "christmas_winter_snowman",
+    "width": 512,
+    "height": 512,
+    "regions": 12,
+    "paintable_pixels": 47812
+  },
+  {
+    "id": "christmas_winter_santa_sleigh",
+    "width": 512,
+    "height": 512,
+    "regions": 19,
+    "paintable_pixels": 46161
+  },
+  {
+    "id": "christmas_winter_gingerbread_cottage",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 66614
+  },
+  {
+    "id": "christmas_winter_penguin_sled",
+    "width": 512,
+    "height": 512,
+    "regions": 18,
+    "paintable_pixels": 46106
+  },
+  {
+    "id": "christmas_winter_teddy_gift",
+    "width": 512,
+    "height": 512,
+    "regions": 14,
+    "paintable_pixels": 49891
+  },
+  {
+    "id": "christmas_winter_toy_stocking",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 49877
+  },
+  {
+    "id": "christmas_winter_elf_workshop",
+    "width": 512,
+    "height": 512,
+    "regions": 15,
+    "paintable_pixels": 37596
+  },
+  {
+    "id": "animals_dinosaurs_lion_cub",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 49123
+  },
+  {
+    "id": "animals_dinosaurs_elephant_bath",
+    "width": 512,
+    "height": 512,
+    "regions": 12,
+    "paintable_pixels": 59695
+  },
+  {
+    "id": "animals_dinosaurs_puppy_play",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 52644
+  },
+  {
+    "id": "animals_dinosaurs_kitten_yarn",
+    "width": 512,
+    "height": 512,
+    "regions": 9,
+    "paintable_pixels": 47422
+  },
+  {
+    "id": "animals_dinosaurs_dinosaur_egg",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 60639
+  },
+  {
+    "id": "animals_dinosaurs_stegosaurus",
+    "width": 512,
+    "height": 512,
+    "regions": 14,
+    "paintable_pixels": 41867
+  },
+  {
+    "id": "animals_dinosaurs_long_neck_dinosaur",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 43636
+  },
+  {
+    "id": "animals_dinosaurs_clownfish",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 43601
+  },
+  {
+    "id": "animals_dinosaurs_parrot",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 38146
+  },
+  {
+    "id": "animals_dinosaurs_owl_family",
+    "width": 512,
+    "height": 512,
+    "regions": 13,
+    "paintable_pixels": 37790
+  },
+  {
+    "id": "vehicles_adventures_racing_car",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 41002
+  },
+  {
+    "id": "vehicles_adventures_monster_truck",
+    "width": 512,
+    "height": 512,
+    "regions": 10,
+    "paintable_pixels": 50704
+  },
+  {
+    "id": "vehicles_adventures_airplane",
+    "width": 512,
+    "height": 512,
+    "regions": 5,
+    "paintable_pixels": 44624
+  },
+  {
+    "id": "vehicles_adventures_pirate_ship",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 39120
+  },
+  {
+    "id": "vehicles_adventures_fire_engine",
+    "width": 512,
+    "height": 512,
+    "regions": 17,
+    "paintable_pixels": 40125
+  },
+  {
+    "id": "vehicles_adventures_ice_cream_van",
+    "width": 512,
+    "height": 512,
+    "regions": 10,
+    "paintable_pixels": 46624
+  },
+  {
+    "id": "vehicles_adventures_train",
+    "width": 512,
+    "height": 512,
+    "regions": 16,
+    "paintable_pixels": 44738
+  },
+  {
+    "id": "vehicles_adventures_digger",
+    "width": 512,
+    "height": 512,
+    "regions": 8,
+    "paintable_pixels": 37501
+  },
+  {
+    "id": "vehicles_adventures_school_bus",
+    "width": 512,
+    "height": 512,
+    "regions": 12,
+    "paintable_pixels": 49964
+  },
+  {
+    "id": "vehicles_adventures_rocket",
+    "width": 512,
+    "height": 512,
+    "regions": 11,
+    "paintable_pixels": 44933
+  }
+]

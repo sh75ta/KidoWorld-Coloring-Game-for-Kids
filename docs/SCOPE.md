@@ -1,5 +1,7 @@
 # Kido Coloring — Requirements baseline
 
+> **First Play implementation update:** See [BUILD_STATUS.md](BUILD_STATUS.md) and the root README for current source/artwork status and actual validation results. This earlier planning baseline remains for traceability.
+
 Source: user specification and supplied wireframe, 18 October 2026. This is a faithful structured restatement, with implementation proposals and open decisions explicitly separated below.
 
 ## Confirmed requirements

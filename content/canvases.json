@@ -8,7 +8,6 @@
   "notes": [
     "Canvas IDs are stable save keys; display titles may be localized later.",
     "Null is_free means undecided, not paid or free. Do not load this planning file as a production access policy.",
-    "All asset paths remain null until actual production assets exist.",
     "The dinosaur sample depicts a stylized baby dinosaur; final anatomical naming/art review is pending."
   ],
   "categories": [
@@ -47,11 +46,11 @@
       "title": "Santa with His Gift Sack",
       "art_brief": "Big hat, fluffy beard, and three wrapped presents.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_santa_gift_sack.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_santa_gift_sack.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_santa_gift_sack.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_reindeer_big_nose",
@@ -62,11 +61,11 @@
       "title": "Reindeer with a Big Nose",
       "art_brief": "Cozy scarf, rounded antlers, and a jingly collar.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_reindeer_big_nose.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_reindeer_big_nose.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_reindeer_big_nose.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_christmas_tree",
@@ -77,11 +76,11 @@
       "title": "Christmas Tree of Surprises",
       "art_brief": "Oversized ornaments, a star, and gifts underneath.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_christmas_tree.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_christmas_tree.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_christmas_tree.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_snowman",
@@ -92,11 +91,11 @@
       "title": "Smiling Snowman",
       "art_brief": "Bucket hat, carrot nose, mittens, and chunky buttons.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_snowman.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_snowman.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_snowman.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_santa_sleigh",
@@ -107,11 +106,11 @@
       "title": "Santa’s Flying Sleigh",
       "art_brief": "Curved runners, a sack of gifts, and a crescent moon.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_santa_sleigh.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_santa_sleigh.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_santa_sleigh.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_gingerbread_cottage",
@@ -122,11 +121,11 @@
       "title": "Gingerbread Cottage",
       "art_brief": "Candy-cane doorway, icing roof, and gumdrop decorations.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_gingerbread_cottage.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_gingerbread_cottage.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_gingerbread_cottage.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_penguin_sled",
@@ -137,11 +136,11 @@
       "title": "Penguin’s Winter Sled",
       "art_brief": "Bobble hat, striped scarf, and a little sled.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_penguin_sled.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_penguin_sled.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_penguin_sled.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_teddy_gift",
@@ -152,11 +151,11 @@
       "title": "Teddy Bear’s Christmas Gift",
       "art_brief": "Teddy peeking out of a large box with a giant bow.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_teddy_gift.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_teddy_gift.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_teddy_gift.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_toy_stocking",
@@ -167,11 +166,11 @@
       "title": "Stocking Full of Toys",
       "art_brief": "Toy robot, teddy, and candy cane poking out.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_toy_stocking.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_toy_stocking.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_toy_stocking.png",
+      "artwork_revision": 1
     },
     {
       "id": "christmas_winter_elf_workshop",
@@ -182,11 +181,11 @@
       "title": "Little Elf’s Toy Workshop",
       "art_brief": "Cheerful elf decorating a toy train at a simple workbench.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/christmas_winter_elf_workshop.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/christmas_winter_elf_workshop.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/christmas_winter_elf_workshop.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_lion_cub",
@@ -197,11 +196,11 @@
       "title": "Lion Cub with a Fluffy Mane",
       "art_brief": "Big rounded mane, chunky paws, and a butterfly.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_lion_cub.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_lion_cub.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_lion_cub.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_elephant_bath",
@@ -212,11 +211,11 @@
       "title": "Baby Elephant’s Bath Time",
       "art_brief": "Raised trunk, water splash, and a rubber duck.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_elephant_bath.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_elephant_bath.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_elephant_bath.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_puppy_play",
@@ -227,11 +226,11 @@
       "title": "Puppy’s Playtime",
       "art_brief": "Floppy ears, spotted ball, and a big bone.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_puppy_play.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_puppy_play.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_puppy_play.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_kitten_yarn",
@@ -242,11 +241,11 @@
       "title": "Kitten in a Yarn Basket",
       "art_brief": "Peeking face, oversized yarn balls, and a bow.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_kitten_yarn.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_kitten_yarn.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_kitten_yarn.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_dinosaur_egg",
@@ -257,11 +256,11 @@
       "title": "Baby T. rex Hatching",
       "art_brief": "Cracked egg, tiny arms, and friendly proportions; existing style sample is a concept reference pending approval.",
       "is_free": null,
-      "asset_status": "style_sample_only",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_dinosaur_egg.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_dinosaur_egg.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_dinosaur_egg.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_stegosaurus",
@@ -272,11 +271,11 @@
       "title": "Stegosaurus in the Garden",
       "art_brief": "Large back plates, broad leaves, and flowers.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_stegosaurus.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_stegosaurus.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_stegosaurus.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_long_neck_dinosaur",
@@ -287,11 +286,11 @@
       "title": "Long-Neck Dinosaur’s Snack",
       "art_brief": "Curved neck, chunky spots, and a small leafy tree.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_long_neck_dinosaur.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_long_neck_dinosaur.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_long_neck_dinosaur.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_clownfish",
@@ -302,11 +301,11 @@
       "title": "Clownfish’s Bubble Adventure",
       "art_brief": "Wide body stripes, big bubbles, and simple seaweed.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_clownfish.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_clownfish.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_clownfish.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_parrot",
@@ -317,11 +316,11 @@
       "title": "Parrot on a Tropical Branch",
       "art_brief": "Large wing feathers, curved beak, and a mango.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_parrot.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_parrot.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_parrot.png",
+      "artwork_revision": 1
     },
     {
       "id": "animals_dinosaurs_owl_family",
@@ -332,11 +331,11 @@
       "title": "Owl Family Under the Moon",
       "art_brief": "One big owl, one baby owl, stars, and a broad branch.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/animals_dinosaurs_owl_family.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/animals_dinosaurs_owl_family.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/animals_dinosaurs_owl_family.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_racing_car",
@@ -347,11 +346,11 @@
       "title": "Little Racing Car",
       "art_brief": "Bold racing stripe, large wheels, and a numbered door.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_racing_car.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_racing_car.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_racing_car.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_monster_truck",
@@ -362,11 +361,11 @@
       "title": "Monster Truck Mountain",
       "art_brief": "Huge tires, flame-shaped decorations, and a small dirt mound.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_monster_truck.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_monster_truck.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_monster_truck.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_airplane",
@@ -377,11 +376,11 @@
       "title": "Airplane Above the Clouds",
       "art_brief": "Rounded wings, big windows, and a smiling sun.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_airplane.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_airplane.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_airplane.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_pirate_ship",
@@ -392,11 +391,11 @@
       "title": "Friendly Pirate Ship",
       "art_brief": "Broad sails, a star flag, and gentle waves.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_pirate_ship.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_pirate_ship.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_pirate_ship.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_fire_engine",
@@ -407,11 +406,11 @@
       "title": "Fire Engine to the Rescue",
       "art_brief": "Big ladder, rolled hose, and a firefighter helmet.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_fire_engine.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_fire_engine.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_fire_engine.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_ice_cream_van",
@@ -422,11 +421,11 @@
       "title": "Ice-Cream Van",
       "art_brief": "Giant ice-cream sign, serving window, and colorful awning.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_ice_cream_van.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_ice_cream_van.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_ice_cream_van.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_train",
@@ -437,11 +436,11 @@
       "title": "Choo-Choo Train",
       "art_brief": "Round engine, two carriages, and puffy steam clouds.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_train.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_train.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_train.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_digger",
@@ -452,11 +451,11 @@
       "title": "Busy Little Digger",
       "art_brief": "Large scoop, chunky tracks, and a pile of sand.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_digger.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_digger.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_digger.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_school_bus",
@@ -467,11 +466,11 @@
       "title": "School Bus Adventure",
       "art_brief": "Big windows, backpack beside the door, and a curved road.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_school_bus.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_school_bus.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_school_bus.png",
+      "artwork_revision": 1
     },
     {
       "id": "vehicles_adventures_rocket",
@@ -482,11 +481,11 @@
       "title": "Rocket to the Moon",
       "art_brief": "Large nose cone, round window, planets, and stars.",
       "is_free": null,
-      "asset_status": "not_created",
-      "outline_asset": null,
-      "region_map_asset": null,
-      "thumbnail_asset": null,
-      "artwork_revision": null
+      "asset_status": "first_pass_vector_art",
+      "outline_asset": "Assets/KidoColoring/Resources/Kido/Art/vehicles_adventures_rocket.png",
+      "region_map_asset": "Assets/KidoColoring/Resources/Kido/Regions/vehicles_adventures_rocket.bytes",
+      "thumbnail_asset": "Assets/KidoColoring/Resources/Kido/Thumbs/vehicles_adventures_rocket.png",
+      "artwork_revision": 1
     }
   ]
 }

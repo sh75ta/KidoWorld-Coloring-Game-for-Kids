@@ -1,0 +1,6 @@
+{
+  "name": "Kido.Runtime",
+  "rootNamespace": "Kido.Coloring",
+  "references": ["UnityEngine.UI"],
+  "autoReferenced": true
+}

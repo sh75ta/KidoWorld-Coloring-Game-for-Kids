@@ -1,0 +1,7 @@
+{
+  "name": "Kido.Editor",
+  "rootNamespace": "Kido.Editor",
+  "references": ["Kido.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

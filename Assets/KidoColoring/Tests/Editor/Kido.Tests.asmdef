@@ -1,0 +1,7 @@
+{
+  "name": "Kido.Tests",
+  "references": ["Kido.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
