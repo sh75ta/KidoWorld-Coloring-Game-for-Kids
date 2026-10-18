@@ -13,11 +13,11 @@ Checked 18 October 2026:
 - Both the supplied wireframe and earlier dinosaur sample can be read.
 - The user's physical computer, Unity Hub installation, signing accounts, and mobile devices are not accessible from this workspace.
 
-These findings do **not** establish whether Unity is installed on the user's computer. No Editor version, mobile module, Xcode installation, signing setup, or device build has been verified there.
+Subsequent user evidence: the Unity Hub screenshot supplied on 18 October 2026 confirms Unity 6.3 LTS `6000.3.14f1` (Apple Silicon), at `/Applications/Unity/Hub/Editor/6000.3.14f1/Unity.app`, with iOS and macOS module badges. Unity 6.0 `6000.0.76f1` is also installed but is not the project target. Android support is not shown. Xcode, signing, compilation, and device builds remain unverified. The project configuration now matches the installed 6.3 Editor.
 
 ## Verify on the development computer
 
-1. Open **Unity Hub → Installs**. Record the full Unity 6.3 Editor version and installation path. If the required version is absent, install it through Hub after deciding which supported patch to use.
+1. Use the existing Unity 6.3 LTS `6000.3.14f1` installation shown in Hub. No new Editor installation is required.
 2. Open that Editor and check **About Unity**. Record the exact version shown; do not infer it from this brief. Unity 6.3 uses the `6000.3` version series, but the patch must be read from the installation.
 3. In Hub's module management for that installation, check **Android Build Support**, **Android SDK & NDK Tools**, **OpenJDK**, and **iOS Build Support**, as applicable to the host.
 4. On the macOS build machine, record the Xcode version and verify the installed mobile toolchain. The iOS module alone does not provide Xcode, signing, or a deployable iOS build.
@@ -30,11 +30,11 @@ Screenshots of **Hub → Installs**, the installed module list, and **About Unit
 
 | Field | Current value |
 | --- | --- |
-| Development computer / OS | Unknown |
-| Unity Editor full version | Unknown |
-| Unity Editor installation path | Unknown |
-| Android module / SDK / NDK / JDK | Unverified |
-| iOS Build Support | Unverified |
+| Development computer / OS | Apple Silicon Mac shown in Unity Hub; OS version unknown |
+| Unity Editor full version | 6000.3.14f1, confirmed by user screenshot |
+| Unity Editor installation path | /Applications/Unity/Hub/Editor/6000.3.14f1/Unity.app |
+| Android module / SDK / NDK / JDK | Not shown in screenshot; build toolchain unverified |
+| iOS Build Support | iOS module badge shown; export not yet tested |
 | Xcode version / macOS build access | Unverified |
 | Existing Unity project path, if any | Unknown |
 | Available iPhone/iPad models and OS | Unknown |
@@ -43,7 +43,7 @@ Screenshots of **Hub → Installs**, the installed module list, and **About Unit
 
 ## Repository setup
 
-This package already contains a local Git repository with planning files. It has no remote. Open its directory in a terminal and run `git status` to inspect it. Do not use this folder as a runnable Unity project until an actual Editor project is created in it with the verified version.
+This package contains a local Git repository with source, assets, project settings, and documentation. It has no remote. Open its directory in a terminal and run `git status` to inspect it. Open the project using Unity 6000.3.14f1 and follow the root README to configure and test the game.
 
 At project creation, use visible `.meta` files and text serialization, commit required source/assets/settings, and exclude generated caches using the supplied `.gitignore`. Signing keys and store credentials stay outside Git.
 

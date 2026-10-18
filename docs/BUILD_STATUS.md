@@ -2,6 +2,8 @@
 
 18 October 2026. Supersedes the earlier planning-only status. The user subsequently instructed us to design and build; source implementation proceeded with an explicit unverified Unity 6.3 target rather than claiming access to the user's machine.
 
+**Editor configuration correction:** The user's subsequent Unity Hub screenshot confirms Unity 6.3 LTS `6000.3.14f1` (Apple Silicon), with iOS and macOS module badges. The project now records that exact version instead of the initial `6000.3.0f1` baseline. Android support is not shown in the screenshot. This change verifies the configured version against the installed Editor; compilation, package resolution, and device builds remain untested here.
+
 ## What exists
 
 - Unity C# source, manifest, boot scene, deterministic metadata, setup/build menus, and tests.

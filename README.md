@@ -19,8 +19,8 @@ The browser version is a design/play review companion. It is **not** an exported
 ## Open the Unity project
 
 1. Extract this entire folder, including `Assets`, `Packages`, and `ProjectSettings`.
-2. In Unity Hub, add the `KidoColoring` folder. Select an installed Unity **6.3** Editor.
-3. The source baseline records `6000.3.0f1`; this is an explicit target, **not a claim about your installed Editor**. Use the appropriate supported 6.3 patch after checking your installed modules. Review and commit version/package changes made by that Editor.
+2. In Unity Hub, add the `KidoColoring` folder. Select your installed **Unity 6.3 LTS (6000.3.14f1)** Editor.
+3. `ProjectSettings/ProjectVersion.txt` now matches `6000.3.14f1`, confirmed in your Unity Hub screenshot on 18 October 2026. No additional Editor installation is needed. For an existing extracted copy, replace that file with the one in this updated package, or change its line to `m_EditorVersion: 6000.3.14f1`. Review and commit package changes made by the Editor on first import.
 4. Let Package Manager resolve the manifest. No fabricated package lock is included.
 5. Run **Kido Coloring → 1. Verify Editor and modules**. Record the console output.
 6. Run **Kido Coloring → 2. Configure and open game**. This sets landscape defaults, uses the legacy input backend, reimports readable artwork, and opens `KidoGame.unity`. Restart the Editor if it requests an input-backend restart.
