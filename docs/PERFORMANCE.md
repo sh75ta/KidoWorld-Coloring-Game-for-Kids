@@ -49,3 +49,7 @@ Compression/hash/readback create temporary buffers. Unity, driver, audio, UI, ma
 - https://create.unity3d.com/Unity-UI-optimization-tips
 
 These guide resource lifetime and profiling decisions. They do not prove the uncompiled implementation meets its targets.
+
+## Figma UI integration checkpoint
+
+Nine original UI PNG resources are read-only on the CPU, without mipmaps. Duplicate dot files share one texture. Only six tool textures are loaded while coloring; splash assets are released on screen changes. Uniform design-space scaling preserves icon proportions without runtime image resampling. Layout recalculates on safe-area size changes, not every frame. A single cached circle texture supplies native round backgrounds. These are source-level choices, not measured performance results. Profile UI batches, ScrollRect scrolling and shader cost in Unity before release.

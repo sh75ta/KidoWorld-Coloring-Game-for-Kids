@@ -31,6 +31,9 @@ namespace Kido.Coloring
         Task<SaveOutcome> pendingSave;int savingRevision;
         SavedPainting saveBuffer;
         bool backgrounded,refreshPreview;
+        readonly List<Texture2D> uiTextures=new List<Texture2D>();
+        RectTransform loadingFill;
+        float pickerCellHeight=112.5f;
         sealed class SaveOutcome {public bool ok;public string error;}
         [Serializable] sealed class PreviewInfo {public int artRevision;public float coverage;}
 
@@ -72,17 +75,19 @@ namespace Kido.Coloring
             yield return new WaitForSecondsRealtime(.7f);
             foreach(var entry in catalog.canvases)
             {
-                LoadPreview(entry);yield return null;
+                LoadPreview(entry);SetLoadingProgress((Array.IndexOf(catalog.canvases,entry)+1f)/catalog.canvases.Length);yield return null;
             }
             ShowMenu();
         }
         void ClearScreen()
         {
             CloseModal();if(scrollTween!=null){StopCoroutine(scrollTween);scrollTween=null;}
-            surface=null;saveBuffer=null;refreshPreview=false;tools.Clear();swatches.Clear();patternButtons.Clear();menuScroll=null;
+            surface=null;saveBuffer=null;refreshPreview=false;saveLabel=null;progressLabel=null;loadingFill=null;tools.Clear();swatches.Clear();patternButtons.Clear();menuScroll=null;
             foreach(var texture in patternTextures)if(texture)Resources.UnloadAsset(texture);
             patternTextures.Clear();colorPicker=null;patternPicker=null;
             if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
+            foreach(var texture in uiTextures)if(texture)Resources.UnloadAsset(texture);
+            uiTextures.Clear();
             screen=KidoUI.Rect("Screen",root);KidoUI.Place(screen,0,0,1,1);
         }
         void Brand(Transform parent)
@@ -91,15 +96,42 @@ namespace Kido.Coloring
             KidoUI.Place(logo.rectTransform,.04f,.88f,.23f,.98f);
             var sub=KidoUI.Label("C O L O R I N G",parent,16,KidoUI.Muted);KidoUI.Place(sub.rectTransform,.043f,.85f,.23f,.89f);
         }
+        Texture2D UITexture(string name)
+        {
+            var texture=Resources.Load<Texture2D>("Kido/UI/Figma/"+name);
+            if(texture&&!uiTextures.Contains(texture))uiTextures.Add(texture);
+            return texture;
+        }
+        RawImage FigmaPicture(string name,Transform parent)
+        {var image=KidoUI.Picture(parent,UITexture(name));image.name=name;return image;}
+        void SetLoadingProgress(float amount)
+        {if(loadingFill)KidoUI.Place(loadingFill,0,0,Mathf.Clamp01(amount),1);}
         void ShowSplash()
         {
-            ClearScreen();background.color=KidoUI.Cream;
-            var title=KidoUI.Label("<b><color=#F06474>k</color><color=#E7A63C>i</color><color=#41BAA3>d</color><color=#7661D5>o</color></b>",screen,112,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(title.rectTransform,.2f,.45f,.8f,.67f);
-            var subtitle=KidoUI.Label("A little color. A big imagination.",screen,28,KidoUI.Muted,TextAnchor.MiddleCenter);KidoUI.Place(subtitle.rectTransform,.2f,.35f,.8f,.44f);
-            var dots=KidoUI.Label("•  •  •",screen,46,KidoUI.Purple,TextAnchor.MiddleCenter);KidoUI.Place(dots.rectTransform,.4f,.24f,.6f,.34f);StartCoroutine(Pulse(dots));
+            ClearScreen();background.color=KidoUI.Hex("FFF2F6");
+            screen.gameObject.AddComponent<RectMask2D>();
+            var design=KidoUI.Rect("Figma splash layout",screen);
+            var layout=design.gameObject.AddComponent<FigmaScreenLayout>();layout.Splash=true;
+            var pink=FigmaPicture("SplashPink",design);var yellow=FigmaPicture("SplashYellow",design);
+            // Original logo export was not in the supplied ZIP. Existing text is provisional.
+            var title=KidoUI.Label("<b><color=#F06474>k</color><color=#E7A63C>i</color><color=#41BAA3>d</color><color=#7661D5>o</color></b>",design,112,KidoUI.Ink,TextAnchor.MiddleCenter);
+            title.name="Provisional logo - original export required";
+            var dots=new RawImage[5];for(int i=0;i<dots.Length;i++)dots[i]=FigmaPicture("Dot",design);
+            var border=KidoUI.Panel("Loading border",design,Color.black);
+            var track=KidoUI.Panel("Loading track",border,KidoUI.Hex("DBDBDB"));KidoUI.Place(track,0,0,1,1,3);
+            loadingFill=KidoUI.Panel("Actual loading progress",track,KidoUI.Hex("C393DF"));SetLoadingProgress(.02f);
+            layout.Layout=(w,h,tablet)=>
+            {
+                // Supplied paint splashes are already clipped Figma node exports.
+                FigmaScreenLayout.Place(pink.rectTransform,0,0,327,403);
+                FigmaScreenLayout.Place(yellow.rectTransform,w-336,h-284,336,284);
+                FigmaScreenLayout.Place(title.rectTransform,(w-577)/2,h/2-293,577,457);
+                FigmaScreenLayout.Place(border,(w-679)/2,tablet?836:717,679,35);
+                float[,] positions=tablet?new float[,]{{1449,518},{522,625},{1159,152},{797,1003},{305,507}}:new float[,]{{1449,518},{522,625},{1159,152},{797,1003},{0,0}};
+                for(int i=0;i<dots.Length;i++){dots[i].gameObject.SetActive(tablet||i<4);FigmaScreenLayout.Place(dots[i].rectTransform,positions[i,0],positions[i,1],21,22);}
+            };
+            Canvas.ForceUpdateCanvases();layout.Refresh();
         }
-        IEnumerator Pulse(Text dots)
-        {while(dots){dots.transform.localScale=Vector3.one*(1+Mathf.Sin(Time.unscaledTime*4)*.08f);yield return null;}}
         void LoadPreview(CanvasEntry entry)
         {
             // Thumbnails are a disposable cache. Never deserialize 30 full paintings on startup.
@@ -193,59 +225,108 @@ namespace Kido.Coloring
             finally{if(bytes)Resources.UnloadAsset(bytes);}
             ClearScreen();active=entry;dirty=false;completed=document.Coverage>=settings.completionThreshold;background.color=KidoUI.Backgrounds[entry.category];
 
-            var name=KidoUI.Label(ShortTitle(entry.title),screen,34,KidoUI.Ink);name.fontStyle=FontStyle.Bold;KidoUI.Place(name.rectTransform,.035f,.90f,.70f,.97f);
-            var done=KidoUI.Button("Done ✓",screen,KidoUI.Hex("22B85D"),LeaveCanvas,24,Color.white);KidoUI.Place((RectTransform)done.transform,.905f,.025f,.985f,.14f);
-            var board=KidoUI.Panel("Paper",screen,Color.white);KidoUI.Place(board,.025f,.095f,.72f,.88f);
-            var artHolder=KidoUI.Rect("Artwork bounds",board);KidoUI.Place(artHolder,.035f,.035f,.965f,.965f);
-            var image=KidoUI.Picture(artHolder,art);KidoUI.Place(image.rectTransform,0,0,1,1);KidoUI.Square(image.rectTransform);
+            background.color=Color.white;
+            var design=KidoUI.Rect("Figma coloring layout",screen);
+            var layout=design.gameObject.AddComponent<FigmaScreenLayout>();
+            var artHolder=KidoUI.Rect("Artwork bounds",design);
+            var image=KidoUI.Picture(artHolder,art);KidoUI.Place(image.rectTransform,0,0,1,1);
             surface=image.gameObject.AddComponent<DrawingSurface>();surface.Initialize(document,art);surface.AnimateGlitter=feedback.Motion;surface.Changed+=OnPaintChanged;
-            var palette=KidoUI.Panel("Colors and patterns",screen,Color.white);KidoUI.Place(palette,.74f,.16f,.895f,.96f);
-            colorPicker=PickerContent(palette,"30 colors",15);
+            var rail=KidoUI.Panel("Brushes",design,KidoUI.Hex("FEDCE7"),false);
+            var palette=KidoUI.Panel("Colors and patterns",design,Color.white,false);
+            colorPicker=PickerContent(palette,"30 colors",30);
             for(int i=0;i<KidoUI.HexColors.Length;i++)
             {
                 int index=i;var swatch=KidoUI.Button("",colorPicker,KidoUI.Hex(KidoUI.HexColors[i]),()=>SelectColor(index));
-                PlacePickerCell((RectTransform)swatch.transform,i);swatches.Add(swatch);
+                swatch.name="Color "+(i+1);swatch.GetComponent<Image>().sprite=null;
+                AddSwatchBorder((RectTransform)swatch.transform);PlacePickerCell((RectTransform)swatch.transform,i);swatches.Add(swatch);
             }
-            patternPicker=PickerContent(palette,"15 patterns",8);
+            patternPicker=PickerContent(palette,"15 patterns",15);
             for(int i=0;i<patternCatalog.patterns.Length;i++)
             {
                 int index=i;var entryPattern=patternCatalog.patterns[i];
                 var texture=Resources.Load<Texture2D>(entryPattern.path);patternTextures.Add(texture);
-                var b=KidoUI.Button("",patternPicker,Color.white,()=>SelectPattern(index));PlacePickerCell((RectTransform)b.transform,i);
-                var pic=KidoUI.Picture(b.transform,texture);KidoUI.Place(pic.rectTransform,.08f,.08f,.92f,.92f);patternButtons.Add(b);
+                var button=KidoUI.Button("",patternPicker,Color.white,()=>SelectPattern(index));PlacePickerCell((RectTransform)button.transform,i);
+                button.GetComponent<Image>().sprite=null;
+                var pic=KidoUI.Picture(button.transform,texture);KidoUI.Place(pic.rectTransform,.08f,.08f,.92f,.92f);patternButtons.Add(button);
             }
             patternPicker.parent.gameObject.SetActive(false);
-            var rail=KidoUI.Panel("Brushes",screen,Color.white);KidoUI.Place(rail,.905f,.16f,.985f,.96f);
             string[] names={"Fill","Brush","Eraser","Glitter","Pattern","Rainbow"};
             for(int i=0;i<6;i++)
             {
-                int tool=i;var b=KidoUI.Button("",rail,KidoUI.Hex("F7F5FC"),()=>SelectTool((PaintTool)tool));
-                float top=1-i/6f;KidoUI.Place((RectTransform)b.transform,.04f,top-1/6f,.96f,top,4);tools.Add(b);
-                var glyphRect=KidoUI.Rect("Tool icon",b.transform);KidoUI.Place(glyphRect,.25f,.31f,.75f,.90f);
-                var glyph=glyphRect.gameObject.AddComponent<ToolGlyph>();glyph.tool=(PaintTool)i;glyph.color=KidoUI.Purple;glyph.raycastTarget=false;
-                var label=KidoUI.Label(names[i],b.transform,17,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(label.rectTransform,.02f,0,.98f,.31f);
+                int tool=i;var button=KidoUI.Button("",design,Color.white,()=>SelectTool((PaintTool)tool));
+                button.name=names[i];button.GetComponent<Image>().sprite=KidoUI.Circle();tools.Add(button);
+                var edge=KidoUI.Panel("Circle border",button.transform,Color.black,false);edge.GetComponent<Image>().sprite=KidoUI.Circle();KidoUI.Place(edge,0,0,1,1);
+                var face=KidoUI.Panel("Tool face",edge,Color.white,false);face.GetComponent<Image>().sprite=KidoUI.Circle();KidoUI.Place(face,0,0,1,1,3);
+                var icon=FigmaPicture(names[i],button.transform);
+                // Match the transforms applied to the artwork in the supplied Figma screens.
+                float rotation=i==0?90:-90;float flip=i==2?1:-1;
+                var ir=icon.rectTransform;ir.anchorMin=ir.anchorMax=ir.pivot=new Vector2(.5f,.5f);ir.anchoredPosition=Vector2.zero;
+                ir.localRotation=Quaternion.Euler(0,0,rotation);ir.localScale=new Vector3(1,flip,1);
             }
-            undoButton=KidoUI.Button("↶ Undo",screen,KidoUI.Hex("F0EDF8"),Undo,20);KidoUI.Place((RectTransform)undoButton.transform,.74f,.025f,.815f,.14f);
-            var reset=KidoUI.Button("Reset",screen,KidoUI.Hex("FFF0EE"),ConfirmReset,20);KidoUI.Place((RectTransform)reset.transform,.822f,.025f,.897f,.14f);
-            saveLabel=KidoUI.Label("Your colors save as you play",screen,20,KidoUI.Muted);KidoUI.Place(saveLabel.rectTransform,.035f,.022f,.46f,.075f);
-            progressLabel=KidoUI.Label("",screen,20,KidoUI.Muted,TextAnchor.MiddleRight);KidoUI.Place(progressLabel.rectTransform,.48f,.022f,.71f,.075f);
+            // These three controls retain temporary artwork until their original exports arrive.
+            var done=KidoUI.Button("Done ✓",design,KidoUI.Hex("22B85D"),LeaveCanvas,28,Color.white);
+            undoButton=KidoUI.Button("↶",design,KidoUI.Hex("38B5FF"),Undo,48,Color.white);
+            var reset=KidoUI.Button("↻",design,KidoUI.Hex("FF5733"),ConfirmReset,48,Color.white);
+            undoButton.GetComponent<Image>().sprite=KidoUI.Circle();reset.GetComponent<Image>().sprite=KidoUI.Circle();
+            var undoHit=KidoUI.Panel("Touch target",undoButton.transform,Color.clear,false);undoHit.GetComponent<Image>().raycastTarget=true;
+            KidoUI.Place(undoHit,0,0,1,1);undoHit.offsetMin=new Vector2(-7.5f,-7.5f);undoHit.offsetMax=new Vector2(7.5f,7.5f);
+            var resetHit=KidoUI.Panel("Touch target",reset.transform,Color.clear,false);resetHit.GetComponent<Image>().raycastTarget=true;
+            KidoUI.Place(resetHit,0,0,1,1);resetHit.offsetMin=new Vector2(-4,-6.5f);resetHit.offsetMax=new Vector2(4,6.5f);
+            layout.Layout=(w,h,tablet)=>
+            {
+                if(surface)surface.FinishStroke();
+                float railX=w-252,paletteX=railX-(tablet?105:112),paletteWidth=tablet?111:112;
+                float artSize=Mathf.Min(tablet?882:720,paletteX-100),artY=tablet?120:152;
+                FigmaScreenLayout.Place(artHolder,(paletteX-artSize)/2,artY,artSize,artSize);
+                FigmaScreenLayout.Place(rail,railX,0,252,h);rail.GetComponent<Image>().color=KidoUI.Hex(tablet?"FFF2F6":"FEDCE7");
+                FigmaScreenLayout.Place(palette,paletteX,0,paletteWidth,h);
+                FigmaScreenLayout.Place((RectTransform)done.transform,28,30,229,98);
+                FigmaScreenLayout.Place((RectTransform)undoButton.transform,paletteX-(tablet?240:234),30,95,97);
+                FigmaScreenLayout.Place((RectTransform)reset.transform,paletteX-(tablet?132:126),29,102,99);
+                float diameter=tablet?148:132,step=tablet?174:144,top=tablet?21:24;
+                for(int i=0;i<tools.Count;i++)
+                {
+                    int slot=i==0?1:i==1?2:i==2?0:i;
+                    FigmaScreenLayout.Place((RectTransform)tools[i].transform,railX+(252-diameter)/2,top+slot*step,diameter,diameter);
+                    var icon=tools[i].GetComponentInChildren<RawImage>();float max=diameter*.75f;
+                    float factor=max/Mathf.Max(icon.texture.width,icon.texture.height);
+                    icon.rectTransform.sizeDelta=new Vector2(icon.texture.width*factor,icon.texture.height*factor);
+                }
+                pickerCellHeight=h/8;
+                ResizePicker(colorPicker,swatches);ResizePicker(patternPicker,patternButtons);
+            };
+            Canvas.ForceUpdateCanvases();layout.Refresh();
             SelectColor(0,false);SelectPattern(0,false);SelectTool(PaintTool.Fill,false);RefreshPaintStatus();
             if(loaded.recovered)Message("Welcome back", "We recovered the last safely saved version of your picture.");
         }
         RectTransform PickerContent(RectTransform parent,string label,int rows)
         {
-            var viewport=KidoUI.Panel(label,parent,Color.white,false);KidoUI.Place(viewport,.035f,.015f,.965f,.985f);
+            var viewport=KidoUI.Panel(label,parent,Color.white,false);KidoUI.Place(viewport,0,0,1,1);
             viewport.GetComponent<Image>().raycastTarget=true;viewport.gameObject.AddComponent<RectMask2D>();
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.horizontal=false;scroll.vertical=true;
             scroll.movementType=ScrollRect.MovementType.Clamped;scroll.decelerationRate=.08f;
             var content=KidoUI.Rect(label+" content",viewport);scroll.content=content;
             content.anchorMin=new Vector2(0,1);content.anchorMax=new Vector2(1,1);content.pivot=new Vector2(.5f,1);
-            content.sizeDelta=new Vector2(0,rows*112);content.anchoredPosition=Vector2.zero;return content;
+            content.sizeDelta=new Vector2(0,rows*pickerCellHeight);content.anchoredPosition=Vector2.zero;return content;
         }
         void PlacePickerCell(RectTransform cell,int index)
         {
-            cell.anchorMin=new Vector2((index%2)*.5f,1);cell.anchorMax=new Vector2((index%2+1)*.5f,1);
-            cell.pivot=new Vector2(.5f,1);cell.offsetMin=new Vector2(6,-(index/2+1)*112+6);cell.offsetMax=new Vector2(-6,-index/2*112-6);
+            cell.anchorMin=new Vector2(0,1);cell.anchorMax=new Vector2(1,1);cell.pivot=new Vector2(.5f,1);
+            cell.offsetMin=new Vector2(0,-(index+1)*pickerCellHeight);cell.offsetMax=new Vector2(0,-index*pickerCellHeight);
+        }
+        void ResizePicker(RectTransform content,List<Button> buttons)
+        {
+            var scroll=content.parent.GetComponent<ScrollRect>();float position=scroll.verticalNormalizedPosition;
+            content.sizeDelta=new Vector2(0,buttons.Count*pickerCellHeight);
+            for(int i=0;i<buttons.Count;i++)PlacePickerCell((RectTransform)buttons[i].transform,i);
+            Canvas.ForceUpdateCanvases();scroll.verticalNormalizedPosition=position;
+        }
+        static void AddSwatchBorder(RectTransform cell)
+        {
+            var top=KidoUI.Panel("Top border",cell,Color.black,false);KidoUI.Place(top,0,1,1,1);top.sizeDelta=new Vector2(0,3);
+            var left=KidoUI.Panel("Left border",cell,Color.black,false);KidoUI.Place(left,0,0,0,1);left.sizeDelta=new Vector2(3,0);
+            var right=KidoUI.Panel("Right border",cell,Color.black,false);KidoUI.Place(right,1,0,1,1);right.sizeDelta=new Vector2(3,0);
+            var bottom=KidoUI.Panel("Bottom border",cell,Color.black,false);KidoUI.Place(bottom,0,0,1,0);bottom.sizeDelta=new Vector2(0,3);
         }
         void SelectPattern(int index,bool sound=true)
         {
@@ -267,7 +348,8 @@ namespace Kido.Coloring
         {
             if(!surface)return;surface.FinishStroke();surface.Tool=tool;if(sound)feedback.Tap();
             colorPicker.parent.gameObject.SetActive(tool!=PaintTool.Pattern);patternPicker.parent.gameObject.SetActive(tool==PaintTool.Pattern);
-            for(int i=0;i<tools.Count;i++){tools[i].GetComponent<Image>().color=i==(int)tool?KidoUI.Hex("E8E0FF"):KidoUI.Hex("F7F5FC");}
+            for(int i=0;i<tools.Count;i++)
+            {var edge=tools[i].transform.Find("Circle border").GetComponent<Image>();edge.color=i==(int)tool?KidoUI.Hex("8B42EA"):Color.black;}
         }
         void OnPaintChanged(){dirty=true;nextSave=Time.unscaledTime+1.5f;feedback.Tap();RefreshPaintStatus();}
         void RefreshPaintStatus()
@@ -382,6 +464,6 @@ namespace Kido.Coloring
             var motion=KidoUI.Button(feedback.Motion?"Motion: on":"Motion: off",box,Color.white,()=>{feedback.SetMotion(!feedback.Motion);if(surface)surface.AnimateGlitter=feedback.Motion;ShowParents();},21);KidoUI.Place((RectTransform)motion.transform,.53f,.27f,.93f,.40f);
             var close=KidoUI.Button("Back to coloring",box,KidoUI.Purple,CloseModal,24,Color.white);KidoUI.Place((RectTransform)close.transform,.20f,.07f,.80f,.22f);
         }
-        void OnDestroy(){Application.lowMemory-=OnLowMemory;backgrounded=true;if(pendingSave!=null)CompleteBackgroundSave(true);foreach(var texture in previews.Values)if(texture)Destroy(texture);}
+        void OnDestroy(){Application.lowMemory-=OnLowMemory;backgrounded=true;if(pendingSave!=null)CompleteBackgroundSave(true);foreach(var texture in previews.Values)if(texture)Destroy(texture);foreach(var texture in uiTextures)if(texture)Resources.UnloadAsset(texture);}
     }
 }

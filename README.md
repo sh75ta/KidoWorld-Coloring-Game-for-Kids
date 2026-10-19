@@ -2,7 +2,7 @@
 
 Updated 19 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
 
-This package contains the rebuilt Unity source and approved artwork. **The Figma visual implementation is unfinished, and this source has not yet been compiled or run in Unity.** The installed Figma connection did not expose design-reading tools in this session; no Figma frames or icons were fetched. The current splash and tool graphics are provisional. Do not treat them as the approved Figma design.
+This package contains the rebuilt Unity source, approved artwork, and the supplied original Figma tool icons and splash decorations. Phone/tablet coloring layouts are implemented in source. **The logo and Done/Undo/Reset artwork were absent from the asset ZIP and remain provisional. This source has not yet been compiled or run in Unity.** See `docs/Figma/INTEGRATION.md` for exact remaining exports and visual limitations.
 
 ## Open the current rebuild
 
@@ -14,10 +14,10 @@ This package contains the rebuilt Unity source and approved artwork. **The Figma
 ## Implemented in source
 
 - All 30 approved designs: transparent 2048px outline textures, 192px gallery thumbnails, 1024px painting-region maps, and the scalable SVG masters.
-- The approved vibrant 30-color palette; stable positions in a scrollable two-column palette.
+- The approved vibrant 30-color palette; stable positions in a scrollable single-column palette with eight visible swatches.
 - All 15 patterns: twelve tintable designs and three Christmas designs with fixed festive colors.
 - Fill, brush, eraser, pattern and rainbow tools; Fairy Dust texture and slow white twinkles restricted to glitter-painted pixels.
-- Undo restores both color and glitter; reset is confirmed and undoable. Done is green, at bottom right with Undo and Reset. There is no separate coloring-screen Back button.
+- Undo restores both color and glitter; reset is confirmed and undoable. Done is green at top-left; Undo and Reset are at the upper-right of the canvas, following the latest Figma frames. There is no separate coloring-screen Back button.
 - Compressed, checksummed alternating save slots, a single background save writer, pause/focus/Done flushes, and cached gallery previews.
 - Memory-bounded tile undo, GPU outline compositing, small gallery assets, explicit active-art release and no per-frame pixel readback for glitter.
 
@@ -31,7 +31,7 @@ Five offline content checks passed: catalog and vector masters; transparent outl
 
 ## Remaining work
 
-- Read Figma file `tKMLc3YnLj2fez5lIisF98`, starting at node `2215:2752`, export its actual splash/coloring-screen assets, and implement those layouts accurately.
+- Supply the missing logo and Done/Undo/Reset exports from Figma file `ORpZoUySkEUioAZ7bU0ULd`. Complete exact art placement and native visual validation. Full unclipped or phone-specific splash decorations are needed to match the phone crop exactly.
 - Close remaining open decorative region boundaries and review very small coloring regions. The diagnostic contact sheet is `docs/ArtQA/regions-contact-sheet.png`; its bright colors are diagnostic labels, not prescribed coloring.
 - Run Unity and physical-device validation, then fix findings before release.
 - Finish the previously scoped store purchase/restore and child-appropriate advertising decisions/integration. No commerce SDK or live transaction was added.

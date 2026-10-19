@@ -1,0 +1,60 @@
+const assetPathPrefix = "LOCAL_FIGMA_ASSETS";
+const imgImage2 = `${assetPathPrefix}/04411.png`;
+const imgDecorationsPinkPaintSplash = `${assetPathPrefix}/9963f.png`;
+const imgDecorationsBluePaintSplash = `${assetPathPrefix}/f13a4.png`;
+const imgDecorationsPurpleDotTop = `${assetPathPrefix}/0f17c.png`;
+
+export default function Loading() {
+  return (
+    <div className="bg-[#fff2f6] relative size-full" data-node-id="6:36" data-name="Loading">
+      <div className="-translate-x-1/2 -translate-y-1/2 absolute h-[457px] left-[calc(50%-0.5px)] top-[calc(50%-64.5px)] w-[577px]" data-node-id="6:37" data-name="image 2">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[187.2%] left-[-5.35%] max-w-none top-[-31.26%] w-[110.71%]" src={imgImage2} />
+        </div>
+      </div>
+      <div className="absolute bg-[#dbdbdb] border-3 border-black border-solid h-[35px] left-[468px] rounded-[50px] top-[717px] w-[679px]" data-node-id="6:38" />
+      <div className="absolute bg-[#c393df] h-[29px] left-[470px] rounded-[50px] top-[720px] w-[483px]" data-node-id="6:39" />
+      <div className="absolute h-[413px] left-[1257px] top-[590px] w-[504px]" data-node-id="6:40" data-name="Decorations / Pink paint splash">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-full left-[-23.41%] max-w-none top-0 w-[146.82%]" src={imgDecorationsPinkPaintSplash} />
+        </div>
+      </div>
+      <div className="absolute flex h-[624.015px] items-center justify-center left-[-287px] top-[-238px] w-[573.291px]" data-node-id="6:41">
+        <div className="flex-none rotate-[-74.18deg]">
+          <div className="h-[448.065px] relative w-[521.628px]" data-name="Decorations / Blue paint splash">
+            <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgDecorationsBluePaintSplash} />
+          </div>
+        </div>
+      </div>
+      <div className="absolute h-[22px] left-[1449px] top-[518px] w-[21px]" data-node-id="6:42" data-name="Decorations / Purple dot — top">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[5204.55%] left-[-3319.05%] max-w-none top-[-3700%] w-[9752.38%]" src={imgDecorationsPurpleDotTop} />
+        </div>
+      </div>
+      <div className="absolute h-[22px] left-[522px] top-[625px] w-[21px]" data-node-id="6:43" data-name="Decorations / Purple dot — top">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[5204.55%] left-[-3319.05%] max-w-none top-[-3700%] w-[9752.38%]" src={imgDecorationsPurpleDotTop} />
+        </div>
+      </div>
+      <div className="absolute h-[22px] left-[1159px] top-[152px] w-[21px]" data-node-id="6:44" data-name="Decorations / Purple dot — top">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[5204.55%] left-[-3319.05%] max-w-none top-[-3700%] w-[9752.38%]" src={imgDecorationsPurpleDotTop} />
+        </div>
+      </div>
+      <div className="absolute h-[22px] left-[797px] top-[1003px] w-[21px]" data-node-id="6:45" data-name="Decorations / Purple dot — top">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[5204.55%] left-[-3319.05%] max-w-none top-[-3700%] w-[9752.38%]" src={imgDecorationsPurpleDotTop} />
+        </div>
+      </div>
+    </div>
+  );
+}
+SUPER CRITICAL: The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system.
+1. Analyze the target codebase to identify: technology stack, styling approach, component patterns, and design tokens
+2. Convert React syntax to the target framework/library
+3. Transform all Tailwind classes to the target styling system while preserving exact visual design
+4. Follow the project's existing patterns and conventions
+DO NOT install any Tailwind as a dependency unless the user instructs you to do so.
+
+Node ids have been added to the code as data attributes, e.g. `data-node-id="1:2"`.
+The generated code contains image and SVG URL constants, e.g. const image = `${assetPathPrefix}/<asset file name>`, where assetPathPrefix is declared once at the top of the code and every asset URL interpolates it. These URLs are temporary download sources and expire after 7 days. Download each asset into the project with curl -L, then replace its URL in the generated code with a reference to the downloaded asset. Never use the temporary URLs as runtime image sources.

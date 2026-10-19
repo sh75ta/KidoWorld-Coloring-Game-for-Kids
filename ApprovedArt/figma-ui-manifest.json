@@ -1,0 +1,63 @@
+{
+  "figmaFile": "ORpZoUySkEUioAZ7bU0ULd",
+  "frames": {
+    "phoneSplash": "6:36",
+    "tabletSplash": "6:46",
+    "phoneColoring": "6:99",
+    "tabletColoring": "6:62"
+  },
+  "attachmentSha256": "d4a465686df66f624e73aaa716af2f5bddc9a1ab3ad778fa0f0aaa51136d81a1",
+  "assets": [
+    {
+      "source": "Decorations/Pink paint splash.png",
+      "resource": "Kido/UI/Figma/SplashYellow",
+      "sha256": "61a17ca3acdc178ff9eada3e9f31e4924cc60676e2b4257fc318b4eb8d6ff7f9"
+    },
+    {
+      "source": "Decorations/Blue paint splash.png",
+      "resource": "Kido/UI/Figma/SplashPink",
+      "sha256": "cf33663e3225bc9f3a0a72832ff498c56fc3f5adc0e3a0b5001127891ec97b20"
+    },
+    {
+      "source": "Decorations/Purple dot \u2014 top.png",
+      "resource": "Kido/UI/Figma/Dot",
+      "sha256": "4453a0f03984c2e8e1331b1e6d3ead775fa7ce495d1d3767dc9f5aeb7c4a2fce"
+    },
+    {
+      "source": "Tool icons/Eraser.png",
+      "resource": "Kido/UI/Figma/Eraser",
+      "sha256": "663a35a0a524f1989993496ca11638ecde73c5fde2c4054fc54a614f46d8d6da"
+    },
+    {
+      "source": "Tool icons/Paint bucket.png",
+      "resource": "Kido/UI/Figma/Fill",
+      "sha256": "e41238f5b9008143ceede2ca22283e78f8d5093b800b88d7daa1b4293d3cef45"
+    },
+    {
+      "source": "Tool icons/Paintbrush.png",
+      "resource": "Kido/UI/Figma/Brush",
+      "sha256": "51bdd5264bb855d361d26ec6346096b3d0dbc179ba261bc0baa354cffb1b7e61"
+    },
+    {
+      "source": "Tool icons/Glitter brush.png",
+      "resource": "Kido/UI/Figma/Glitter",
+      "sha256": "63edaa2ae0e9988e7b264ff8aec183bd10dd38183fd7759c83a2cea24239847f"
+    },
+    {
+      "source": "Tool icons/Paint roller.png",
+      "resource": "Kido/UI/Figma/Pattern",
+      "sha256": "80dd823104b554767372a94ef387f073b92ca7f60712d08f5ad137d83f1f504a"
+    },
+    {
+      "source": "Tool icons/Rainbow brush.png",
+      "resource": "Kido/UI/Figma/Rainbow",
+      "sha256": "20f53074b783f4612685680863541accad85930064cbf2f5f0d258319d91b1ff"
+    }
+  ],
+  "missing": [
+    "Logo",
+    "Done",
+    "Undo",
+    "Reset"
+  ]
+}

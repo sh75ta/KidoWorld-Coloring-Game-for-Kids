@@ -1,0 +1,147 @@
+const assetPathPrefix = "LOCAL_FIGMA_ASSETS";
+const imgButtonsDone = `${assetPathPrefix}/3d13a.png`;
+const imgButtonsUndo = `${assetPathPrefix}/03576.png`;
+const imgToolIconsEraser = `${assetPathPrefix}/58efd.png`;
+const imgButtonsRefresh = `${assetPathPrefix}/df931.png`;
+const img01ChristmasWinterSantaGiftSack1 = `${assetPathPrefix}/68890.png`;
+const imgToolIconEraserBackground = `${assetPathPrefix}/9d874.svg`;
+
+export default function CanvasColoringScreen() {
+  return (
+    <div className="bg-white overflow-clip relative rounded-[20px] size-full" data-node-id="6:62" data-name="Canvas Coloring Screen">
+      <div className="absolute bg-[#fff2f6] h-[1091px] left-[1170px] rounded-[20px] top-[-12px] w-[252px]" data-node-id="6:63" />
+      <div className="absolute bg-[#ff2f2f] border-3 border-black border-solid h-[140px] left-[1065px] top-[-12px] w-[111px]" data-node-id="6:64" />
+      <div className="absolute bg-[#a1ff2f] border-3 border-black border-solid h-[140px] left-[1065px] top-[397px] w-[111px]" data-node-id="6:65" />
+      <div className="absolute bg-[#d22fff] border-3 border-black border-solid h-[141px] left-[1065px] top-[805px] w-[111px]" data-node-id="6:66" />
+      <div className="absolute bg-white border-3 border-black border-solid h-[140px] left-[1065px] top-[533px] w-[111px]" data-node-id="6:67" />
+      <div className="absolute bg-white border-3 border-black border-solid h-[141px] left-[1065px] top-[124px] w-[111px]" data-node-id="6:68" />
+      <div className="absolute bg-[#2ffff5] border-3 border-black border-solid h-[140px] left-[1065px] top-[533px] w-[111px]" data-node-id="6:69" />
+      <div className="absolute bg-white border-3 border-black border-solid h-[140px] left-[1065px] top-[942px] w-[111px]" data-node-id="6:70" />
+      <div className="absolute bg-white border-3 border-black border-solid h-[140px] left-[1065px] top-[668px] w-[111px]" data-node-id="6:71" />
+      <div className="absolute bg-[#ffa12f] border-3 border-black border-solid h-[141px] left-[1065px] top-[124px] w-[111px]" data-node-id="6:72" />
+      <div className="absolute bg-[#2f63ff] border-3 border-black border-solid h-[140px] left-[1065px] top-[668px] w-[111px]" data-node-id="6:73" />
+      <div className="absolute bg-[#ff2fd2] border-3 border-black border-solid h-[140px] left-[1065px] top-[942px] w-[111px]" data-node-id="6:74" />
+      <div className="absolute bg-white border-3 border-black border-solid h-[141px] left-[1065px] top-[259px] w-[111px]" data-node-id="6:75" />
+      <div className="absolute bg-[#fcff2f] border-3 border-black border-solid h-[141px] left-[1065px] top-[259px] w-[111px]" data-node-id="6:76" />
+      <div className="absolute h-[98px] left-[28px] top-[30px] w-[229px]" data-node-id="6:77" data-name="Buttons / Done">
+        <img alt="" className="absolute inset-0 max-w-none object-contain pointer-events-none size-full" src={imgButtonsDone} />
+      </div>
+      <div className="absolute h-[97px] left-[825px] top-[30px] w-[95px]" data-node-id="6:78" data-name="Buttons / Undo">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img alt="" className="absolute h-[106.13%] left-[-2.37%] max-w-none top-[-2.34%] w-[267.06%]" src={imgButtonsUndo} />
+        </div>
+      </div>
+      <div className="absolute contents left-[1221px] top-[21px]" data-node-id="6:79">
+        <div className="absolute left-[1221px] size-[148px] top-[21px]" data-node-id="6:80" data-name="Tool icon / Eraser background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex items-center justify-center left-[1239.37px] size-[111.255px] top-[39.37px]" data-node-id="6:81">
+          <div className="flex-none rotate-90">
+            <div className="relative size-[111.255px]" data-name="Tool icons / Eraser">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[220.38%] left-[-2.43%] max-w-none top-[-2.31%] w-[466.87%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute contents left-[1221px] top-[195px]" data-node-id="6:82">
+        <div className="absolute left-[1221px] size-[148px] top-[195px]" data-node-id="6:83" data-name="Tool icon / Paint bucket background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex h-[112.276px] items-center justify-center left-[1239.37px] top-[213.37px] w-[111.255px]" data-node-id="6:84">
+          <div className="-rotate-90 -scale-y-100 flex-none">
+            <div className="h-[111.255px] relative w-[112.276px]" data-name="Tool icons / Paint bucket">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[217.86%] left-[-102.32%] max-w-none top-[-2.29%] w-[445.22%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute contents left-[1221px] top-[369px]" data-node-id="6:85">
+        <div className="absolute left-[1221px] size-[148px] top-[369px]" data-node-id="6:86" data-name="Tool icon / Paintbrush background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex h-[89.821px] items-center justify-center left-[1240.39px] top-[397.58px] w-[109.214px]" data-node-id="6:87">
+          <div className="-scale-y-100 flex-none rotate-90">
+            <div className="h-[109.214px] relative w-[89.821px]" data-name="Tool icons / Paintbrush">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[210.06%] left-[-250.53%] max-w-none top-[-2.2%] w-[538.95%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute contents left-[1221px] top-[543px]" data-node-id="6:88">
+        <div className="absolute left-[1221px] size-[148px] top-[543px]" data-node-id="6:89" data-name="Tool icon / Glitter brush background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex h-[89.821px] items-center justify-center left-[1240.39px] top-[572.6px] w-[109.214px]" data-node-id="6:90">
+          <div className="-scale-y-100 flex-none rotate-90">
+            <div className="h-[109.214px] relative w-[89.821px]" data-name="Tool icons / Glitter brush">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[207.2%] left-[-325.32%] max-w-none top-[-2.17%] w-[492.31%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute h-[99px] left-[933px] top-[29px] w-[102px]" data-node-id="6:91" data-name="Buttons / Refresh">
+        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgButtonsRefresh} />
+      </div>
+      <div className="absolute contents left-[1221px] top-[717px]" data-node-id="6:92">
+        <div className="absolute left-[1221px] size-[148px] top-[717px]" data-node-id="6:93" data-name="Tool icon / Paint roller background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex h-[112.276px] items-center justify-center left-[1239.37px] top-[734.35px] w-[111.255px]" data-node-id="6:94">
+          <div className="-scale-y-100 flex-none rotate-90">
+            <div className="h-[111.255px] relative w-[112.276px]" data-name="Tool icons / Paint roller">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[217.24%] left-[-2.31%] max-w-none top-[-111.68%] w-[443.93%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute contents left-[1221px] top-[891px]" data-node-id="6:95">
+        <div className="absolute left-[1221px] size-[148px] top-[891px]" data-node-id="6:96" data-name="Tool icon / Rainbow brush background">
+          <div className="absolute inset-[-1.01%]">
+            <img alt="" className="block max-w-none size-full" src={imgToolIconEraserBackground} />
+          </div>
+        </div>
+        <div className="absolute flex items-center justify-center left-[1239.37px] size-[111.255px] top-[909.37px]" data-node-id="6:97">
+          <div className="-scale-y-100 flex-none rotate-90">
+            <div className="relative size-[111.255px]" data-name="Tool icons / Rainbow brush">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <img alt="" className="absolute h-[210.34%] left-[-101.79%] max-w-none top-[-108.14%] w-[422.56%]" src={imgToolIconsEraser} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="absolute left-[91px] rounded-[10px] size-[882px] top-[120px]" data-node-id="6:98" data-name="01-christmas_winter_santa_gift_sack 1">
+        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[10px] size-full" src={img01ChristmasWinterSantaGiftSack1} />
+      </div>
+    </div>
+  );
+}
+SUPER CRITICAL: The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system.
+1. Analyze the target codebase to identify: technology stack, styling approach, component patterns, and design tokens
+2. Convert React syntax to the target framework/library
+3. Transform all Tailwind classes to the target styling system while preserving exact visual design
+4. Follow the project's existing patterns and conventions
+DO NOT install any Tailwind as a dependency unless the user instructs you to do so.
+
+Node ids have been added to the code as data attributes, e.g. `data-node-id="1:2"`.
+The generated code contains image and SVG URL constants, e.g. const image = `${assetPathPrefix}/<asset file name>`, where assetPathPrefix is declared once at the top of the code and every asset URL interpolates it. These URLs are temporary download sources and expire after 7 days. Download each asset into the project with curl -L, then replace its URL in the generated code with a reference to the downloaded asset. Never use the temporary URLs as runtime image sources.

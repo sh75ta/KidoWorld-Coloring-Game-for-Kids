@@ -12,7 +12,7 @@ namespace Kido.Coloring
         public static readonly Color[] Backgrounds={Hex("FFF3EF"),Hex("EDF8F0"),Hex("EFF5FF")};
         // Approved Vibrant 30, 19 October 2026. Stable ordering across tools and sessions.
         public static readonly string[] HexColors={"FF303B","FF5733","FF8A00","FF409C","FF78BE","FF7A6B","FFCE26","B7E833","68CF36","22B85D","009D73","00C7AE","27D8F2","38B5FF","3978F6","3D45D8","8B42EA","C440DD","FFD9BA","F2B887","D99460","B87346","8D4E32","593524","FFFFFF","DCE5ED","8998AC","242836","FFF3CD","CDB7FF"};
-        static Sprite rounded;static Font font;
+        static Sprite rounded,circle;static Font font;
         public static Color Hex(string hex){ColorUtility.TryParseHtmlString("#"+hex,out var c);return c;}
         public static RectTransform Rect(string name,Transform parent)
         {
@@ -49,6 +49,15 @@ namespace Kido.Coloring
         }
         public static void Square(RectTransform rect)
         {var fitter=rect.gameObject.AddComponent<AspectRatioFitter>();fitter.aspectMode=AspectRatioFitter.AspectMode.FitInParent;fitter.aspectRatio=1;}
+        public static Sprite Circle()
+        {
+            if(circle)return circle;
+            const int n=256;var texture=new Texture2D(n,n,TextureFormat.RGBA32,false);var pixels=new Color32[n*n];
+            for(int y=0;y<n;y++)for(int x=0;x<n;x++)
+            {float dx=x-(n-1)*.5f,dy=y-(n-1)*.5f;pixels[y*n+x]=new Color(1,1,1,Mathf.Clamp01(n*.5f-Mathf.Sqrt(dx*dx+dy*dy)));}
+            texture.SetPixels32(pixels);texture.Apply(false,true);texture.wrapMode=TextureWrapMode.Clamp;texture.filterMode=FilterMode.Bilinear;
+            circle=Sprite.Create(texture,new Rect(0,0,n,n),new Vector2(.5f,.5f));return circle;
+        }
         public static Sprite Rounded()
         {
             if(rounded)return rounded;

@@ -6,7 +6,7 @@
 - Fifteen patterns, including Candy Cane Stripes, Christmas Trees & Stars, Christmas Gifts.
 - Vibrant 30 palette approved on 19 October.
 - Glitter concept D: Fairy Dust with subtle white sparkles, slowly twinkling and fading inside the paint. Strong grain, gel, foil and jewel flakes were not selected.
-- Done is green, bottom right, and saves/returns; Undo and Reset sit nearby. No separate coloring-screen Back button.
+- Done is green at top-left and saves/returns; Undo and Reset sit at the upper-right of the canvas as in the latest Figma frames. No separate coloring-screen Back button.
 - Supplied Figma is the authority for splash, coloring layout, brushes, buttons and icons. Earlier UI kits were rejected.
 
 ## Implementation versus validation
@@ -19,16 +19,16 @@
 | Painting | Region-constrained strokes; per-region bounded fill; one gesture per undo | Native touch and edge behavior |
 | Persistence | Compressed V2 payload; SHA-256; two alternating slots; one worker; owned snapshots | App interruption, disk-full, actual save latency |
 | Memory | One active full artwork, bounded undo, read-only outlines/thumbnails, released art | Profiler captures and repeated navigation test |
-| Figma screens | BLOCKED; actual screens/icons not retrieved | Fetch frame hierarchy, screenshots, exported assets |
+| Figma screens | Phone/tablet contexts retrieved; supplied original icons/decorations integrated | Missing logo and three action exports; native visual validation and phone splash crop |
 | Native platforms | Existing Unity version retained | Compile, EditMode suite, Xcode export, Android build |
 
 ## Figma handoff
 
-URL: https://www.figma.com/design/tKMLc3YnLj2fez5lIisF98/Game-Icon?node-id=2215-2752
+URL: https://www.figma.com/design/ORpZoUySkEUioAZ7bU0ULd/KidoColoring?node-id=0-1
 
-The user installed Figma during this task and installation was confirmed. The session still exposed no callable Figma design-reading tools after repeated capability discovery. The public URL was also unreadable through the web reader. Do not ask the user to install Figma again. Continue with its tools when exposed; alternatively use user-provided frame PNGs and individual transparent icon/button exports. No private browser session was accessed.
+The new file is readable through Figma. Phone/tablet frames and screenshots were retrieved. Direct image downloads and the browser returned Site Unavailable; the user then supplied KidoColoring.zip containing six icons and three unique splash decorations. These originals are integrated unchanged on disk. The ZIP omitted the logo and Done/Undo/Reset assets. Existing artwork for those four elements remains provisional. No additional Figma permission change or installation is required for the supplied assets.
 
-Before implementing the final UI, inspect the node and nearby frames, record reference frame dimensions, export actual layer artwork, and preserve aspect ratios/9-slice borders where applicable. Use a common safe-area root. Validate both tablet and landscape-phone layouts against the source at matching aspect ratios. Keep labels/actions consistent with the approved requirements.
+See `docs/Figma/INTEGRATION.md` for source frame IDs, implemented layout, remaining exports, crop limitations and validation steps. Menu/dialog styling remains from the earlier prototype. No claim of complete Figma visual fidelity or native runtime validation is made.
 
 ## Region review
 
