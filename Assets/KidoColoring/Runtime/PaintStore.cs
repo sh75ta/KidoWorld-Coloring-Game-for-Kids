@@ -122,7 +122,7 @@ namespace Kido.Coloring
                 using(var packed=new MemoryStream())
                 {
                     byte[] header=Encoding.ASCII.GetBytes("KIDOZIP2");packed.Write(header,0,header.Length);
-                    using(var zip=new DeflateStream(packed,CompressionLevel.Fastest,true))zip.Write(all,0,all.Length);
+                    using(var zip=new DeflateStream(packed,System.IO.Compression.CompressionLevel.Fastest,true))zip.Write(all,0,all.Length);
                     return packed.ToArray();
                 }
             }
