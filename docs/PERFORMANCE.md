@@ -26,7 +26,7 @@ Startup reads cached previews, not thirty full painting buffers. Outlines and ga
 | Active uncompressed outline | 16 MiB GPU |
 | Paint and effect textures | 5 MiB GPU |
 | Fifteen 256px patterns | About 3.75 MiB each on CPU and GPU, plus selected sample buffer |
-| Thirty 192px gallery images | Up to about 4.22 MiB GPU per set; saved previews may form a second set |
+| Thirty 384px gallery images | Up to about 16.9 MiB GPU per set; only visible loaded resources should be confirmed in the Profiler; saved previews may form a second set |
 
 Compression/hash/readback create temporary buffers. Unity, driver, audio, UI, managed heap capacity and retained GC generations add overhead not included above. Track peak resident memory, not just texture estimates. Device data should determine platform texture compression and painting resolution changes.
 
@@ -52,4 +52,4 @@ These guide resource lifetime and profiling decisions. They do not prove the unc
 
 ## Figma UI integration checkpoint
 
-Thirteen original UI PNG resources are read-only on the CPU, without mipmaps. Duplicate dot files share one texture. Six tool textures and three small action-button textures are loaded while coloring; splash assets are released on screen changes. Uniform design-space scaling preserves icon proportions without runtime image resampling. Layout recalculates on safe-area size changes, not every frame. A single cached circle texture supplies native round backgrounds. These are source-level choices, not measured performance results. Profile UI batches, ScrollRect scrolling and shader cost in Unity before release.
+Thirteen original UI PNG resources are read-only on the CPU, without mipmaps. Duplicate dot files share one texture. Six tool textures and three small action-button textures are loaded while coloring; splash/menu assets are released on screen changes. The gallery thumbnails are now 384px to stay crisp at native phone/tablet size; profile actual Resources retention before deciding whether to move the gallery to explicit asynchronous loading. The supplied MP3 imports as a streaming clip with background loading. Uniform design-space scaling preserves icon proportions without runtime image resampling. Layout recalculates on safe-area size changes, not every frame. A single cached circle texture supplies native round backgrounds. These are source-level choices, not measured performance results. Profile UI batches, ScrollRect scrolling, audio streaming and shader cost in Unity before release.

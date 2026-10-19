@@ -40,7 +40,7 @@ function regions(rgba){
  for(const c of catalog){
   const svg=fs.readFileSync(external?path.join(source,c.svg):path.join(masters,c.id+'.svg'));fs.writeFileSync(path.join(masters,c.id+'.svg'),svg);
   await sharp(svg).resize(2048,2048).png().toFile(path.join(resources,'Art',c.id+'.png'));
-  await sharp(svg).resize(192,192).flatten({background:'#ffffff'}).png().toFile(path.join(resources,'Thumbs',c.id+'.png'));
+  await sharp(svg).resize(384,384).flatten({background:'#ffffff'}).png().toFile(path.join(resources,'Thumbs',c.id+'.png'));
   const rgba=await sharp(svg).resize(size,size).ensureAlpha().raw().toBuffer(),map=regions(rgba);
   if(map.count<3)throw new Error('Too few regions: '+c.id);
   fs.writeFileSync(path.join(resources,'Regions',c.id+'.bytes'),map.binary);
@@ -66,5 +66,5 @@ function regions(rgba){
   await sharp(svg).resize(256,256).png().toFile(path.join(resources,'Patterns',String(i+1).padStart(2,'0')+'.png'));
  }
  fs.writeFileSync(path.join(resources,'patterns.json'),JSON.stringify({patterns:pc.map((p,i)=>({id:i,name:p.name,path:'Kido/Patterns/'+String(i+1).padStart(2,'0'),tint:i<12,approved:true}))},null,2));
- console.log('Imported 30 vector masters, 30 outlines, 30 maps, 30 thumbnails, 15 patterns.');
+ console.log('Imported 30 vector masters, 30 outlines, 30 maps, 30 high-resolution thumbnails, 15 patterns.');
 })().catch(e=>{console.error(e);process.exit(1)});

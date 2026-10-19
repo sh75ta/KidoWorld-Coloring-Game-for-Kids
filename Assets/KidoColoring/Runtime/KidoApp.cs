@@ -20,7 +20,7 @@ namespace Kido.Coloring
         readonly Dictionary<string,float> progress=new Dictionary<string,float>();
         readonly HashSet<string> unavailableSaves=new HashSet<string>();
         DrawingSurface surface;CanvasEntry active;
-        ScrollRect menuScroll;Button[] tabs;Text menuHeadline,saveLabel,progressLabel;
+        ScrollRect menuScroll;Button[] tabs;Text menuHeadline,saveLabel,progressLabel;Image menuBanner;
         Button undoButton;readonly List<Button> tools=new List<Button>(),swatches=new List<Button>();
         int category;float menuPosition,nextSave;bool dirty,completed;
         Coroutine scrollTween;
@@ -35,7 +35,8 @@ namespace Kido.Coloring
         RectTransform loadingFill;
         float pickerCellHeight=112.5f;
         sealed class SaveOutcome {public bool ok;public string error;}
-        [Serializable] sealed class PreviewInfo {public int artRevision;public float coverage;}
+        const int PreviewRevision=2;
+        [Serializable] sealed class PreviewInfo {public int artRevision,previewRevision;public float coverage;}
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -82,7 +83,7 @@ namespace Kido.Coloring
         void ClearScreen()
         {
             CloseModal();if(scrollTween!=null){StopCoroutine(scrollTween);scrollTween=null;}
-            surface=null;saveBuffer=null;refreshPreview=false;saveLabel=null;progressLabel=null;loadingFill=null;tools.Clear();swatches.Clear();patternButtons.Clear();menuScroll=null;
+            surface=null;saveBuffer=null;refreshPreview=false;saveLabel=null;progressLabel=null;loadingFill=null;menuBanner=null;tools.Clear();swatches.Clear();patternButtons.Clear();menuScroll=null;
             foreach(var texture in patternTextures)if(texture)Resources.UnloadAsset(texture);
             patternTextures.Clear();colorPicker=null;patternPicker=null;
             if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
@@ -148,8 +149,8 @@ namespace Kido.Coloring
             try
             {
                 var info=JsonUtility.FromJson<PreviewInfo>(File.ReadAllText(meta));
-                if(info.artRevision!=entry.artRevision)return;
-                if(new FileInfo(png).Length>512000)return;
+                if(info.artRevision!=entry.artRevision||info.previewRevision!=PreviewRevision)return;
+                if(new FileInfo(png).Length>2000000)return;
                 texture=new Texture2D(2,2,TextureFormat.RGB24,false);
                 if(!texture.LoadImage(File.ReadAllBytes(png),true)){Destroy(texture);return;}
                 previews[entry.id]=texture;progress[entry.id]=Mathf.Clamp01(info.coverage);
@@ -158,36 +159,55 @@ namespace Kido.Coloring
         }
         public void ShowMenu()
         {
-            ClearScreen();active=null;Brand(screen);background.color=KidoUI.Backgrounds[category];
-            var parents=KidoUI.Button("Parents",screen,Color.white,ParentGate,23);KidoUI.Place((RectTransform)parents.transform,.85f,.88f,.96f,.96f);
-            var nav=KidoUI.Panel("World tabs",screen,Color.white);KidoUI.Place(nav,.30f,.87f,.80f,.97f,4);tabs=new Button[3];
-            for(int i=0;i<3;i++){int c=i;tabs[i]=KidoUI.Button(Content.Categories[i],nav,Color.white,()=>{feedback.Tap();JumpToCategory(c);},26);KidoUI.Place((RectTransform)tabs[i].transform,i/3f,0,(i+1)/3f,1,6);}
-            var kicker=KidoUI.Label("YOUR LITTLE COLORING CLUB",screen,18,KidoUI.Accents[category]);KidoUI.Place(kicker.rectTransform,.045f,.765f,.75f,.81f);
-            menuHeadline=KidoUI.Label(Content.Headlines[category],screen,46,KidoUI.Ink);menuHeadline.fontStyle=FontStyle.Bold;KidoUI.Place(menuHeadline.rectTransform,.043f,.69f,.85f,.77f);
-            var subtitle=KidoUI.Label("Pick a picture and make it yours.",screen,24,KidoUI.Muted);KidoUI.Place(subtitle.rectTransform,.045f,.635f,.78f,.69f);
-            var viewport=KidoUI.Panel("Pictures viewport",screen,new Color(1,1,1,.01f),false);KidoUI.Place(viewport,.035f,.095f,.965f,.625f);
+            ClearScreen();active=null;background.color=KidoUI.Hex("FFF2F6");screen.gameObject.AddComponent<RectMask2D>();
+            var pink=FigmaPicture("SplashPink",screen);KidoUI.Place(pink.rectTransform,-.025f,.58f,.16f,1.03f);pink.color=new Color(1,1,1,.16f);
+            var yellow=FigmaPicture("SplashYellow",screen);KidoUI.Place(yellow.rectTransform,.84f,-.03f,1.025f,.31f);yellow.color=new Color(1,1,1,.18f);
+            var dotA=FigmaPicture("Dot",screen);KidoUI.Place(dotA.rectTransform,.185f,.755f,.199f,.779f);dotA.color=new Color(1,1,1,.45f);
+            var dotB=FigmaPicture("Dot",screen);KidoUI.Place(dotB.rectTransform,.80f,.69f,.814f,.714f);dotB.color=new Color(1,1,1,.38f);
+
+            var header=KidoUI.Panel("Playful header",screen,new Color(1,1,1,.94f));KidoUI.Place(header,.025f,.805f,.975f,.975f);
+            var headerShadow=header.gameObject.AddComponent<Shadow>();headerShadow.effectColor=new Color(.46f,.25f,.55f,.12f);headerShadow.effectDistance=new Vector2(0,-5);
+            var logoBounds=KidoUI.Rect("Kido logo",header);KidoUI.Place(logoBounds,.018f,.06f,.16f,.94f);
+            var logo=FigmaPicture("Logo",logoBounds);KidoUI.Place(logo.rectTransform,0,0,1,1);
+            var logoFit=logo.gameObject.AddComponent<AspectRatioFitter>();logoFit.aspectMode=AspectRatioFitter.AspectMode.FitInParent;logoFit.aspectRatio=(float)logo.texture.width/logo.texture.height;
+            var nav=KidoUI.Panel("World tabs",header,KidoUI.Hex("FFF2F6"));KidoUI.Place(nav,.215f,.15f,.765f,.85f,4);tabs=new Button[3];
+            for(int i=0;i<3;i++)
+            {
+                int c=i;tabs[i]=KidoUI.Button(Content.Categories[i],nav,Color.white,()=>{feedback.Tap();JumpToCategory(c);},24);
+                KidoUI.Place((RectTransform)tabs[i].transform,i/3f,0,(i+1)/3f,1,6);
+            }
+            var parents=KidoUI.Button("Parents",header,KidoUI.Hex("CDB7FF"),ParentGate,22,KidoUI.Ink);KidoUI.Place((RectTransform)parents.transform,.825f,.18f,.975f,.82f);
+
+            var banner=KidoUI.Panel("World welcome",screen,KidoUI.Hex("FEDCE7"));KidoUI.Place(banner,.035f,.66f,.965f,.785f);
+            menuBanner=banner.GetComponent<Image>();
+            var kicker=KidoUI.Label("PICK A WORLD • CHOOSE A PICTURE • START COLORING",banner,17,KidoUI.Purple);KidoUI.Place(kicker.rectTransform,.035f,.55f,.95f,.91f);
+            menuHeadline=KidoUI.Label(Content.Headlines[category],banner,38,KidoUI.Ink);menuHeadline.fontStyle=FontStyle.Bold;KidoUI.Place(menuHeadline.rectTransform,.035f,.05f,.67f,.61f);
+            var subtitle=KidoUI.Label("Swipe to discover all 30 pictures  →",banner,21,KidoUI.Muted,TextAnchor.MiddleRight);KidoUI.Place(subtitle.rectTransform,.60f,.08f,.965f,.53f);
+
+            var viewport=KidoUI.Panel("Pictures viewport",screen,new Color(1,1,1,.01f),false);KidoUI.Place(viewport,.035f,.105f,.965f,.635f);
             viewport.GetComponent<Image>().raycastTarget=true;viewport.gameObject.AddComponent<RectMask2D>();
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.horizontal=true;scroll.vertical=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.decelerationRate=.08f;scroll.viewport=viewport;menuScroll=scroll;
             var content=KidoUI.Rect("All 30 pictures",viewport);scroll.content=content;content.anchorMin=new Vector2(0,0);content.anchorMax=new Vector2(0,1);content.pivot=new Vector2(0,.5f);
-            Canvas.ForceUpdateCanvases();float gap=18,cellWidth=Mathf.Clamp(viewport.rect.width/4.25f,220,320),cellHeight=(viewport.rect.height-gap-8)/2;
+            Canvas.ForceUpdateCanvases();float gap=20,cellWidth=Mathf.Clamp(viewport.rect.width/4.25f,230,325),cellHeight=(viewport.rect.height-gap-8)/2;
             content.sizeDelta=new Vector2(15*(cellWidth+gap)-gap,0);content.anchoredPosition=Vector2.zero;
             for(int i=0;i<catalog.canvases.Length;i++)
             {
                 var entry=catalog.canvases[i];int local=i%10,col=entry.category*5+local/2,row=local%2;
                 var card=KidoUI.Button("",content,Color.white,()=>OpenCanvas(entry));var cr=(RectTransform)card.transform;
                 cr.anchorMin=cr.anchorMax=new Vector2(0,1);cr.pivot=new Vector2(0,1);cr.sizeDelta=new Vector2(cellWidth,cellHeight);cr.anchoredPosition=new Vector2(col*(cellWidth+gap),-row*(cellHeight+gap)-4);
-                var pictureHolder=KidoUI.Rect("Art",cr);KidoUI.Place(pictureHolder,.07f,.24f,.93f,.97f);
-                var pic=KidoUI.Picture(pictureHolder,previews.TryGetValue(entry.id,out var preview)?preview:Resources.Load<Texture2D>(entry.thumbPath));KidoUI.Place(pic.rectTransform,0,0,1,1);KidoUI.Square(pic.rectTransform);
-                var label=KidoUI.Label(ShortTitle(entry.title),cr,20,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(label.rectTransform,.04f,.065f,.96f,.24f);
+                var cardShadow=card.gameObject.AddComponent<Shadow>();cardShadow.effectColor=new Color(.46f,.25f,.55f,.14f);cardShadow.effectDistance=new Vector2(0,-5);
+                var cardEdge=card.gameObject.AddComponent<Outline>();cardEdge.effectColor=new Color(KidoUI.Accents[entry.category].r,KidoUI.Accents[entry.category].g,KidoUI.Accents[entry.category].b,.30f);cardEdge.effectDistance=new Vector2(2,-2);
+                var pictureHolder=KidoUI.Panel("Art",cr,KidoUI.Hex("FFF9FB"));KidoUI.Place(pictureHolder,.055f,.245f,.945f,.96f);
+                var pic=KidoUI.Picture(pictureHolder,previews.TryGetValue(entry.id,out var preview)?preview:Resources.Load<Texture2D>(entry.thumbPath));KidoUI.Place(pic.rectTransform,.035f,.035f,.965f,.965f);KidoUI.Square(pic.rectTransform);
+                var label=KidoUI.Label(ShortTitle(entry.title),cr,19,KidoUI.Ink,TextAnchor.MiddleCenter);label.fontStyle=FontStyle.Bold;KidoUI.Place(label.rectTransform,.035f,.065f,.965f,.245f);
                 float amount=progress.TryGetValue(entry.id,out var value)?value:0;
-                var track=KidoUI.Panel("Progress",cr,KidoUI.Hex("F0EFF5"));KidoUI.Place(track,.10f,.045f,.90f,.064f);
+                var track=KidoUI.Panel("Progress",cr,KidoUI.Hex("F0E8F3"));KidoUI.Place(track,.10f,.04f,.90f,.062f);
                 if(amount>0){var fill=KidoUI.Panel("Colored",track,KidoUI.Accents[entry.category]);KidoUI.Place(fill,0,0,amount,1);}
                 if(amount>=settings.completionThreshold){var badge=KidoUI.Label("★",cr,27,KidoUI.Accents[entry.category],TextAnchor.MiddleCenter);KidoUI.Place(badge.rectTransform,.79f,.77f,.98f,.99f);}
                 if(!access.CanOpen(entry.id)){var lockLabel=KidoUI.Label("Parents",cr,18,KidoUI.Purple,TextAnchor.MiddleCenter);KidoUI.Place(lockLabel.rectTransform,.60f,.79f,.98f,.98f);}
                 if(unavailableSaves.Contains(entry.id)){var warn=KidoUI.Label("Saved picture needs help",cr,15,KidoUI.Accents[0],TextAnchor.MiddleCenter);KidoUI.Place(warn.rectTransform,.05f,.02f,.95f,.10f);}
             }
-            var footer=KidoUI.Label("30 pictures. Endless possibilities.",screen,20,KidoUI.Muted);KidoUI.Place(footer.rectTransform,.045f,.025f,.65f,.075f);
-            var swipe=KidoUI.Label("Swipe to explore  →",screen,21,KidoUI.Muted,TextAnchor.MiddleRight);KidoUI.Place(swipe.rectTransform,.70f,.025f,.955f,.075f);
+            var footer=KidoUI.Label("30 pictures • 3 magical worlds • endless imagination",screen,19,KidoUI.Purple,TextAnchor.MiddleCenter);KidoUI.Place(footer.rectTransform,.20f,.025f,.80f,.078f);
             scroll.horizontalNormalizedPosition=menuPosition;
             scroll.onValueChanged.AddListener(_=>
             {
@@ -204,7 +224,8 @@ namespace Kido.Coloring
         }
         void SetCategory(int c)
         {
-            category=c;background.color=KidoUI.Backgrounds[c];if(menuHeadline)menuHeadline.text=Content.Headlines[c];
+            category=c;background.color=KidoUI.Hex("FFF2F6");if(menuHeadline)menuHeadline.text=Content.Headlines[c];
+            if(menuBanner)menuBanner.color=KidoUI.Hex(c==0?"FEDCE7":c==1?"DFF6EB":"FFF0C9");
             if(tabs==null)return;for(int i=0;i<tabs.Length;i++)if(tabs[i]){tabs[i].GetComponent<Image>().color=i==c?KidoUI.Accents[i]:Color.white;tabs[i].GetComponentInChildren<Text>().color=i==c?Color.white:KidoUI.Muted;}
         }
         void JumpToCategory(int c)
@@ -404,7 +425,7 @@ namespace Kido.Coloring
                 if(previews.TryGetValue(active.id,out var previous))Destroy(previous);
                 previews[active.id]=thumbnail;
                 File.WriteAllBytes(Path.Combine(store.Root,active.id+".preview.png"),thumbnail.EncodeToPNG());
-                File.WriteAllText(Path.Combine(store.Root,active.id+".preview.json"),JsonUtility.ToJson(new PreviewInfo{artRevision=active.artRevision,coverage=surface.Document.Coverage}));
+                File.WriteAllText(Path.Combine(store.Root,active.id+".preview.json"),JsonUtility.ToJson(new PreviewInfo{artRevision=active.artRevision,previewRevision=PreviewRevision,coverage=surface.Document.Coverage}));
             }
             catch(Exception e){Debug.LogWarning("Preview cache: "+e.Message);}
             finally{if(thumbnail)thumbnail.Apply(false,true);}

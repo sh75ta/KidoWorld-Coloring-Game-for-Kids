@@ -4,7 +4,7 @@ For continuation in a new local Codex session, read `AGENTS.md` and `HANDOFF.md`
 
 Updated 19 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
 
-This package contains the rebuilt Unity source, approved artwork, and the supplied original Figma logo, tool icons, action buttons and splash decorations. Phone/tablet coloring layouts are implemented in source. **The splash logo and all three action controls now use your supplied artwork. This source has not yet been compiled or run in Unity.** See `docs/Figma/INTEGRATION.md` for visual validation details and the remaining phone-decoration crop difference.
+This package contains the rebuilt Unity source, approved artwork, supplied original Figma UI, and the supplied 30-second Jingle Bells background track. Phone/tablet coloring layouts are implemented in source. The macOS Metal shader keyword errors reported during the first native run were corrected; the updated build still needs a clean Unity compile and visual confirmation.
 
 ## Open the current rebuild
 
@@ -19,6 +19,9 @@ This package contains the rebuilt Unity source, approved artwork, and the suppli
 - The approved vibrant 30-color palette; stable positions in a scrollable single-column palette with eight visible swatches.
 - All 15 patterns: twelve tintable designs and three Christmas designs with fixed festive colors.
 - Fill, brush, eraser, pattern and rainbow tools; Fairy Dust texture and slow white twinkles restricted to glitter-painted pixels.
+- The outside white page/background can be colored with every tool and restored through save/undo.
+- Looping Jingle Bells background music plays across splash, gallery and coloring screens and follows the existing parent Sound setting.
+- The gallery now uses 384px thumbnails and the approved splash/canvas visual language: pink backdrop, supplied logo and paint decorations, pastel world banner, rounded cards and category accents.
 - Undo restores both color and glitter; reset is confirmed and undoable. Done is green at top-left; Undo and Reset are at the upper-right of the canvas, following the latest Figma frames. There is no separate coloring-screen Back button.
 - Compressed, checksummed alternating save slots, a single background save writer, pause/focus/Done flushes, and cached gallery previews.
 - Memory-bounded tile undo, GPU outline compositing, small gallery assets, explicit active-art release and no per-frame pixel readback for glitter.

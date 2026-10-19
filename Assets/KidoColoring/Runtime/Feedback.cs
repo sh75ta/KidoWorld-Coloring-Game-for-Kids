@@ -6,7 +6,7 @@ namespace Kido.Coloring
 {
     public sealed class Feedback:MonoBehaviour
     {
-        AudioSource source;AudioClip tap,finish;
+        AudioSource source,musicSource;AudioClip tap,finish,music;
         public bool Sound {get;private set;}
         public bool Motion {get;private set;}
         void Awake()
@@ -14,6 +14,13 @@ namespace Kido.Coloring
             Sound=PlayerPrefs.GetInt("kido.sound",1)==1;Motion=PlayerPrefs.GetInt("kido.motion",1)==1;
             source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.volume=.18f;
             tap=Tone("soft tap",520,.075f);finish=Tone("finished",780,.22f);
+            music=Resources.Load<AudioClip>("Kido/Audio/JingleBellsKids30s");
+            if(music)
+            {
+                musicSource=gameObject.AddComponent<AudioSource>();musicSource.playOnAwake=false;musicSource.loop=true;
+                musicSource.volume=.14f;musicSource.clip=music;musicSource.ignoreListenerPause=false;
+                if(Sound)musicSource.Play();
+            }
         }
         AudioClip Tone(string name,float hz,float duration)
         {
@@ -22,7 +29,13 @@ namespace Kido.Coloring
             var clip=AudioClip.Create(name,data.Length,1,rate,false);clip.SetData(data,0);return clip;
         }
         public void Tap(){if(Sound)source.PlayOneShot(tap);}
-        public void SetSound(bool enabled){Sound=enabled;PlayerPrefs.SetInt("kido.sound",enabled?1:0);PlayerPrefs.Save();}
+        public void SetSound(bool enabled)
+        {
+            Sound=enabled;PlayerPrefs.SetInt("kido.sound",enabled?1:0);PlayerPrefs.Save();
+            if(!musicSource)return;
+            if(enabled){if(!musicSource.isPlaying)musicSource.UnPause();if(!musicSource.isPlaying)musicSource.Play();}
+            else musicSource.Pause();
+        }
         public void SetMotion(bool enabled){Motion=enabled;PlayerPrefs.SetInt("kido.motion",enabled?1:0);PlayerPrefs.Save();}
         public void Celebrate(RectTransform parent)
         {

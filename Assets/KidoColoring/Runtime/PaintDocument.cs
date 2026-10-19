@@ -33,7 +33,7 @@ namespace Kido.Coloring
             if (effects != null && effects.Length != Paint.Length) throw new ArgumentException("Saved effects mismatch.");
             for (int i = 0; saved != null && i < Paint.Length; i++)
             {
-                if (map.Labels[i] == 0 || saved[i].a == 0) continue;
+                if (saved[i].a == 0) continue;
                 Paint[i] = saved[i]; Effects[i] = effects == null ? (byte)0 : effects[i]; PaintedPixels++;
             }
         }
@@ -76,14 +76,19 @@ namespace Kido.Coloring
         public ushort RegionAt(int x,int y)=>x<0||y<0||x>=Map.Width||y>=Map.Height?(ushort)0:Map.Labels[y*Map.Width+x];
         public void Fill(ushort region,Color32 color)
         {
-            if(region==0||region>Map.Count)return;color.a=255;
+            if(region>Map.Count)return;color.a=255;
+            if(region==0)
+            {
+                for(int i=0;i<Map.Labels.Length;i++)if(Map.Labels[i]==0)SetPixel(i,color);
+                return;
+            }
             var b=Map.Bounds[region];
             for(int y=b.yMin;y<b.yMax;y++)for(int x=b.xMin;x<b.xMax;x++)
             {int i=y*Map.Width+x;if(Map.Labels[i]==region)SetPixel(i,color);}
         }
         public void Stroke(Vector2 from,Vector2 to,float radius,ushort region,Color32 color,PaintTool tool,float rainbowPhase,PatternData pattern=null)
         {
-            if(region==0)return;radius=Mathf.Clamp(radius,2,100);
+            radius=Mathf.Clamp(radius,2,100);
             int steps=Mathf.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/Mathf.Max(1,radius*.3f)));
             for(int s=0;s<=steps;s++)
             {

@@ -42,7 +42,7 @@ namespace Kido.Coloring
         public void OnPointerDown(PointerEventData e)
         {
             if(Document==null||pointer!=int.MinValue||e.button!=PointerEventData.InputButton.Left||!Locate(e,out var p))return;
-            region=Document.RegionAt((int)p.x,(int)p.y);if(region==0)return;
+            region=Document.RegionAt((int)p.x,(int)p.y);
             pointer=e.pointerId;last=p;phase=Mathf.Repeat(Time.unscaledTime*.11f,1);Document.BeginAction();
             if(Tool==PaintTool.Fill)Document.Fill(region,SelectedColor);
             else Document.Stroke(p,p,Radius,region,SelectedColor,Tool,phase,Pattern);
@@ -70,7 +70,7 @@ namespace Kido.Coloring
             effectTexture.LoadRawTextureData(Document.Effects);effectTexture.Apply(false,false);
             renderedRevision=Document.Revision;
         }
-        public Texture2D Thumbnail(int size=192)
+        public Texture2D Thumbnail(int size=384)
         {
             Render();var rt=RenderTexture.GetTemporary(size,size,0,RenderTextureFormat.ARGB32);
             var previous=RenderTexture.active;Texture2D thumb=null;

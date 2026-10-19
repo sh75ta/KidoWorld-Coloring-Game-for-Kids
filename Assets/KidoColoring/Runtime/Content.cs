@@ -51,6 +51,7 @@ namespace Kido.Coloring
         public int Count { get; }
         public ushort[] Labels { get; }
         public int PaintablePixels { get; }
+        public int InteriorPixels { get; }
         public RectInt[] Bounds { get; }
         public RegionMap(int width, int height, int count, ushort[] labels)
         {
@@ -63,8 +64,10 @@ namespace Kido.Coloring
                 if (label > count) throw new InvalidDataException("Invalid region label.");
                 if (label != 0) paintable++;
             }
-            PaintablePixels = paintable;
-            if (PaintablePixels == 0) throw new InvalidDataException("Artwork has no coloring regions.");
+            InteriorPixels = paintable;
+            if (InteriorPixels == 0) throw new InvalidDataException("Artwork has no coloring regions.");
+            // Label zero is the page/background. It is intentionally paintable too.
+            PaintablePixels = labels.Length;
             Bounds = new RectInt[count + 1];
             var minX = new int[count+1]; var minY = new int[count+1];
             var maxX = new int[count+1]; var maxY = new int[count+1];

@@ -12,8 +12,14 @@ namespace Kido.Tests
         [Test] public void FillIsBoundedAndUndoRestoresBlank()
         {
             var d=new PaintDocument(Map());d.BeginAction();d.Fill(1,new Color32(255,0,0,255));d.EndAction();
-            Assert.AreEqual(2,d.PaintedPixels);Assert.AreEqual(0,d.Paint[5].a);Assert.AreEqual(.5f,d.Coverage);
+            Assert.AreEqual(2,d.PaintedPixels);Assert.AreEqual(0,d.Paint[5].a);Assert.AreEqual(.25f,d.Coverage);
             Assert.IsTrue(d.Undo());Assert.AreEqual(0,d.PaintedPixels);Assert.IsFalse(d.CanUndo);
+        }
+        [Test] public void PageBackgroundCanBeColoredAndUndone()
+        {
+            var d=new PaintDocument(Map());d.BeginAction();d.Fill(0,new Color32(56,181,255,255));d.EndAction();
+            Assert.AreEqual(4,d.PaintedPixels);Assert.AreEqual(255,d.Paint[0].a);Assert.AreEqual(0,d.Paint[1].a);Assert.AreEqual(.5f,d.Coverage);
+            Assert.IsTrue(d.Undo());Assert.AreEqual(0,d.PaintedPixels);
         }
         [Test] public void BrushCannotCrossStartingRegion()
         {
@@ -40,7 +46,7 @@ namespace Kido.Tests
         {
             var d=new PaintDocument(Map());d.BeginAction();d.Fill(2,Color.magenta);d.EndAction();
             var bytes=PaintStore.Encode(new SavedPainting{sequence=1,id="test",width=4,height=2,artRevision=1,coverage=d.Coverage,paint=d.Paint});
-            var restored=PaintStore.Decode(bytes);Assert.AreEqual(.5f,restored.coverage);CollectionAssert.AreEqual(d.Paint,restored.paint);
+            var restored=PaintStore.Decode(bytes);Assert.AreEqual(.25f,restored.coverage);CollectionAssert.AreEqual(d.Paint,restored.paint);
         }
         [Test] public void CorruptionFailsChecksum()
         {
@@ -55,7 +61,7 @@ namespace Kido.Tests
                 var store=new PaintStore(path);var d=new PaintDocument(Map());d.BeginAction();d.Fill(1,Color.red);d.EndAction();
                 Assert.IsTrue(store.TrySave("test",1,d,out _));d.BeginAction();d.Fill(2,Color.blue);d.EndAction();Assert.IsTrue(store.TrySave("test",1,d,out _));
                 File.WriteAllBytes(Path.Combine(path,"test.b.kido"),new byte[]{1,2,3});
-                var loaded=store.Load("test",4,2,1);Assert.IsTrue(loaded.recovered);Assert.AreEqual(1,loaded.painting.sequence);Assert.AreEqual(.5f,loaded.painting.coverage);
+                var loaded=store.Load("test",4,2,1);Assert.IsTrue(loaded.recovered);Assert.AreEqual(1,loaded.painting.sequence);Assert.AreEqual(.25f,loaded.painting.coverage);
                 Assert.IsTrue(store.TrySave("test",1,d,out _));Assert.AreEqual(2,store.Load("test").painting.sequence);
             }
             finally{if(Directory.Exists(path))Directory.Delete(path,true);}
