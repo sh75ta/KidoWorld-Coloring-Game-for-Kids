@@ -19,16 +19,16 @@
 | Painting | Region-constrained strokes; per-region bounded fill; one gesture per undo | Native touch and edge behavior |
 | Persistence | Compressed V2 payload; SHA-256; two alternating slots; one worker; owned snapshots | App interruption, disk-full, actual save latency |
 | Memory | One active full artwork, bounded undo, read-only outlines/thumbnails, released art | Profiler captures and repeated navigation test |
-| Figma screens | Phone/tablet contexts retrieved; supplied original icons/decorations integrated | Missing logo and three action exports; native visual validation and phone splash crop |
+| Figma screens | Phone/tablet contexts retrieved; supplied original logo/icons/buttons/decorations integrated | Native visual validation and phone splash crop |
 | Native platforms | Existing Unity version retained | Compile, EditMode suite, Xcode export, Android build |
 
 ## Figma handoff
 
 URL: https://www.figma.com/design/ORpZoUySkEUioAZ7bU0ULd/KidoColoring?node-id=0-1
 
-The new file is readable through Figma. Phone/tablet frames and screenshots were retrieved. Direct image downloads and the browser returned Site Unavailable; the user then supplied KidoColoring.zip containing six icons and three unique splash decorations. These originals are integrated unchanged on disk. The ZIP omitted the logo and Done/Undo/Reset assets. Existing artwork for those four elements remains provisional. No additional Figma permission change or installation is required for the supplied assets.
+The new file is readable through Figma. Phone/tablet frames and screenshots were retrieved. Direct image downloads and the browser returned Site Unavailable; the user then supplied KidoColoring.zip containing six icons and three unique splash decorations. These originals are integrated unchanged on disk. A second ZIP supplied Done, Undo and Reset, now integrated as original PNGs. The separately attached transparent logo has also replaced the splash text placeholder. No additional Figma permission change or installation is required for the supplied assets.
 
-See `docs/Figma/INTEGRATION.md` for source frame IDs, implemented layout, remaining exports, crop limitations and validation steps. Menu/dialog styling remains from the earlier prototype. No claim of complete Figma visual fidelity or native runtime validation is made.
+See `docs/Figma/INTEGRATION.md` for source frame IDs, implemented layout, asset mapping, crop limitations and validation steps. Menu/dialog styling remains from the earlier prototype. No claim of complete Figma visual fidelity or native runtime validation is made.
 
 ## Region review
 

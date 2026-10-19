@@ -136,6 +136,6 @@
   },
   "ui": {
     "source": "https://www.figma.com/design/ORpZoUySkEUioAZ7bU0ULd/KidoColoring?node-id=0-1",
-    "status": "Original supplied icons/decorations integrated; Figma layouts implemented in source, native validation pending. Logo and Done/Undo/Reset remain provisional pending four exports."
+    "status": "Supplied original logo, tool icons, action buttons and decorations integrated; Figma phone/tablet layouts implemented in source. Native visual and runtime validation pending; phone splash crop differences documented."
   }
 }

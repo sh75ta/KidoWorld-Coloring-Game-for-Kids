@@ -104,6 +104,12 @@ namespace Kido.Coloring
         }
         RawImage FigmaPicture(string name,Transform parent)
         {var image=KidoUI.Picture(parent,UITexture(name));image.name=name;return image;}
+        Button FigmaButton(string asset,Transform parent,Action click)
+        {
+            var button=KidoUI.Button("",parent,Color.clear,click);button.name=asset;
+            var artwork=FigmaPicture(asset,button.transform);KidoUI.Place(artwork.rectTransform,0,0,1,1);
+            artwork.raycastTarget=true;button.targetGraphic=artwork;return button;
+        }
         void SetLoadingProgress(float amount)
         {if(loadingFill)KidoUI.Place(loadingFill,0,0,Mathf.Clamp01(amount),1);}
         void ShowSplash()
@@ -113,9 +119,10 @@ namespace Kido.Coloring
             var design=KidoUI.Rect("Figma splash layout",screen);
             var layout=design.gameObject.AddComponent<FigmaScreenLayout>();layout.Splash=true;
             var pink=FigmaPicture("SplashPink",design);var yellow=FigmaPicture("SplashYellow",design);
-            // Original logo export was not in the supplied ZIP. Existing text is provisional.
-            var title=KidoUI.Label("<b><color=#F06474>k</color><color=#E7A63C>i</color><color=#41BAA3>d</color><color=#7661D5>o</color></b>",design,112,KidoUI.Ink,TextAnchor.MiddleCenter);
-            title.name="Provisional logo - original export required";
+            var logoBounds=KidoUI.Rect("Logo bounds",design);
+            var logo=FigmaPicture("Logo",logoBounds);KidoUI.Place(logo.rectTransform,0,0,1,1);
+            var logoFit=logo.gameObject.AddComponent<AspectRatioFitter>();
+            logoFit.aspectMode=AspectRatioFitter.AspectMode.FitInParent;logoFit.aspectRatio=(float)logo.texture.width/logo.texture.height;
             var dots=new RawImage[5];for(int i=0;i<dots.Length;i++)dots[i]=FigmaPicture("Dot",design);
             var border=KidoUI.Panel("Loading border",design,Color.black);
             var track=KidoUI.Panel("Loading track",border,KidoUI.Hex("DBDBDB"));KidoUI.Place(track,0,0,1,1,3);
@@ -125,7 +132,7 @@ namespace Kido.Coloring
                 // Supplied paint splashes are already clipped Figma node exports.
                 FigmaScreenLayout.Place(pink.rectTransform,0,0,327,403);
                 FigmaScreenLayout.Place(yellow.rectTransform,w-336,h-284,336,284);
-                FigmaScreenLayout.Place(title.rectTransform,(w-577)/2,h/2-293,577,457);
+                FigmaScreenLayout.Place(logoBounds,(w-577)/2,h/2-293,577,457);
                 FigmaScreenLayout.Place(border,(w-679)/2,tablet?836:717,679,35);
                 float[,] positions=tablet?new float[,]{{1449,518},{522,625},{1159,152},{797,1003},{305,507}}:new float[,]{{1449,518},{522,625},{1159,152},{797,1003},{0,0}};
                 for(int i=0;i<dots.Length;i++){dots[i].gameObject.SetActive(tablet||i<4);FigmaScreenLayout.Place(dots[i].rectTransform,positions[i,0],positions[i,1],21,22);}
@@ -263,11 +270,9 @@ namespace Kido.Coloring
                 var ir=icon.rectTransform;ir.anchorMin=ir.anchorMax=ir.pivot=new Vector2(.5f,.5f);ir.anchoredPosition=Vector2.zero;
                 ir.localRotation=Quaternion.Euler(0,0,rotation);ir.localScale=new Vector3(1,flip,1);
             }
-            // These three controls retain temporary artwork until their original exports arrive.
-            var done=KidoUI.Button("Done ✓",design,KidoUI.Hex("22B85D"),LeaveCanvas,28,Color.white);
-            undoButton=KidoUI.Button("↶",design,KidoUI.Hex("38B5FF"),Undo,48,Color.white);
-            var reset=KidoUI.Button("↻",design,KidoUI.Hex("FF5733"),ConfirmReset,48,Color.white);
-            undoButton.GetComponent<Image>().sprite=KidoUI.Circle();reset.GetComponent<Image>().sprite=KidoUI.Circle();
+            var done=FigmaButton("Done",design,LeaveCanvas);
+            undoButton=FigmaButton("Undo",design,Undo);
+            var reset=FigmaButton("Reset",design,ConfirmReset);
             var undoHit=KidoUI.Panel("Touch target",undoButton.transform,Color.clear,false);undoHit.GetComponent<Image>().raycastTarget=true;
             KidoUI.Place(undoHit,0,0,1,1);undoHit.offsetMin=new Vector2(-7.5f,-7.5f);undoHit.offsetMax=new Vector2(7.5f,7.5f);
             var resetHit=KidoUI.Panel("Touch target",reset.transform,Color.clear,false);resetHit.GetComponent<Image>().raycastTarget=true;

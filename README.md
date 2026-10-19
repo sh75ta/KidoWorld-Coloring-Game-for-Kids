@@ -2,7 +2,7 @@
 
 Updated 19 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
 
-This package contains the rebuilt Unity source, approved artwork, and the supplied original Figma tool icons and splash decorations. Phone/tablet coloring layouts are implemented in source. **The logo and Done/Undo/Reset artwork were absent from the asset ZIP and remain provisional. This source has not yet been compiled or run in Unity.** See `docs/Figma/INTEGRATION.md` for exact remaining exports and visual limitations.
+This package contains the rebuilt Unity source, approved artwork, and the supplied original Figma logo, tool icons, action buttons and splash decorations. Phone/tablet coloring layouts are implemented in source. **The splash logo and all three action controls now use your supplied artwork. This source has not yet been compiled or run in Unity.** See `docs/Figma/INTEGRATION.md` for visual validation details and the remaining phone-decoration crop difference.
 
 ## Open the current rebuild
 
@@ -31,7 +31,7 @@ Five offline content checks passed: catalog and vector masters; transparent outl
 
 ## Remaining work
 
-- Supply the missing logo and Done/Undo/Reset exports from Figma file `ORpZoUySkEUioAZ7bU0ULd`. Complete exact art placement and native visual validation. Full unclipped or phone-specific splash decorations are needed to match the phone crop exactly.
+- Run native visual validation against Figma file `ORpZoUySkEUioAZ7bU0ULd`. Full unclipped or phone-specific splash decorations would allow the phone crop to match exactly.
 - Close remaining open decorative region boundaries and review very small coloring regions. The diagnostic contact sheet is `docs/ArtQA/regions-contact-sheet.png`; its bright colors are diagnostic labels, not prescribed coloring.
 - Run Unity and physical-device validation, then fix findings before release.
 - Finish the previously scoped store purchase/restore and child-appropriate advertising decisions/integration. No commerce SDK or live transaction was added.

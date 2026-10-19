@@ -52,12 +52,35 @@
       "source": "Tool icons/Rainbow brush.png",
       "resource": "Kido/UI/Figma/Rainbow",
       "sha256": "20f53074b783f4612685680863541accad85930064cbf2f5f0d258319d91b1ff"
+    },
+    {
+      "source": "Buttons/Done.png",
+      "resource": "Kido/UI/Figma/Done",
+      "figmaNode": "6:114",
+      "attachmentSha256": "0c28a006e2f627f4738ed9326c599a159f3eda038e124a5ce66587860a39ebc9",
+      "sha256": "8849a41e7346271bf6a72c00c03361467779ab3bf1924bddba25b4d511b4fe9d"
+    },
+    {
+      "source": "Buttons/Undo.png",
+      "resource": "Kido/UI/Figma/Undo",
+      "figmaNode": "6:115",
+      "attachmentSha256": "0c28a006e2f627f4738ed9326c599a159f3eda038e124a5ce66587860a39ebc9",
+      "sha256": "96695a5140c209b1faf39d4801f039321a187c87b169a3314b788d672adea378"
+    },
+    {
+      "source": "Buttons/Refresh.png",
+      "resource": "Kido/UI/Figma/Reset",
+      "figmaNode": "6:128",
+      "attachmentSha256": "0c28a006e2f627f4738ed9326c599a159f3eda038e124a5ce66587860a39ebc9",
+      "sha256": "a42fa331e2125bfabaa46e8430032250b302e89b4f8ddeadf6476cadbd3138c9"
+    },
+    {
+      "source": "image(20261019-055041).png",
+      "resource": "Kido/UI/Figma/Logo",
+      "figmaNode": "6:37",
+      "sha256": "973958436e4e0516fdc92a82d491f1d2797d051e2ab84890aaecb5245e967da3"
     }
   ],
-  "missing": [
-    "Logo",
-    "Done",
-    "Undo",
-    "Reset"
-  ]
+  "missing": [],
+  "actionButtonAttachmentSha256": "0c28a006e2f627f4738ed9326c599a159f3eda038e124a5ce66587860a39ebc9"
 }
