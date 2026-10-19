@@ -1,5 +1,7 @@
 # Kido Coloring — approved-content rebuild
 
+For continuation in a new local Codex session, read `AGENTS.md` and `HANDOFF.md` first.
+
 Updated 19 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
 
 This package contains the rebuilt Unity source, approved artwork, and the supplied original Figma logo, tool icons, action buttons and splash decorations. Phone/tablet coloring layouts are implemented in source. **The splash logo and all three action controls now use your supplied artwork. This source has not yet been compiled or run in Unity.** See `docs/Figma/INTEGRATION.md` for visual validation details and the remaining phone-decoration crop difference.
