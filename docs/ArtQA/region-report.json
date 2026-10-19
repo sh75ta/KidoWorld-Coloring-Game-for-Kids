@@ -1,0 +1,212 @@
+[
+  {
+    "id": "christmas_winter_santa_gift_sack",
+    "regions": 82,
+    "paintablePixels": 621244,
+    "smallestRegion": 40,
+    "review": "Review gift ribbons and small trim for younger children."
+  },
+  {
+    "id": "christmas_winter_reindeer_big_nose",
+    "regions": 39,
+    "paintablePixels": 398963,
+    "smallestRegion": 33,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_christmas_tree",
+    "regions": 52,
+    "paintablePixels": 456178,
+    "smallestRegion": 35,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_snowman",
+    "regions": 31,
+    "paintablePixels": 532880,
+    "smallestRegion": 118,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_santa_sleigh",
+    "regions": 57,
+    "paintablePixels": 537346,
+    "smallestRegion": 26,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_gingerbread_cottage",
+    "regions": 38,
+    "paintablePixels": 579308,
+    "smallestRegion": 43,
+    "review": "Review window frames and candy-cane stripe widths at phone size."
+  },
+  {
+    "id": "christmas_winter_penguin_sled",
+    "regions": 65,
+    "paintablePixels": 452698,
+    "smallestRegion": 34,
+    "review": "Close the snowbank at the edges and simplify scarf fringe before region masks."
+  },
+  {
+    "id": "christmas_winter_teddy_gift",
+    "regions": 40,
+    "paintablePixels": 636172,
+    "smallestRegion": 123,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_toy_stocking",
+    "regions": 42,
+    "paintablePixels": 499587,
+    "smallestRegion": 26,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "christmas_winter_elf_workshop",
+    "regions": 93,
+    "paintablePixels": 508752,
+    "smallestRegion": 29,
+    "review": "More detailed scene: review train and workbench gaps at phone size."
+  },
+  {
+    "id": "animals_dinosaurs_lion_cub",
+    "regions": 29,
+    "paintablePixels": 502520,
+    "smallestRegion": 46,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_elephant_bath",
+    "regions": 27,
+    "paintablePixels": 461638,
+    "smallestRegion": 45,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_puppy_play",
+    "regions": 22,
+    "paintablePixels": 499196,
+    "smallestRegion": 101,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_kitten_yarn",
+    "regions": 35,
+    "paintablePixels": 533081,
+    "smallestRegion": 88,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_dinosaur_egg",
+    "regions": 25,
+    "paintablePixels": 489169,
+    "smallestRegion": 26,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_stegosaurus",
+    "regions": 36,
+    "paintablePixels": 516299,
+    "smallestRegion": 57,
+    "review": "Simplify tiny toenail regions for the youngest children."
+  },
+  {
+    "id": "animals_dinosaurs_long_neck_dinosaur",
+    "regions": 24,
+    "paintablePixels": 450918,
+    "smallestRegion": 29,
+    "review": "Simplify tiny toenail regions and check tree/body separation."
+  },
+  {
+    "id": "animals_dinosaurs_clownfish",
+    "regions": 23,
+    "paintablePixels": 363954,
+    "smallestRegion": 105,
+    "review": "Close seaweed base contours before tap-to-fill region preparation."
+  },
+  {
+    "id": "animals_dinosaurs_parrot",
+    "regions": 22,
+    "paintablePixels": 404400,
+    "smallestRegion": 86,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "animals_dinosaurs_owl_family",
+    "regions": 35,
+    "paintablePixels": 442607,
+    "smallestRegion": 142,
+    "review": "Resolve the branch at the image boundary before region preparation."
+  },
+  {
+    "id": "vehicles_adventures_racing_car",
+    "regions": 26,
+    "paintablePixels": 389892,
+    "smallestRegion": 112,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_monster_truck",
+    "regions": 43,
+    "paintablePixels": 510796,
+    "smallestRegion": 59,
+    "review": "Revised to remove small mechanical details. Close the mound and review tire tread regions."
+  },
+  {
+    "id": "vehicles_adventures_airplane",
+    "regions": 37,
+    "paintablePixels": 472952,
+    "smallestRegion": 47,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_pirate_ship",
+    "regions": 46,
+    "paintablePixels": 395327,
+    "smallestRegion": 117,
+    "review": "Close wave contours and consider removing tiny porthole rivets."
+  },
+  {
+    "id": "vehicles_adventures_fire_engine",
+    "regions": 56,
+    "paintablePixels": 570540,
+    "smallestRegion": 80,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_ice_cream_van",
+    "regions": 40,
+    "paintablePixels": 549943,
+    "smallestRegion": 38,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_train",
+    "regions": 47,
+    "paintablePixels": 406877,
+    "smallestRegion": 59,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_digger",
+    "regions": 35,
+    "paintablePixels": 441788,
+    "smallestRegion": 32,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  },
+  {
+    "id": "vehicles_adventures_school_bus",
+    "regions": 42,
+    "paintablePixels": 515160,
+    "smallestRegion": 44,
+    "review": "Close road/background boundaries and review narrow window-frame regions."
+  },
+  {
+    "id": "vehicles_adventures_rocket",
+    "regions": 22,
+    "paintablePixels": 476104,
+    "smallestRegion": 49,
+    "review": "Review expression, composition, and region sizes before final cleanup."
+  }
+]

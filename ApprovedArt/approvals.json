@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-19",
+  "palette": {
+    "approved": true,
+    "colors": [
+      {
+        "name": "Red",
+        "hex": "#FF303B"
+      },
+      {
+        "name": "Tangerine",
+        "hex": "#FF5733"
+      },
+      {
+        "name": "Orange",
+        "hex": "#FF8A00"
+      },
+      {
+        "name": "Hot pink",
+        "hex": "#FF409C"
+      },
+      {
+        "name": "Pink",
+        "hex": "#FF78BE"
+      },
+      {
+        "name": "Coral",
+        "hex": "#FF7A6B"
+      },
+      {
+        "name": "Yellow",
+        "hex": "#FFCE26"
+      },
+      {
+        "name": "Lime",
+        "hex": "#B7E833"
+      },
+      {
+        "name": "Leaf green",
+        "hex": "#68CF36"
+      },
+      {
+        "name": "Green",
+        "hex": "#22B85D"
+      },
+      {
+        "name": "Emerald",
+        "hex": "#009D73"
+      },
+      {
+        "name": "Turquoise",
+        "hex": "#00C7AE"
+      },
+      {
+        "name": "Aqua",
+        "hex": "#27D8F2"
+      },
+      {
+        "name": "Sky blue",
+        "hex": "#38B5FF"
+      },
+      {
+        "name": "Blue",
+        "hex": "#3978F6"
+      },
+      {
+        "name": "Indigo",
+        "hex": "#3D45D8"
+      },
+      {
+        "name": "Purple",
+        "hex": "#8B42EA"
+      },
+      {
+        "name": "Orchid",
+        "hex": "#C440DD"
+      },
+      {
+        "name": "Peach",
+        "hex": "#FFD9BA"
+      },
+      {
+        "name": "Sand",
+        "hex": "#F2B887"
+      },
+      {
+        "name": "Caramel",
+        "hex": "#D99460"
+      },
+      {
+        "name": "Toffee",
+        "hex": "#B87346"
+      },
+      {
+        "name": "Brown",
+        "hex": "#8D4E32"
+      },
+      {
+        "name": "Deep brown",
+        "hex": "#593524"
+      },
+      {
+        "name": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Silver grey",
+        "hex": "#DCE5ED"
+      },
+      {
+        "name": "Slate",
+        "hex": "#8998AC"
+      },
+      {
+        "name": "Black",
+        "hex": "#242836"
+      },
+      {
+        "name": "Cream",
+        "hex": "#FFF3CD"
+      },
+      {
+        "name": "Lilac",
+        "hex": "#CDB7FF"
+      }
+    ]
+  },
+  "patterns": {
+    "approved": true,
+    "count": 15
+  },
+  "glitter": {
+    "approved": true,
+    "concept": "D - Fairy Dust",
+    "motion": "Subtle white twinkles confined to glitter paint"
+  },
+  "ui": {
+    "source": "https://www.figma.com/design/tKMLc3YnLj2fez5lIisF98/Game-Icon?node-id=2215-2752",
+    "status": "Awaiting actual frame and asset access; prior UI kits rejected"
+  }
+}

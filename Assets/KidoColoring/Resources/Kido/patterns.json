@@ -1,0 +1,109 @@
+{
+  "patterns": [
+    {
+      "id": 0,
+      "name": "Big Dots",
+      "path": "Kido/Patterns/01",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 1,
+      "name": "Wide Stripes",
+      "path": "Kido/Patterns/02",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 2,
+      "name": "Soft Zigzags",
+      "path": "Kido/Patterns/03",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 3,
+      "name": "Chunky Checks",
+      "path": "Kido/Patterns/04",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 4,
+      "name": "Happy Stars",
+      "path": "Kido/Patterns/05",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 5,
+      "name": "Sweet Hearts",
+      "path": "Kido/Patterns/06",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 6,
+      "name": "Bubbles",
+      "path": "Kido/Patterns/07",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 7,
+      "name": "Simple Flowers",
+      "path": "Kido/Patterns/08",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 8,
+      "name": "Dino Tracks",
+      "path": "Kido/Patterns/09",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 9,
+      "name": "Rainbow Arcs",
+      "path": "Kido/Patterns/10",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 10,
+      "name": "Confetti",
+      "path": "Kido/Patterns/11",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 11,
+      "name": "Rolling Waves",
+      "path": "Kido/Patterns/12",
+      "tint": true,
+      "approved": true
+    },
+    {
+      "id": 12,
+      "name": "Candy Cane Stripes",
+      "path": "Kido/Patterns/13",
+      "tint": false,
+      "approved": true
+    },
+    {
+      "id": 13,
+      "name": "Christmas Trees & Stars",
+      "path": "Kido/Patterns/14",
+      "tint": false,
+      "approved": true
+    },
+    {
+      "id": 14,
+      "name": "Christmas Gifts",
+      "path": "Kido/Patterns/15",
+      "tint": false,
+      "approved": true
+    }
+  ]
+}

@@ -10,7 +10,8 @@ namespace Kido.Coloring
         public static readonly Color Ink=Hex("293450"),Muted=Hex("788198"),Cream=Hex("FFF9EF"),Purple=Hex("7661D5");
         public static readonly Color[] Accents={Hex("D76776"),Hex("40A68C"),Hex("E7A63C")};
         public static readonly Color[] Backgrounds={Hex("FFF3EF"),Hex("EDF8F0"),Hex("EFF5FF")};
-        public static readonly string[] HexColors={"F06474","FFB45F","FFD85E","93C96B","41BAA3","65C8E5","6F98E7","9A7DE3","D993D3","B38262","485575","FFFFFF"};
+        // Approved Vibrant 30, 19 October 2026. Stable ordering across tools and sessions.
+        public static readonly string[] HexColors={"FF303B","FF5733","FF8A00","FF409C","FF78BE","FF7A6B","FFCE26","B7E833","68CF36","22B85D","009D73","00C7AE","27D8F2","38B5FF","3978F6","3D45D8","8B42EA","C440DD","FFD9BA","F2B887","D99460","B87346","8D4E32","593524","FFFFFF","DCE5ED","8998AC","242836","FFF3CD","CDB7FF"};
         static Sprite rounded;static Font font;
         public static Color Hex(string hex){ColorUtility.TryParseHtmlString("#"+hex,out var c);return c;}
         public static RectTransform Rect(string name,Transform parent)
@@ -67,7 +68,7 @@ namespace Kido.Coloring
         public void OnPointerDown(PointerEventData e){target=Vector3.one*.96f;}
         public void OnPointerUp(PointerEventData e){target=Vector3.one;}
         public void OnPointerExit(PointerEventData e){target=Vector3.one;}
-        void Update(){transform.localScale=Vector3.Lerp(transform.localScale,target,Time.unscaledDeltaTime*22);}
+        void Update(){if((transform.localScale-target).sqrMagnitude>.00001f)transform.localScale=Vector3.Lerp(transform.localScale,target,Time.unscaledDeltaTime*22);}
     }
     public sealed class SafeArea:MonoBehaviour
     {

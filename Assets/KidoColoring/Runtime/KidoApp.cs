@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -23,6 +24,16 @@ namespace Kido.Coloring
         Button undoButton;readonly List<Button> tools=new List<Button>(),swatches=new List<Button>();
         int category;float menuPosition,nextSave;bool dirty,completed;
         Coroutine scrollTween;
+        PatternCatalog patternCatalog;
+        RectTransform colorPicker,patternPicker;
+        readonly List<Texture2D> patternTextures=new List<Texture2D>();
+        readonly List<Button> patternButtons=new List<Button>();
+        Task<SaveOutcome> pendingSave;int savingRevision;
+        SavedPainting saveBuffer;
+        bool backgrounded,refreshPreview;
+        sealed class SaveOutcome {public bool ok;public string error;}
+        [Serializable] sealed class PreviewInfo {public int artRevision;public float coverage;}
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
@@ -31,6 +42,7 @@ namespace Kido.Coloring
         }
         IEnumerator Start()
         {
+            Application.lowMemory+=OnLowMemory;
             Application.targetFrameRate=60;
             Screen.orientation=ScreenOrientation.AutoRotation;
             Screen.autorotateToLandscapeLeft=true;Screen.autorotateToLandscapeRight=true;
@@ -52,7 +64,8 @@ namespace Kido.Coloring
             try
             {
                 catalog=Content.Load();settings=Content.Settings();access=new AccessPolicy(settings);
-                store=new PaintStore(Path.Combine(Application.persistentDataPath,"KidoPaintings"));
+                store=new PaintStore(Path.Combine(Application.persistentDataPath,"KidoPaintings-v2"));
+                patternCatalog=JsonUtility.FromJson<PatternCatalog>(Resources.Load<TextAsset>("Kido/patterns").text);
             }
             catch(Exception e){failure=e;}
             if(failure!=null){ClearScreen();Message("Let's try again", "The coloring book couldn't open. Please restart the game.");Debug.LogException(failure);yield break;}
@@ -66,7 +79,9 @@ namespace Kido.Coloring
         void ClearScreen()
         {
             CloseModal();if(scrollTween!=null){StopCoroutine(scrollTween);scrollTween=null;}
-            surface=null;tools.Clear();swatches.Clear();menuScroll=null;
+            surface=null;saveBuffer=null;refreshPreview=false;tools.Clear();swatches.Clear();patternButtons.Clear();menuScroll=null;
+            foreach(var texture in patternTextures)if(texture)Resources.UnloadAsset(texture);
+            patternTextures.Clear();colorPicker=null;patternPicker=null;
             if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
             screen=KidoUI.Rect("Screen",root);KidoUI.Place(screen,0,0,1,1);
         }
@@ -87,17 +102,20 @@ namespace Kido.Coloring
         {while(dots){dots.transform.localScale=Vector3.one*(1+Mathf.Sin(Time.unscaledTime*4)*.08f);yield return null;}}
         void LoadPreview(CanvasEntry entry)
         {
-            var loaded=store.Load(entry.id,512,512,entry.artRevision);
-            if(loaded.painting==null){if(loaded.filesExist)unavailableSaves.Add(entry.id);return;}
-            progress[entry.id]=loaded.painting.coverage;
-            var source=Resources.Load<Texture2D>(entry.thumbPath);if(!source)return;
-            var sourcePixels=source.GetPixels32();int size=source.width;var output=new Color32[size*size];var paint=loaded.painting.paint;
-            for(int y=0;y<size;y++)for(int x=0;x<size;x++)
+            // Thumbnails are a disposable cache. Never deserialize 30 full paintings on startup.
+            string meta=Path.Combine(store.Root,entry.id+".preview.json"),png=Path.Combine(store.Root,entry.id+".preview.png");
+            if(!File.Exists(meta)||!File.Exists(png))return;
+            Texture2D texture=null;
+            try
             {
-                var c=paint[(y*512/size)*512+x*512/size];var line=sourcePixels[y*size+x];
-                output[y*size+x]=c.a==0?line:new Color32((byte)(line.r*c.r/255),(byte)(line.g*c.g/255),(byte)(line.b*c.b/255),255);
+                var info=JsonUtility.FromJson<PreviewInfo>(File.ReadAllText(meta));
+                if(info.artRevision!=entry.artRevision)return;
+                if(new FileInfo(png).Length>512000)return;
+                texture=new Texture2D(2,2,TextureFormat.RGB24,false);
+                if(!texture.LoadImage(File.ReadAllBytes(png),true)){Destroy(texture);return;}
+                previews[entry.id]=texture;progress[entry.id]=Mathf.Clamp01(info.coverage);
             }
-            var texture=new Texture2D(size,size,TextureFormat.RGB24,false);texture.SetPixels32(output);texture.Apply();previews[entry.id]=texture;
+            catch(Exception e)when(e is IOException||e is ArgumentException){if(texture)Destroy(texture);Debug.LogWarning("Preview cache ignored: "+e.Message);}
         }
         public void ShowMenu()
         {
@@ -162,48 +180,79 @@ namespace Kido.Coloring
         void OpenCanvas(CanvasEntry entry)
         {
             if(!access.CanOpen(entry.id)){ParentGate();return;}
-            feedback.Tap();PaintDocument document;Texture2D art;LoadResult loaded;
+            feedback.Tap();PaintDocument document;Texture2D art=null;TextAsset bytes=null;LoadResult loaded;
             try
             {
-                art=Resources.Load<Texture2D>(entry.artPath);var bytes=Resources.Load<TextAsset>(entry.regionPath);
+                art=Resources.Load<Texture2D>(entry.artPath);bytes=Resources.Load<TextAsset>(entry.regionPath);
                 if(!art || !bytes)throw new InvalidDataException("Artwork is missing.");
                 var map=RegionMap.Decode(bytes.bytes);loaded=store.Load(entry.id,map.Width,map.Height,entry.artRevision);
-                if(loaded.filesExist && loaded.painting==null){Message("Your picture is safe", "We couldn't open the saved colors. The saved files have been kept. Please ask a grown-up for help.");return;}
-                document=new PaintDocument(map,loaded.painting?.paint);
+                if(loaded.filesExist && loaded.painting==null){Resources.UnloadAsset(art);Message("Your picture is safe", "We couldn't open the saved colors. The saved files have been kept. Please ask a grown-up for help.");return;}
+                document=new PaintDocument(map,loaded.painting?.paint,loaded.painting?.effects);
             }
-            catch(Exception e){Debug.LogException(e);Message("Let's try another picture","This picture couldn't open. Your other pictures are still here.");return;}
+            catch(Exception e){if(art)Resources.UnloadAsset(art);Debug.LogException(e);Message("Let's try another picture","This picture couldn't open. Your other pictures are still here.");return;}
+            finally{if(bytes)Resources.UnloadAsset(bytes);}
             ClearScreen();active=entry;dirty=false;completed=document.Coverage>=settings.completionThreshold;background.color=KidoUI.Backgrounds[entry.category];
-            var back=KidoUI.Button("‹  Pictures",screen,Color.white,LeaveCanvas,24);KidoUI.Place((RectTransform)back.transform,.025f,.89f,.18f,.975f);
-            var name=KidoUI.Label(ShortTitle(entry.title),screen,34,KidoUI.Ink);name.fontStyle=FontStyle.Bold;KidoUI.Place(name.rectTransform,.205f,.90f,.74f,.97f);
-            var done=KidoUI.Button("Done  ✓",screen,KidoUI.Accents[entry.category],LeaveCanvas,27,Color.white);KidoUI.Place((RectTransform)done.transform,.785f,.89f,.975f,.975f);
-            var board=KidoUI.Panel("Paper",screen,Color.white);KidoUI.Place(board,.025f,.095f,.755f,.865f);
+
+            var name=KidoUI.Label(ShortTitle(entry.title),screen,34,KidoUI.Ink);name.fontStyle=FontStyle.Bold;KidoUI.Place(name.rectTransform,.035f,.90f,.70f,.97f);
+            var done=KidoUI.Button("Done ✓",screen,KidoUI.Hex("22B85D"),LeaveCanvas,24,Color.white);KidoUI.Place((RectTransform)done.transform,.905f,.025f,.985f,.14f);
+            var board=KidoUI.Panel("Paper",screen,Color.white);KidoUI.Place(board,.025f,.095f,.72f,.88f);
             var artHolder=KidoUI.Rect("Artwork bounds",board);KidoUI.Place(artHolder,.035f,.035f,.965f,.965f);
             var image=KidoUI.Picture(artHolder,art);KidoUI.Place(image.rectTransform,0,0,1,1);KidoUI.Square(image.rectTransform);
-            surface=image.gameObject.AddComponent<DrawingSurface>();surface.Initialize(document,art);surface.Changed+=OnPaintChanged;
-            var rail=KidoUI.Panel("Creative tools",screen,Color.white);KidoUI.Place(rail,.775f,.095f,.975f,.865f);
-            var colorsTitle=KidoUI.Label("YOUR COLORS",rail,17,KidoUI.Muted);KidoUI.Place(colorsTitle.rectTransform,.09f,.935f,.92f,.985f);
-            for(int i=0;i<12;i++)
+            surface=image.gameObject.AddComponent<DrawingSurface>();surface.Initialize(document,art);surface.AnimateGlitter=feedback.Motion;surface.Changed+=OnPaintChanged;
+            var palette=KidoUI.Panel("Colors and patterns",screen,Color.white);KidoUI.Place(palette,.74f,.16f,.895f,.96f);
+            colorPicker=PickerContent(palette,"30 colors",15);
+            for(int i=0;i<KidoUI.HexColors.Length;i++)
             {
-                int index=i;var c=KidoUI.Hex(KidoUI.HexColors[i]);var swatch=KidoUI.Button("",rail,c,()=>SelectColor(index));
-                float x=.075f+(i%4)*.22f,y=.87f-(i/4)*.092f;
-                KidoUI.Place((RectTransform)swatch.transform,x,y-.065f,x+.19f,y+.013f);swatches.Add(swatch);
-                if(i==11){var border=swatch.gameObject.AddComponent<Outline>();border.effectColor=KidoUI.Hex("DDDDEA");border.effectDistance=new Vector2(1,-1);}
+                int index=i;var swatch=KidoUI.Button("",colorPicker,KidoUI.Hex(KidoUI.HexColors[i]),()=>SelectColor(index));
+                PlacePickerCell((RectTransform)swatch.transform,i);swatches.Add(swatch);
             }
-            var toolTitle=KidoUI.Label("MAKE YOUR MARK",rail,17,KidoUI.Muted);KidoUI.Place(toolTitle.rectTransform,.09f,.575f,.94f,.63f);
-            string[] names={"Tap fill","Brush","Eraser","Glitter","Pattern","Rainbow"};
+            patternPicker=PickerContent(palette,"15 patterns",8);
+            for(int i=0;i<patternCatalog.patterns.Length;i++)
+            {
+                int index=i;var entryPattern=patternCatalog.patterns[i];
+                var texture=Resources.Load<Texture2D>(entryPattern.path);patternTextures.Add(texture);
+                var b=KidoUI.Button("",patternPicker,Color.white,()=>SelectPattern(index));PlacePickerCell((RectTransform)b.transform,i);
+                var pic=KidoUI.Picture(b.transform,texture);KidoUI.Place(pic.rectTransform,.08f,.08f,.92f,.92f);patternButtons.Add(b);
+            }
+            patternPicker.parent.gameObject.SetActive(false);
+            var rail=KidoUI.Panel("Brushes",screen,Color.white);KidoUI.Place(rail,.905f,.16f,.985f,.96f);
+            string[] names={"Fill","Brush","Eraser","Glitter","Pattern","Rainbow"};
             for(int i=0;i<6;i++)
             {
                 int tool=i;var b=KidoUI.Button("",rail,KidoUI.Hex("F7F5FC"),()=>SelectTool((PaintTool)tool));
-                float x=.065f+(i%2)*.46f,y=.545f-(i/2)*.156f;KidoUI.Place((RectTransform)b.transform,x,y-.125f,x+.41f,y+.009f);tools.Add(b);
-                var glyphRect=KidoUI.Rect("Tool icon",b.transform);KidoUI.Place(glyphRect,.29f,.34f,.71f,.95f);var glyph=glyphRect.gameObject.AddComponent<ToolGlyph>();glyph.tool=(PaintTool)i;glyph.color=KidoUI.Purple;glyph.raycastTarget=false;
-                var label=KidoUI.Label(names[i],b.transform,18,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(label.rectTransform,.02f,.02f,.98f,.34f);
+                float top=1-i/6f;KidoUI.Place((RectTransform)b.transform,.04f,top-1/6f,.96f,top,4);tools.Add(b);
+                var glyphRect=KidoUI.Rect("Tool icon",b.transform);KidoUI.Place(glyphRect,.25f,.31f,.75f,.90f);
+                var glyph=glyphRect.gameObject.AddComponent<ToolGlyph>();glyph.tool=(PaintTool)i;glyph.color=KidoUI.Purple;glyph.raycastTarget=false;
+                var label=KidoUI.Label(names[i],b.transform,17,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(label.rectTransform,.02f,0,.98f,.31f);
             }
-            undoButton=KidoUI.Button("↶ Undo",rail,KidoUI.Hex("F0EDF8"),Undo,20);KidoUI.Place((RectTransform)undoButton.transform,.06f,.025f,.48f,.105f);
-            var reset=KidoUI.Button("Reset",rail,KidoUI.Hex("FFF0EE"),ConfirmReset,20);KidoUI.Place((RectTransform)reset.transform,.52f,.025f,.94f,.105f);
-            saveLabel=KidoUI.Label("Your colors save as you play",screen,20,KidoUI.Muted);KidoUI.Place(saveLabel.rectTransform,.035f,.022f,.70f,.075f);
-            progressLabel=KidoUI.Label("",screen,20,KidoUI.Muted,TextAnchor.MiddleRight);KidoUI.Place(progressLabel.rectTransform,.77f,.022f,.97f,.075f);
-            SelectColor(0,false);SelectTool(PaintTool.Fill,false);RefreshPaintStatus();
+            undoButton=KidoUI.Button("↶ Undo",screen,KidoUI.Hex("F0EDF8"),Undo,20);KidoUI.Place((RectTransform)undoButton.transform,.74f,.025f,.815f,.14f);
+            var reset=KidoUI.Button("Reset",screen,KidoUI.Hex("FFF0EE"),ConfirmReset,20);KidoUI.Place((RectTransform)reset.transform,.822f,.025f,.897f,.14f);
+            saveLabel=KidoUI.Label("Your colors save as you play",screen,20,KidoUI.Muted);KidoUI.Place(saveLabel.rectTransform,.035f,.022f,.46f,.075f);
+            progressLabel=KidoUI.Label("",screen,20,KidoUI.Muted,TextAnchor.MiddleRight);KidoUI.Place(progressLabel.rectTransform,.48f,.022f,.71f,.075f);
+            SelectColor(0,false);SelectPattern(0,false);SelectTool(PaintTool.Fill,false);RefreshPaintStatus();
             if(loaded.recovered)Message("Welcome back", "We recovered the last safely saved version of your picture.");
+        }
+        RectTransform PickerContent(RectTransform parent,string label,int rows)
+        {
+            var viewport=KidoUI.Panel(label,parent,Color.white,false);KidoUI.Place(viewport,.035f,.015f,.965f,.985f);
+            viewport.GetComponent<Image>().raycastTarget=true;viewport.gameObject.AddComponent<RectMask2D>();
+            var scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.horizontal=false;scroll.vertical=true;
+            scroll.movementType=ScrollRect.MovementType.Clamped;scroll.decelerationRate=.08f;
+            var content=KidoUI.Rect(label+" content",viewport);scroll.content=content;
+            content.anchorMin=new Vector2(0,1);content.anchorMax=new Vector2(1,1);content.pivot=new Vector2(.5f,1);
+            content.sizeDelta=new Vector2(0,rows*112);content.anchoredPosition=Vector2.zero;return content;
+        }
+        void PlacePickerCell(RectTransform cell,int index)
+        {
+            cell.anchorMin=new Vector2((index%2)*.5f,1);cell.anchorMax=new Vector2((index%2+1)*.5f,1);
+            cell.pivot=new Vector2(.5f,1);cell.offsetMin=new Vector2(6,-(index/2+1)*112+6);cell.offsetMax=new Vector2(-6,-index/2*112-6);
+        }
+        void SelectPattern(int index,bool sound=true)
+        {
+            if(!surface)return;surface.FinishStroke();
+            surface.Pattern=new PatternData(patternTextures[index],patternCatalog.patterns[index].tint);
+            for(int i=0;i<patternButtons.Count;i++)patternButtons[i].GetComponent<Image>().color=i==index?KidoUI.Purple:Color.white;
+            if(sound)feedback.Tap();
         }
         void SelectColor(int index,bool sound=true)
         {
@@ -211,15 +260,16 @@ namespace Kido.Coloring
             for(int i=0;i<swatches.Count;i++)
             {
                 var old=swatches[i].transform.Find("Selected");if(old)Destroy(old.gameObject);
-                if(i==index){var label=KidoUI.Label("✓",swatches[i].transform,28,index==11?KidoUI.Ink:Color.white,TextAnchor.MiddleCenter);label.name="Selected";KidoUI.Place(label.rectTransform,0,0,1,1);}
+                if(i==index){var label=KidoUI.Label("✓",swatches[i].transform,28,surface.SelectedColor.r*.299f+surface.SelectedColor.g*.587f+surface.SelectedColor.b*.114f>145?KidoUI.Ink:Color.white,TextAnchor.MiddleCenter);label.name="Selected";KidoUI.Place(label.rectTransform,0,0,1,1);}
             }
         }
         void SelectTool(PaintTool tool,bool sound=true)
         {
             if(!surface)return;surface.FinishStroke();surface.Tool=tool;if(sound)feedback.Tap();
+            colorPicker.parent.gameObject.SetActive(tool!=PaintTool.Pattern);patternPicker.parent.gameObject.SetActive(tool==PaintTool.Pattern);
             for(int i=0;i<tools.Count;i++){tools[i].GetComponent<Image>().color=i==(int)tool?KidoUI.Hex("E8E0FF"):KidoUI.Hex("F7F5FC");}
         }
-        void OnPaintChanged(){dirty=true;nextSave=Time.unscaledTime+.65f;feedback.Tap();RefreshPaintStatus();}
+        void OnPaintChanged(){dirty=true;nextSave=Time.unscaledTime+1.5f;feedback.Tap();RefreshPaintStatus();}
         void RefreshPaintStatus()
         {
             if(!surface)return;undoButton.interactable=surface.Document.CanUndo;
@@ -233,14 +283,51 @@ namespace Kido.Coloring
             if(!surface)return;surface.FinishStroke();
             Confirm("Start fresh?","This clears the colors on this picture. Your other pictures stay just as they are.","Keep coloring","Clear picture",()=>{surface.Document.Clear();OnPaintChanged();});
         }
+        void BeginBackgroundSave()
+        {
+            if(pendingSave!=null||!surface||active==null||!dirty)return;
+            savingRevision=surface.Document.Revision;
+            var document=surface.Document;
+            if(saveBuffer==null)saveBuffer=new SavedPainting{paint=new Color32[document.Paint.Length],effects=new byte[document.Effects.Length]};
+            saveBuffer.id=active.id;saveBuffer.artRevision=active.artRevision;saveBuffer.width=document.Map.Width;saveBuffer.height=document.Map.Height;saveBuffer.coverage=document.Coverage;
+            Array.Copy(document.Paint,saveBuffer.paint,document.Paint.Length);Array.Copy(document.Effects,saveBuffer.effects,document.Effects.Length);
+            var snapshot=saveBuffer;
+            pendingSave=Task.Run(()=>{bool ok=store.TrySaveSnapshot(snapshot,out var error);return new SaveOutcome{ok=ok,error=error};});
+        }
+        bool CompleteBackgroundSave(bool wait)
+        {
+            if(pendingSave==null)return true;if(!wait&&!pendingSave.IsCompleted)return false;
+            SaveOutcome result;
+            try{result=pendingSave.GetAwaiter().GetResult();}
+            catch(Exception e){result=new SaveOutcome{ok=false,error=e.Message};}
+            pendingSave=null;
+            if(!result.ok){if(saveLabel)saveLabel.text="Couldn't save yet";Debug.LogWarning(result.error);nextSave=Time.unscaledTime+5;return false;}
+            if(surface && savingRevision==surface.Document.Revision){dirty=false;UpdateSavedPreview();}
+            return true;
+        }
+        void UpdateSavedPreview()
+        {
+            if(!surface||active==null)return;
+            if(saveLabel)saveLabel.text="Saved ✓";progress[active.id]=surface.Document.Coverage;
+            if(backgrounded){refreshPreview=true;return;}
+            refreshPreview=false;Texture2D thumbnail=null;
+            try
+            {
+                thumbnail=surface.Thumbnail();
+                if(previews.TryGetValue(active.id,out var previous))Destroy(previous);
+                previews[active.id]=thumbnail;
+                File.WriteAllBytes(Path.Combine(store.Root,active.id+".preview.png"),thumbnail.EncodeToPNG());
+                File.WriteAllText(Path.Combine(store.Root,active.id+".preview.json"),JsonUtility.ToJson(new PreviewInfo{artRevision=active.artRevision,coverage=surface.Document.Coverage}));
+            }
+            catch(Exception e){Debug.LogWarning("Preview cache: "+e.Message);}
+            finally{if(thumbnail)thumbnail.Apply(false,true);}
+        }
         bool SavePainting()
         {
-            if(!surface || active==null || !dirty)return true;
-            surface.FinishStroke();
-            if(!store.TrySave(active.id,active.artRevision,surface.Document,out var error))
-            {saveLabel.text="Couldn't save yet — please keep this picture open";Debug.LogWarning(error);nextSave=Time.unscaledTime+5;return false;}
-            dirty=false;saveLabel.text="Saved with love  ✓";progress[active.id]=surface.Document.Coverage;
-            if(previews.TryGetValue(active.id,out var previous))Destroy(previous);previews[active.id]=surface.Thumbnail();return true;
+            if(!surface||active==null)return true;surface.FinishStroke();
+            if(!CompleteBackgroundSave(true))return false;
+            if(!dirty)return true;
+            BeginBackgroundSave();return CompleteBackgroundSave(true);
         }
         void LeaveCanvas()
         {
@@ -250,12 +337,20 @@ namespace Kido.Coloring
         }
         void Update()
         {
-            if(dirty && surface && !surface.Document.ActionOpen && Time.unscaledTime>=nextSave)SavePainting();
+            if(refreshPreview&&!backgrounded&&surface&&!surface.Document.ActionOpen)UpdateSavedPreview();
+            if(pendingSave!=null&&pendingSave.IsCompleted)CompleteBackgroundSave(false);
+            if(dirty&&surface&&!surface.Document.ActionOpen&&Time.unscaledTime>=nextSave)BeginBackgroundSave();
             if(Input.GetKeyDown(KeyCode.Escape)) {if(modalRoot)CloseModal();else if(surface)LeaveCanvas();}
         }
-        void OnApplicationPause(bool paused){if(paused && surface){surface.FinishStroke();SavePainting();}}
-        void OnApplicationFocus(bool focused){if(!focused && surface){surface.FinishStroke();SavePainting();}}
-        void OnApplicationQuit(){if(surface){surface.FinishStroke();SavePainting();}}
+        void OnApplicationPause(bool paused){backgrounded=paused;if(paused&&surface){surface.FinishStroke();SavePainting();}}
+        void OnApplicationFocus(bool focused){backgrounded=!focused;if(!focused&&surface){surface.FinishStroke();SavePainting();}}
+        void OnApplicationQuit(){backgrounded=true;if(surface){surface.FinishStroke();SavePainting();}}
+        void OnLowMemory()
+        {
+            if(!surface)return;
+            foreach(var texture in previews.Values)if(texture)Destroy(texture);previews.Clear();
+            // Active paint and undo are never discarded. Gallery previews are disposable.
+        }
         RectTransform Modal(string title,string body)
         {
             CloseModal();modalRoot=KidoUI.Panel("Dialog shade",root,new Color(.1f,.14f,.24f,.46f),false);KidoUI.Place(modalRoot,0,0,1,1);modalRoot.GetComponent<Image>().raycastTarget=true;
@@ -284,9 +379,9 @@ namespace Kido.Coloring
         {
             var box=Modal("A little space for parents","This first-play version opens all 30 pictures. Purchases and advertising are not available yet.");
             var sound=KidoUI.Button(feedback.Sound?"Sound: on":"Sound: off",box,Color.white,()=>{feedback.SetSound(!feedback.Sound);ShowParents();},22);KidoUI.Place((RectTransform)sound.transform,.07f,.27f,.47f,.40f);
-            var motion=KidoUI.Button(feedback.Motion?"Celebrations: on":"Celebrations: off",box,Color.white,()=>{feedback.SetMotion(!feedback.Motion);ShowParents();},21);KidoUI.Place((RectTransform)motion.transform,.53f,.27f,.93f,.40f);
+            var motion=KidoUI.Button(feedback.Motion?"Motion: on":"Motion: off",box,Color.white,()=>{feedback.SetMotion(!feedback.Motion);if(surface)surface.AnimateGlitter=feedback.Motion;ShowParents();},21);KidoUI.Place((RectTransform)motion.transform,.53f,.27f,.93f,.40f);
             var close=KidoUI.Button("Back to coloring",box,KidoUI.Purple,CloseModal,24,Color.white);KidoUI.Place((RectTransform)close.transform,.20f,.07f,.80f,.22f);
         }
-        void OnDestroy(){foreach(var texture in previews.Values)if(texture)Destroy(texture);}
+        void OnDestroy(){Application.lowMemory-=OnLowMemory;backgrounded=true;if(pendingSave!=null)CompleteBackgroundSave(true);foreach(var texture in previews.Values)if(texture)Destroy(texture);}
     }
 }

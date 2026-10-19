@@ -81,8 +81,38 @@ namespace Kido.Tests
             {
                 var art=Resources.Load<Texture2D>(entry.artPath);Assert.IsNotNull(art);
                 var map=RegionMap.Decode(Resources.Load<TextAsset>(entry.regionPath).bytes);
-                Assert.AreEqual(art.width,map.Width);Assert.AreEqual(art.height,map.Height);Assert.Greater(map.Count,0);
+                Assert.AreEqual(entry.paintWidth,map.Width);Assert.AreEqual(entry.paintHeight,map.Height);
+                Assert.AreEqual(2048,art.width);Assert.Greater(map.Count,0);
+                Resources.UnloadAsset(art);
             }
+        }
+        [Test] public void GlitterSurvivesSaveUndoAndOverpaint()
+        {
+            var d=new PaintDocument(Map());d.BeginAction();d.Stroke(new Vector2(1,0),new Vector2(2,0),4,1,Color.red,PaintTool.Glitter,0);d.EndAction();
+            Assert.AreEqual(255,d.Effects[1]);Assert.AreEqual(0,d.Effects[5]);
+            var saved=PaintStore.Snapshot("glitter",2,d);saved.sequence=1;
+            var restored=PaintStore.Decode(PaintStore.Encode(saved));CollectionAssert.AreEqual(d.Effects,restored.effects);
+            d.BeginAction();d.Fill(1,Color.blue);d.EndAction();Assert.AreEqual(0,d.Effects[1]);
+            d.Undo();Assert.AreEqual(255,d.Effects[1]);Assert.AreEqual(255,d.Paint[1].r);
+            d.Clear();Assert.AreEqual(0,d.Effects[1]);d.Undo();Assert.AreEqual(255,d.Effects[1]);
+        }
+        [Test] public void SnapshotIsIndependentOfFurtherDrawing()
+        {
+            var d=new PaintDocument(Map());d.BeginAction();d.Fill(1,Color.red);d.EndAction();
+            var snapshot=PaintStore.Snapshot("snapshot",2,d);d.BeginAction();d.Fill(1,Color.blue);d.EndAction();
+            Assert.AreEqual(255,snapshot.paint[1].r);Assert.AreEqual(0,snapshot.paint[1].b);
+        }
+        [Test] public void UndoMemoryIsBoundedForShippedResolution()
+        {
+            var labels=new ushort[1024*1024];for(int i=0;i<labels.Length;i++)labels[i]=1;
+            var d=new PaintDocument(new RegionMap(1024,1024,1,labels));
+            for(int i=0;i<8;i++){d.BeginAction();d.Fill(1,i%2==0?Color.red:Color.blue);d.EndAction();Assert.LessOrEqual(d.UndoBytes,PaintDocument.UndoBudgetBytes);}
+            Assert.IsTrue(d.Undo());Assert.AreEqual(255,d.Paint[0].r);
+        }
+        [Test] public void TransparentOutlineDoesNotErasePaint()
+        {
+            Assert.AreEqual((Color32)Color.red,PaintDocument.CompositePixel(Color.red,new Color32(0,0,0,0)));
+            Assert.AreEqual((Color32)Color.black,PaintDocument.CompositePixel(Color.red,Color.black));
         }
     }
 }

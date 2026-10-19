@@ -8,7 +8,7 @@ namespace Kido.Coloring
     [Serializable] public sealed class CanvasEntry
     {
         public string id, title, artPath, thumbPath, regionPath;
-        public int category, artRevision;
+        public int category, artRevision, paintWidth = 1024, paintHeight = 1024;
     }
     [Serializable] public sealed class ContentCatalog { public CanvasEntry[] canvases; }
     [Serializable] public sealed class GameSettings
@@ -51,6 +51,7 @@ namespace Kido.Coloring
         public int Count { get; }
         public ushort[] Labels { get; }
         public int PaintablePixels { get; }
+        public RectInt[] Bounds { get; }
         public RegionMap(int width, int height, int count, ushort[] labels)
         {
             if (width <= 0 || height <= 0 || width > 2048 || height > 2048 || count <= 0 || count > 65535 || labels.Length != width * height)
@@ -64,6 +65,17 @@ namespace Kido.Coloring
             }
             PaintablePixels = paintable;
             if (PaintablePixels == 0) throw new InvalidDataException("Artwork has no coloring regions.");
+            Bounds = new RectInt[count + 1];
+            var minX = new int[count+1]; var minY = new int[count+1];
+            var maxX = new int[count+1]; var maxY = new int[count+1];
+            for(int i=0;i<=count;i++){minX[i]=width;minY[i]=height;}
+            for(int i=0;i<labels.Length;i++)
+            {
+                int label=labels[i];if(label==0)continue;int x=i%width,y=i/width;
+                minX[label]=Math.Min(minX[label],x);minY[label]=Math.Min(minY[label],y);
+                maxX[label]=Math.Max(maxX[label],x);maxY[label]=Math.Max(maxY[label],y);
+            }
+            for(int i=1;i<=count;i++)if(minX[i]<width)Bounds[i]=new RectInt(minX[i],minY[i],maxX[i]-minX[i]+1,maxY[i]-minY[i]+1);
         }
         public static RegionMap Decode(byte[] bytes)
         {

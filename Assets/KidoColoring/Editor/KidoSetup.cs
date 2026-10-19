@@ -15,9 +15,11 @@ namespace Kido.Editor
         {
             if(!assetPath.StartsWith("Assets/KidoColoring/Resources/Kido/",StringComparison.Ordinal))return;
             var importer=(TextureImporter)assetImporter;
-            importer.textureType=TextureImporterType.Default;importer.isReadable=true;importer.mipmapEnabled=false;
+            importer.textureType=TextureImporterType.Default;
+            importer.isReadable=assetPath.Contains("/Patterns/");importer.mipmapEnabled=false;
             importer.textureCompression=TextureImporterCompression.Uncompressed;importer.maxTextureSize=2048;
             importer.npotScale=TextureImporterNPOTScale.None;importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Bilinear;
+            importer.alphaIsTransparency=true;
         }
     }
     public static class KidoSetup

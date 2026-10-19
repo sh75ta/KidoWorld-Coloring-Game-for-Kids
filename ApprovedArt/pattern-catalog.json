@@ -1,0 +1,92 @@
+[
+  {
+    "number": "01",
+    "name": "Big Dots",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "02",
+    "name": "Wide Stripes",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "03",
+    "name": "Soft Zigzags",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "04",
+    "name": "Chunky Checks",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "05",
+    "name": "Happy Stars",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "06",
+    "name": "Sweet Hearts",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "07",
+    "name": "Bubbles",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "08",
+    "name": "Simple Flowers",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "09",
+    "name": "Dino Tracks",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "10",
+    "name": "Rainbow Arcs",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "11",
+    "name": "Confetti",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "12",
+    "name": "Rolling Waves",
+    "color_mode": "proposed_selected_color_tint",
+    "approval": "positive_feedback_received"
+  },
+  {
+    "number": "13",
+    "name": "Candy Cane Stripes",
+    "color_mode": "fixed_festive_palette",
+    "approval": "pending"
+  },
+  {
+    "number": "14",
+    "name": "Christmas Trees & Stars",
+    "color_mode": "fixed_festive_palette",
+    "approval": "pending"
+  },
+  {
+    "number": "15",
+    "name": "Christmas Gifts",
+    "color_mode": "fixed_festive_palette",
+    "approval": "pending"
+  }
+]

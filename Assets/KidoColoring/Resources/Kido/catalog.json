@@ -7,7 +7,9 @@
       "artPath": "Kido/Art/christmas_winter_santa_gift_sack",
       "thumbPath": "Kido/Thumbs/christmas_winter_santa_gift_sack",
       "regionPath": "Kido/Regions/christmas_winter_santa_gift_sack",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_reindeer_big_nose",
@@ -16,7 +18,9 @@
       "artPath": "Kido/Art/christmas_winter_reindeer_big_nose",
       "thumbPath": "Kido/Thumbs/christmas_winter_reindeer_big_nose",
       "regionPath": "Kido/Regions/christmas_winter_reindeer_big_nose",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_christmas_tree",
@@ -25,7 +29,9 @@
       "artPath": "Kido/Art/christmas_winter_christmas_tree",
       "thumbPath": "Kido/Thumbs/christmas_winter_christmas_tree",
       "regionPath": "Kido/Regions/christmas_winter_christmas_tree",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_snowman",
@@ -34,7 +40,9 @@
       "artPath": "Kido/Art/christmas_winter_snowman",
       "thumbPath": "Kido/Thumbs/christmas_winter_snowman",
       "regionPath": "Kido/Regions/christmas_winter_snowman",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_santa_sleigh",
@@ -43,7 +51,9 @@
       "artPath": "Kido/Art/christmas_winter_santa_sleigh",
       "thumbPath": "Kido/Thumbs/christmas_winter_santa_sleigh",
       "regionPath": "Kido/Regions/christmas_winter_santa_sleigh",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_gingerbread_cottage",
@@ -52,7 +62,9 @@
       "artPath": "Kido/Art/christmas_winter_gingerbread_cottage",
       "thumbPath": "Kido/Thumbs/christmas_winter_gingerbread_cottage",
       "regionPath": "Kido/Regions/christmas_winter_gingerbread_cottage",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_penguin_sled",
@@ -61,7 +73,9 @@
       "artPath": "Kido/Art/christmas_winter_penguin_sled",
       "thumbPath": "Kido/Thumbs/christmas_winter_penguin_sled",
       "regionPath": "Kido/Regions/christmas_winter_penguin_sled",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_teddy_gift",
@@ -70,7 +84,9 @@
       "artPath": "Kido/Art/christmas_winter_teddy_gift",
       "thumbPath": "Kido/Thumbs/christmas_winter_teddy_gift",
       "regionPath": "Kido/Regions/christmas_winter_teddy_gift",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_toy_stocking",
@@ -79,7 +95,9 @@
       "artPath": "Kido/Art/christmas_winter_toy_stocking",
       "thumbPath": "Kido/Thumbs/christmas_winter_toy_stocking",
       "regionPath": "Kido/Regions/christmas_winter_toy_stocking",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "christmas_winter_elf_workshop",
@@ -88,7 +106,9 @@
       "artPath": "Kido/Art/christmas_winter_elf_workshop",
       "thumbPath": "Kido/Thumbs/christmas_winter_elf_workshop",
       "regionPath": "Kido/Regions/christmas_winter_elf_workshop",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_lion_cub",
@@ -97,7 +117,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_lion_cub",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_lion_cub",
       "regionPath": "Kido/Regions/animals_dinosaurs_lion_cub",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_elephant_bath",
@@ -106,7 +128,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_elephant_bath",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_elephant_bath",
       "regionPath": "Kido/Regions/animals_dinosaurs_elephant_bath",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_puppy_play",
@@ -115,7 +139,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_puppy_play",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_puppy_play",
       "regionPath": "Kido/Regions/animals_dinosaurs_puppy_play",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_kitten_yarn",
@@ -124,7 +150,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_kitten_yarn",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_kitten_yarn",
       "regionPath": "Kido/Regions/animals_dinosaurs_kitten_yarn",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_dinosaur_egg",
@@ -133,7 +161,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_dinosaur_egg",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_dinosaur_egg",
       "regionPath": "Kido/Regions/animals_dinosaurs_dinosaur_egg",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_stegosaurus",
@@ -142,7 +172,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_stegosaurus",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_stegosaurus",
       "regionPath": "Kido/Regions/animals_dinosaurs_stegosaurus",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_long_neck_dinosaur",
@@ -151,7 +183,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_long_neck_dinosaur",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_long_neck_dinosaur",
       "regionPath": "Kido/Regions/animals_dinosaurs_long_neck_dinosaur",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_clownfish",
@@ -160,7 +194,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_clownfish",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_clownfish",
       "regionPath": "Kido/Regions/animals_dinosaurs_clownfish",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_parrot",
@@ -169,7 +205,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_parrot",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_parrot",
       "regionPath": "Kido/Regions/animals_dinosaurs_parrot",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "animals_dinosaurs_owl_family",
@@ -178,7 +216,9 @@
       "artPath": "Kido/Art/animals_dinosaurs_owl_family",
       "thumbPath": "Kido/Thumbs/animals_dinosaurs_owl_family",
       "regionPath": "Kido/Regions/animals_dinosaurs_owl_family",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_racing_car",
@@ -187,7 +227,9 @@
       "artPath": "Kido/Art/vehicles_adventures_racing_car",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_racing_car",
       "regionPath": "Kido/Regions/vehicles_adventures_racing_car",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_monster_truck",
@@ -196,7 +238,9 @@
       "artPath": "Kido/Art/vehicles_adventures_monster_truck",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_monster_truck",
       "regionPath": "Kido/Regions/vehicles_adventures_monster_truck",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_airplane",
@@ -205,7 +249,9 @@
       "artPath": "Kido/Art/vehicles_adventures_airplane",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_airplane",
       "regionPath": "Kido/Regions/vehicles_adventures_airplane",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_pirate_ship",
@@ -214,7 +260,9 @@
       "artPath": "Kido/Art/vehicles_adventures_pirate_ship",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_pirate_ship",
       "regionPath": "Kido/Regions/vehicles_adventures_pirate_ship",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_fire_engine",
@@ -223,7 +271,9 @@
       "artPath": "Kido/Art/vehicles_adventures_fire_engine",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_fire_engine",
       "regionPath": "Kido/Regions/vehicles_adventures_fire_engine",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_ice_cream_van",
@@ -232,7 +282,9 @@
       "artPath": "Kido/Art/vehicles_adventures_ice_cream_van",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_ice_cream_van",
       "regionPath": "Kido/Regions/vehicles_adventures_ice_cream_van",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_train",
@@ -241,7 +293,9 @@
       "artPath": "Kido/Art/vehicles_adventures_train",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_train",
       "regionPath": "Kido/Regions/vehicles_adventures_train",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_digger",
@@ -250,7 +304,9 @@
       "artPath": "Kido/Art/vehicles_adventures_digger",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_digger",
       "regionPath": "Kido/Regions/vehicles_adventures_digger",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_school_bus",
@@ -259,7 +315,9 @@
       "artPath": "Kido/Art/vehicles_adventures_school_bus",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_school_bus",
       "regionPath": "Kido/Regions/vehicles_adventures_school_bus",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     },
     {
       "id": "vehicles_adventures_rocket",
@@ -268,7 +326,9 @@
       "artPath": "Kido/Art/vehicles_adventures_rocket",
       "thumbPath": "Kido/Thumbs/vehicles_adventures_rocket",
       "regionPath": "Kido/Regions/vehicles_adventures_rocket",
-      "artRevision": 1
+      "artRevision": 2,
+      "paintWidth": 1024,
+      "paintHeight": 1024
     }
   ]
 }
