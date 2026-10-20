@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 namespace Kido.Coloring
 {
-    // Behaviour/layout from the supplied menu video. The exact Figma mascot exports
-    // remain optional until the linked file can be read; never use substitute art.
+    // Behaviour/layout from the supplied menu video, using the four original
+    // transparent category exports supplied on 20 October.
     public sealed class GalleryMenu:MonoBehaviour
     {
         static readonly string[] Names={"CHRISTMAS","ANIMALS","VEHICLES","TRACING"};
@@ -150,8 +150,6 @@ namespace Kido.Coloring
             float available=width-2*margin-3*gap,total=0;
             for(int i=0;i<4;i++)
             {
-                // Without the unavailable original mascots, retain readable text
-                // tabs. Do not pretend a replacement illustration is approved.
                 float weight=mascots[i]?(i==selected?2.25f:1):1.45f;
                 float desired=weight;
                 tabWidths[i]=immediate?desired:Mathf.Lerp(tabWidths[i],desired,1-Mathf.Exp(-Time.unscaledDeltaTime*16));

@@ -21,28 +21,21 @@ interaction work and implements the menu behaviour in the supplied prototype.
   A fade blocks repeated taps while a screen is being replaced.
 - The existing grown-up gate remains reachable from the menu.
 
-## Exact visual match remains blocked
+## Original category artwork received
 
 The requested frame is:
 https://www.figma.com/design/tKMLc3YnLj2fez5lIisF98/Game-Icon?node-id=2218-2946
 
-On 20 October, design-context, metadata, screenshot and asset-export requests all
-returned the connector's file-access error. This is **not** a claim that Figma
-view-only users generally cannot download assets. The previously accessible
-KidoColoring file contained only the earlier frames.
+On 20 October, the user supplied `Game Icon (2).zip`. Its four transparent
+original exports are now integrated as the Santa, lion, rocket and tracing-A
+category mascots. Their original bytes, dimensions, names and hashes are recorded
+in `ApprovedArt/menu-assets-manifest.json`.
 
 The three attached menu videos have identical SHA-256:
 `80c5081ec61b433abfe391ab63b47cd17a78649a3a3ebb1901bec5cfde323637`.
 
 The supplied video establishes the two-row gallery, tab expansion and scrolling
-behaviour. It does not provide usable original Santa/lion/rocket/letter-A assets
-or exact Figma layout tokens. This implementation is therefore a **functional
-video-based menu draft**, not an approved pixel-perfect Figma reconstruction.
-The animal background color is provisional; exact colors/spacing need the frame.
-
-Until the original exports are available, the menu deliberately uses readable
-text tabs. It does not redraw, crop from the video, or substitute other mascots.
-`GalleryMenu` supports original transparent exports at these resource paths:
+behaviour. The characters now use original exports at these resource paths:
 
 | Resource path (omit extension in code) | Intended original asset |
 | --- | --- |
@@ -51,10 +44,10 @@ text tabs. It does not redraw, crop from the video, or substitute other mascots.
 | Kido/UI/Figma/Menu/VEHICLES | Rocket category mascot |
 | Kido/UI/Figma/Menu/TRACING | Letter A category mascot |
 
-With these textures present, the selected tab expands and shows its label;
-unselected tabs show their mascots. Verify the actual exported bounds against
-the Figma frame before treating this hookup as final. Export the frame and its
-four original category assets, or copy the frame into the readable Figma file.
+The selected tab expands and shows its label; unselected tabs show their mascot.
+The exact frame metadata remains inaccessible, so final spacing, category colors
+and pixel-level phone/tablet comparison still require either an accessible frame
+or native visual approval against the user's prototype.
 
 ## Earlier interaction requests included in this source update
 
@@ -73,7 +66,7 @@ four original category assets, or copy the frame into the readable Figma file.
 | Done | Save first; top-down bounded confetti and SFX, then quick fade to menu |
 | Intro decorations | Subtle float/rotation, resize-safe, follows Motion setting |
 | BGM | Previously supplied Jingle Bells track continues globally |
-| Letter-by-letter logo bounce | **Not implemented**: existing supplied logo is one flattened texture; original letter layers/exports needed |
+| Letter-by-letter logo bounce | Nine non-overlapping UV slices of the original texture bounce in sequence; source pixels are unchanged and no extra textures are allocated |
 | Kids' “KidoWorld” chorus | **No recording supplied**: optional `Kido/Audio/KidoWorldChorus` resource hookup exists; no synthesized children recording claimed |
 
 ## Technical/design audit and corrections
@@ -97,7 +90,7 @@ four original category assets, or copy the frame into the readable Figma file.
 
 ## What actually ran
 
-- `node --test tools/test-approved-content.cjs`: **6 passed, 0 failed**.
+- `node --test tools/test-approved-content.cjs`: **7 passed, 0 failed**, including exact menu asset hashes and transparency.
 - `git diff --check`: passed.
 - Font parsed successfully: family **League Gothic**, style **Regular**.
 - All new Unity assets have stable, unique `.meta` files.

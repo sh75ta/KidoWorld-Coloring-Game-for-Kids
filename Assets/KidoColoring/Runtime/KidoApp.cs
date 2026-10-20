@@ -53,8 +53,8 @@ namespace Kido.Coloring
             Screen.orientation=ScreenOrientation.AutoRotation;
             Screen.autorotateToLandscapeLeft=true;Screen.autorotateToLandscapeRight=true;
             Screen.autorotateToPortrait=false;Screen.autorotateToPortraitUpsideDown=false;
-            feedback=gameObject.AddComponent<Feedback>();
             if(!FindAnyObjectByType<AudioListener>())gameObject.AddComponent<AudioListener>();
+            feedback=gameObject.AddComponent<Feedback>();
             if(!EventSystem.current)
             {
                 var es=new GameObject("Event System",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -65,7 +65,7 @@ namespace Kido.Coloring
             var scaler=canvasObject.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.matchWidthOrHeight=.5f;
             var bg=KidoUI.Panel("Background",canvasObject.transform,KidoUI.Cream,false);KidoUI.Place(bg,0,0,1,1);background=bg.GetComponent<Image>();
             root=KidoUI.Rect("Safe area",canvasObject.transform);root.gameObject.AddComponent<SafeArea>();
-            ShowSplash();yield return null;
+            ShowSplash();feedback.PlayIntroVoice();yield return null;
             Exception failure=null;
             try
             {
@@ -139,9 +139,7 @@ namespace Kido.Coloring
             var pinkMotion=pink.gameObject.AddComponent<GentleFloat>();
             var yellowMotion=yellow.gameObject.AddComponent<GentleFloat>();yellowMotion.Phase=2;
             var logoBounds=KidoUI.Rect("Logo bounds",design);
-            var logo=FigmaPicture("Logo",logoBounds);KidoUI.Place(logo.rectTransform,0,0,1,1);
-            var logoFit=logo.gameObject.AddComponent<AspectRatioFitter>();
-            logoFit.aspectMode=AspectRatioFitter.AspectMode.FitInParent;logoFit.aspectRatio=(float)logo.texture.width/logo.texture.height;
+            logoBounds.gameObject.AddComponent<SplashLogoAnimator>().Configure(UITexture("Logo"));
             var dots=new RawImage[5];for(int i=0;i<dots.Length;i++){dots[i]=FigmaPicture("Dot",design);dots[i].gameObject.AddComponent<GentleFloat>().Phase=i;}
             var border=KidoUI.Panel("Loading border",design,Color.black);
             var track=KidoUI.Panel("Loading track",border,KidoUI.Hex("DBDBDB"));KidoUI.Place(track,0,0,1,1,3);
@@ -408,7 +406,11 @@ namespace Kido.Coloring
         {
             if(!surface||active==null)return true;surface.FinishStroke();
             if(!CompleteBackgroundSave(true))return false;
-            if(!dirty)return true;
+            if(!dirty)
+            {
+                if(!progress.TryGetValue(active.id,out var amount)||Mathf.Abs(amount-surface.Document.Coverage)>.0001f)UpdateSavedPreview();
+                return true;
+            }
             BeginBackgroundSave();return CompleteBackgroundSave(true);
         }
         void LeaveCanvas()
@@ -419,9 +421,14 @@ namespace Kido.Coloring
         }
         IEnumerator DoneCelebration()
         {
-            leaving=true;var group=screen.GetComponent<CanvasGroup>()??screen.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
-            feedback.Celebrate(screen);yield return new WaitForSecondsRealtime(feedback.Motion?1.25f:.2f);
-            yield return FadeToMenu();leaving=false;
+            leaving=true;
+            try
+            {
+                var group=screen.GetComponent<CanvasGroup>()??screen.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
+                feedback.Celebrate(screen);yield return new WaitForSecondsRealtime(feedback.Motion?1.25f:.2f);
+                yield return FadeToMenu();
+            }
+            finally{leaving=false;}
         }
         void Update()
         {

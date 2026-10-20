@@ -2,9 +2,10 @@
 
 Latest menu/interaction status: `../MENU_UPDATE_2026-10-20.md`. The new frame
 `tKMLc3YnLj2fez5lIisF98 / 2218:2946` returned connector access errors for design
-context, screenshot, metadata and export. The new menu is a functional draft
-from the attached video with League Gothic, pending original category mascots
-and exact frame tokens. Historical notes below describe earlier source versions.
+context, screenshot, metadata and export. The new menu follows the attached video
+with League Gothic, and the user later supplied the four original category
+mascots in `Game Icon (2).zip`. Exact frame tokens remain unavailable. Historical
+notes below describe earlier source versions.
 
 Source file: `ORpZoUySkEUioAZ7bU0ULd`. Phone frames `6:36` / `6:99`; tablet frames `6:46` / `6:62`. Retrieved high-fidelity design context is retained alongside this note. These references describe layout, not a React dependency.
 

@@ -17,7 +17,6 @@ namespace Kido.Coloring
             tap=Tone("soft tap",620,.11f);finish=Tone("finished",880,.65f);
             tick=Tone("palette detent",1050,.035f);paintChime=Tone("paint sparkle",930,.3f);
             voice=Resources.Load<AudioClip>("Kido/Audio/KidoWorldChorus");
-            if(voice&&Sound)source.PlayOneShot(voice);
             music=Resources.Load<AudioClip>("Kido/Audio/JingleBellsKids30s");
             if(music)
             {
@@ -26,6 +25,7 @@ namespace Kido.Coloring
                 if(Sound)musicSource.Play();
             }
         }
+        public void PlayIntroVoice(){if(voice&&Sound)source.PlayOneShot(voice);}
         AudioClip Tone(string name,float hz,float duration)
         {
             const int rate=22050;var data=new float[(int)(rate*duration)];

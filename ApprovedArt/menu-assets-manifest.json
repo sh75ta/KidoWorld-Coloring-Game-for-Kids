@@ -1,0 +1,11 @@
+{
+  "source": "Game Icon (2).zip",
+  "sourceSha256": "b952c14e8e9d8b32be0d5008be0b0047e14634ee825def831897cea0a152f79b",
+  "received": "2026-10-20",
+  "assets": [
+    {"source":"image 6.png","resource":"Kido/UI/Figma/Menu/CHRISTMAS","width":548,"height":548,"sha256":"577028bc4fa9e261c0f078c2252ca552b29dad6bde72a4712b91b4c6188afb2b"},
+    {"source":"image 10.png","resource":"Kido/UI/Figma/Menu/ANIMALS","width":488,"height":580,"sha256":"490f86a1f948ed74f515805f1d27fdb60d4fb788a49a636f71f875df59b247b9"},
+    {"source":"image 11.png","resource":"Kido/UI/Figma/Menu/VEHICLES","width":352,"height":508,"sha256":"5199982f0096de2ed131db692c61bf76f799e2c89daf58d60c9b31347f6a86ab"},
+    {"source":"image 14.png","resource":"Kido/UI/Figma/Menu/TRACING","width":416,"height":426,"sha256":"6d4b57c7baf9c2391eee9e14cc2841b22ab7719fabbe69371977e639d1d6a087"}
+  ]
+}

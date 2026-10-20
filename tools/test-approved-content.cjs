@@ -39,3 +39,12 @@ test('15 approved pattern resources, including three fixed Christmas palettes',a
 test('all shipped Unity assets have unique stable metadata',()=>{
  const ids=new Set();function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(entry.name.startsWith('.'))continue;const p=path.join(dir,entry.name);if(p.endsWith('.meta'))continue;assert.ok(fs.existsSync(p+'.meta'),'Missing metadata: '+p);const m=fs.readFileSync(p+'.meta','utf8').match(/guid: ([a-f0-9]{32})/);assert.ok(m);assert.ok(!ids.has(m[1]),'Duplicate GUID');ids.add(m[1]);if(entry.isDirectory())walk(p);}}walk(path.join(root,'Assets'));
 });
+test('original menu category exports match the supplied asset package manifest',async()=>{
+ const crypto=require('node:crypto'),manifest=JSON.parse(fs.readFileSync(path.join(root,'ApprovedArt/menu-assets-manifest.json')));
+ assert.equal(manifest.assets.length,4);
+ for(const item of manifest.assets){
+  const file=path.join(resources,item.resource+'.png'),bytes=fs.readFileSync(file);
+  assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),item.sha256);
+  const meta=await sharp(bytes).metadata();assert.equal(meta.width,item.width);assert.equal(meta.height,item.height);assert.ok(meta.hasAlpha);
+ }
+});
