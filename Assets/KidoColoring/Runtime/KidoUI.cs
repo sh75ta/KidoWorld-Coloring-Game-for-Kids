@@ -12,7 +12,10 @@ namespace Kido.Coloring
         public static readonly Color[] Backgrounds={Hex("FFF3EF"),Hex("EDF8F0"),Hex("EFF5FF")};
         // Approved Vibrant 30, 19 October 2026. Stable ordering across tools and sessions.
         public static readonly string[] HexColors={"FF303B","FF5733","FF8A00","FF409C","FF78BE","FF7A6B","FFCE26","B7E833","68CF36","22B85D","009D73","00C7AE","27D8F2","38B5FF","3978F6","3D45D8","8B42EA","C440DD","FFD9BA","F2B887","D99460","B87346","8D4E32","593524","FFFFFF","DCE5ED","8998AC","242836","FFF3CD","CDB7FF"};
-        static Sprite rounded,circle;static Font font;
+        // Slightly curvier than the first menu draft (18). Sprites are cached per radius.
+        public const float CornerRadius=26;
+        static readonly System.Collections.Generic.Dictionary<int,Sprite> roundedByRadius=new System.Collections.Generic.Dictionary<int,Sprite>();
+        static Sprite circle;static Font font;
         public static Color Hex(string hex){ColorUtility.TryParseHtmlString("#"+hex,out var c);return c;}
         public static RectTransform Rect(string name,Transform parent)
         {
@@ -20,11 +23,18 @@ namespace Kido.Coloring
         }
         public static void Place(RectTransform rect,float left,float bottom,float right,float top,float inset=0)
         {rect.anchorMin=new Vector2(left,bottom);rect.anchorMax=new Vector2(right,top);rect.offsetMin=new Vector2(inset,inset);rect.offsetMax=new Vector2(-inset,-inset);}
-        public static RectTransform Panel(string name,Transform parent,Color color,bool round=true)
+        public static RectTransform Panel(string name,Transform parent,Color color,bool round=true,float radius=CornerRadius)
         {
             var rect=Rect(name,parent);var img=rect.gameObject.AddComponent<Image>();img.color=color;img.raycastTarget=false;
-            if(round){img.sprite=Rounded();img.type=Image.Type.Sliced;}
+            if(round){img.sprite=Rounded(radius);img.type=Image.Type.Sliced;}
             return rect;
+        }
+        // A frame and the face inside it with concentric corners: inner radius = outer radius - border.
+        public static RectTransform Framed(string name,Transform parent,Color frame,Color face,float radius=CornerRadius,float border=3)
+        {
+            var outer=Panel(name,parent,frame,true,radius);
+            var inner=Panel("Face",outer,face,true,Mathf.Max(2,radius-border));Place(inner,0,0,1,1,border);
+            return outer;
         }
         public static Text Label(string text,Transform parent,int size,Color color,TextAnchor anchor=TextAnchor.MiddleLeft)
         {
@@ -34,9 +44,9 @@ namespace Kido.Coloring
             t.horizontalOverflow=HorizontalWrapMode.Wrap;t.verticalOverflow=VerticalWrapMode.Truncate;
             return t;
         }
-        public static Button Button(string label,Transform parent,Color background,Action click,int size=26,Color? textColor=null)
+        public static Button Button(string label,Transform parent,Color background,Action click,int size=26,Color? textColor=null,float radius=CornerRadius)
         {
-            var rect=Panel(label,parent,background);var image=rect.GetComponent<Image>();image.raycastTarget=true;
+            var rect=Panel(label,parent,background,true,radius);var image=rect.GetComponent<Image>();image.raycastTarget=true;
             var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;
             var colors=button.colors;colors.highlightedColor=Color.white;colors.pressedColor=new Color(.9f,.9f,.94f);colors.selectedColor=Color.white;button.colors=colors;
             button.navigation=new Navigation{mode=Navigation.Mode.None};button.onClick.AddListener(()=>click?.Invoke());
@@ -58,17 +68,22 @@ namespace Kido.Coloring
             texture.SetPixels32(pixels);texture.Apply(false,true);texture.wrapMode=TextureWrapMode.Clamp;texture.filterMode=FilterMode.Bilinear;
             circle=Sprite.Create(texture,new Rect(0,0,n,n),new Vector2(.5f,.5f));return circle;
         }
-        public static Sprite Rounded()
+        public static Sprite Rounded(float radius=CornerRadius)
         {
-            if(rounded)return rounded;
-            const int n=64;const float radius=18;var tex=new Texture2D(n,n,TextureFormat.RGBA32,false);var pixels=new Color32[n*n];
+            int key=Mathf.RoundToInt(radius*4);
+            if(roundedByRadius.TryGetValue(key,out var cached)&&cached)return cached;
+            // Drawn at 2x and shown at 1x (pixels per unit 200) so edges stay smooth on dense screens.
+            const int scale=2;int c=Mathf.CeilToInt(radius),n=(2*c+4)*scale;float r=radius*scale;
+            var tex=new Texture2D(n,n,TextureFormat.RGBA32,false);var pixels=new Color32[n*n];
             for(int y=0;y<n;y++)for(int x=0;x<n;x++)
             {
-                float dx=Mathf.Max(radius-x,0,x-(n-1-radius)),dy=Mathf.Max(radius-y,0,y-(n-1-radius));
-                float alpha=Mathf.Clamp01(radius+.5f-Mathf.Sqrt(dx*dx+dy*dy));pixels[y*n+x]=new Color(1,1,1,alpha);
+                float dx=Mathf.Max(r-x-.5f,0,x+.5f-(n-r)),dy=Mathf.Max(r-y-.5f,0,y+.5f-(n-r));
+                float alpha=Mathf.Clamp01(r-Mathf.Sqrt(dx*dx+dy*dy)+.5f);pixels[y*n+x]=new Color(1,1,1,alpha);
             }
             tex.SetPixels32(pixels);tex.Apply();tex.wrapMode=TextureWrapMode.Clamp;tex.filterMode=FilterMode.Bilinear;
-            rounded=Sprite.Create(tex,new Rect(0,0,n,n),new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,new Vector4(20,20,20,20));return rounded;
+            float border=(c+2)*scale;
+            var sprite=Sprite.Create(tex,new Rect(0,0,n,n),new Vector2(.5f,.5f),100*scale,0,SpriteMeshType.FullRect,new Vector4(border,border,border,border));
+            roundedByRadius[key]=sprite;return sprite;
         }
     }
     public sealed class PressBounce:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler
@@ -102,6 +117,7 @@ namespace Kido.Coloring
             var rect=(RectTransform)transform;rect.anchorMin=new Vector2(last.x/width,last.y/height);rect.anchorMax=new Vector2(last.xMax/width,last.yMax/height);rect.offsetMin=rect.offsetMax=Vector2.zero;
         }
     }
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class ToolGlyph:MaskableGraphic
     {
         public PaintTool tool;

@@ -96,6 +96,17 @@ namespace Kido.Coloring
         }
         // Keep the original 1024px artwork coordinates intact inside a stable page.
         // The outer gutter is drawable; presentation maps it to each device's margins.
+        // Saved-page geometry. The 1024px artwork sits centered in a wider page so a
+        // single uniform screen scale covers the white drawing area on phones and tablets.
+        public const int PageWidth=2048,PageHeight=1536;
+        public RegionMap WithPage(int pageWidth=PageWidth,int pageHeight=PageHeight)
+        {
+            if(pageWidth<Width||pageHeight<Height||pageWidth>2048||pageHeight>2048)throw new ArgumentOutOfRangeException(nameof(pageWidth));
+            int offX=(pageWidth-Width)/2,offY=(pageHeight-Height)/2;
+            var labels=new ushort[pageWidth*pageHeight];
+            for(int y=0;y<Height;y++)Array.Copy(Labels,y*Width,labels,(y+offY)*pageWidth+offX,Width);
+            return new RegionMap(pageWidth,pageHeight,Count,labels);
+        }
         public RegionMap WithPageMargins(int margin=256)
         {
             if(margin<0||margin>(2048-Math.Max(Width,Height))/2)throw new ArgumentOutOfRangeException(nameof(margin));

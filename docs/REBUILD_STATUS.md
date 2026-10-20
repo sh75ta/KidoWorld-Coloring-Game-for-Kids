@@ -25,7 +25,7 @@ For the current 20 October source and validation status, read
 | Figma screens | Phone/tablet contexts retrieved; supplied original logo/icons/buttons/decorations integrated | Native visual validation and phone splash crop |
 | Gallery | Re-themed to the approved pink/purple Figma language; 384px source thumbnails | Phone/tablet visual approval and scrolling test |
 | Background coloring | Region zero is paintable, saved and undoable | Native touch review along outline edges |
-| Audio | Supplied 30-second Jingle Bells track loops globally and follows Sound on/off | Device loudness, loop seam and interruption review |
+| Audio | Intro chorus once during the splash; Christmas Fun (Short) fades in afterwards, loops, and follows Sound on/off | Device loudness, loop seam and interruption review |
 | Native platforms | Existing Unity version retained | Compile, EditMode suite, Xcode export, Android build |
 
 ## Figma handoff

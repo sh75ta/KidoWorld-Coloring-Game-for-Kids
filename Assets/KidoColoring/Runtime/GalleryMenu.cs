@@ -13,8 +13,11 @@ namespace Kido.Coloring
         static readonly string[] Names={"CHRISTMAS","ANIMALS","VEHICLES","TRACING"};
         static readonly Color[] TabColors={KidoUI.Hex("CF111B"),KidoUI.Hex("CC854F"),KidoUI.Hex("325483"),KidoUI.Hex("D9C900")};
         static readonly Color[] PageColors={KidoUI.Hex("FF9FA5"),KidoUI.Hex("F4C69C"),KidoUI.Hex("B9CCD5"),KidoUI.Hex("FFF8A5")};
+        const float TabRadius=KidoUI.CornerRadius,CardRadius=30,PageRadius=34,FrameThickness=3;
         readonly List<Texture2D> ownedTextures=new List<Texture2D>();
+        readonly List<Material> cardMaterials=new List<Material>();
         readonly RectTransform[] cards=new RectTransform[30];
+        readonly Material[] cardMaterial=new Material[30];
         readonly int[] worlds=new int[30],slots=new int[30];
         readonly RectTransform[] tabRects=new RectTransform[4];
         readonly RawImage[] mascots=new RawImage[4];
@@ -23,22 +26,24 @@ namespace Kido.Coloring
         RectTransform page,viewport,content,tracing,parents;
         Image pageColor;GalleryScrollRect scroll;
         Action<float,int> changed;
-        Font menuFont;
+        Font menuFont;Shader cardShader;
         float width,height,header,stride,maxOffset,targetOffset;
         int selected=-1;bool moving,layingOut,tabsDirty=true;
 
         public void Initialize(ContentCatalog catalog,Func<CanvasEntry,Texture2D> preview,
-            Func<CanvasEntry,float> progress,Func<CanvasEntry,bool> allowed,Action<CanvasEntry> open,
+            Func<CanvasEntry,bool> allowed,Action<CanvasEntry> open,
             Action parentGate,Action<float,int> onPosition,float position)
         {
             changed=onPosition;
             menuFont=Resources.Load<Font>("Kido/Fonts/LeagueGothic-Regular");
+            cardShader=Resources.Load<Shader>("Kido/Shaders/RoundedCard");
+            if(!cardShader)Debug.LogWarning("Rounded card shader is missing; cards fall back to square corners.");
             if(!menuFont)Debug.LogWarning("League Gothic font is missing from Kido/Fonts/LeagueGothic-Regular.");
             for(int i=0;i<4;i++)
             {
-                int index=i;var button=KidoUI.Button("",transform,Color.black,()=>JumpToCategory(index));
+                int index=i;var button=KidoUI.Button("",transform,Color.black,()=>JumpToCategory(index),26,null,TabRadius);
                 button.name=Names[i];tabRects[i]=(RectTransform)button.transform;
-                var face=KidoUI.Panel("Category color",button.transform,TabColors[i]);KidoUI.Place(face,0,0,1,1,3);
+                var face=KidoUI.Panel("Category color",button.transform,TabColors[i],true,TabRadius-FrameThickness);KidoUI.Place(face,0,0,1,1,FrameThickness);
                 var texture=Resources.Load<Texture2D>("Kido/UI/Figma/Menu/"+Names[i]);
                 if(texture)
                 {
@@ -47,8 +52,8 @@ namespace Kido.Coloring
                 }
                 labels[i]=MenuLabel(Names[i],button.transform,58,Color.white);
             }
-            page=KidoUI.Panel("Gallery border",transform,Color.black);
-            var fill=KidoUI.Panel("Live category background",page,PageColors[0]);KidoUI.Place(fill,0,0,1,1,3);pageColor=fill.GetComponent<Image>();
+            page=KidoUI.Panel("Gallery border",transform,Color.black,true,PageRadius);
+            var fill=KidoUI.Panel("Live category background",page,PageColors[0],true,PageRadius-FrameThickness);KidoUI.Place(fill,0,0,1,1,FrameThickness);pageColor=fill.GetComponent<Image>();
             viewport=KidoUI.Panel("Horizontal gallery",page,Color.clear,false);
             viewport.GetComponent<Image>().raycastTarget=true;viewport.gameObject.AddComponent<RectMask2D>();
             scroll=viewport.gameObject.AddComponent<GalleryScrollRect>();scroll.horizontal=true;scroll.vertical=false;
@@ -60,23 +65,24 @@ namespace Kido.Coloring
             for(int i=0;i<catalog.canvases.Length;i++)
             {
                 var entry=catalog.canvases[i];worlds[i]=entry.category;slots[i]=counts[entry.category]++;
-                var button=KidoUI.Button("",content,Color.black,()=>open(entry));button.name=entry.title;cards[i]=(RectTransform)button.transform;
-                var face=KidoUI.Panel("White paper",button.transform,Color.white);KidoUI.Place(face,0,0,1,1,3);
+                var card=KidoUI.Rect(entry.title,content);cards[i]=card;
                 var texture=preview(entry);
                 if(!texture){texture=Resources.Load<Texture2D>(entry.thumbPath);if(texture)ownedTextures.Add(texture);}
-                if(texture)
+                var picture=card.gameObject.AddComponent<RawImage>();picture.texture=texture;picture.raycastTarget=true;
+                // One shader draws frame, paper and artwork, so the artwork is clipped by the inner
+                // rounded edge and the inner/outer corners are concentric.
+                if(cardShader)
                 {
-                    var art=KidoUI.Picture(face,texture);KidoUI.Place(art.rectTransform,.045f,.045f,.955f,.955f);KidoUI.Square(art.rectTransform);
+                    var material=new Material(cardShader);material.SetFloat("_Radius",CardRadius);material.SetFloat("_Border",FrameThickness);
+                    picture.material=material;cardMaterial[i]=material;cardMaterials.Add(material);
                 }
-                else {var title=MenuLabel(entry.title,face,34,KidoUI.Ink);KidoUI.Place(title.rectTransform,.1f,.1f,.9f,.9f);}
-                float amount=progress(entry);
-                if(amount>0)
-                {
-                    var track=KidoUI.Panel("Saved progress",face,KidoUI.Hex("E9E5EF"));KidoUI.Place(track,.12f,.035f,.88f,.052f);
-                    var bar=KidoUI.Panel("Colored",track,TabColors[entry.category]);KidoUI.Place(bar,0,0,Mathf.Clamp01(amount),1);
-                }
+                var button=card.gameObject.AddComponent<Button>();button.targetGraphic=picture;
+                var colors=button.colors;colors.highlightedColor=Color.white;colors.pressedColor=new Color(.9f,.9f,.94f);colors.selectedColor=Color.white;button.colors=colors;
+                button.navigation=new Navigation{mode=Navigation.Mode.None};button.onClick.AddListener(()=>open(entry));
+                card.gameObject.AddComponent<PressBounce>();
+                if(!texture){var title=MenuLabel(entry.title,card,34,KidoUI.Ink);KidoUI.Place(title.rectTransform,.1f,.1f,.9f,.9f);}
                 if(!allowed(entry))
-                {var text=MenuLabel("GROWN-UPS",face,26,KidoUI.Ink);KidoUI.Place(text.rectTransform,.1f,.04f,.9f,.17f);}
+                {var text=MenuLabel("GROWN-UPS",card,26,KidoUI.Ink);KidoUI.Place(text.rectTransform,.1f,.04f,.9f,.17f);}
             }
             tracing=KidoUI.Rect("Tracing coming soon",content);
             var soon=MenuLabel("COMING SOON",tracing,132,KidoUI.Ink);KidoUI.Place(soon.rectTransform,.05f,.30f,.95f,.70f);
@@ -105,7 +111,10 @@ namespace Kido.Coloring
             stride=SectionStride(cell,gap);maxOffset=3*stride;
             content.sizeDelta=new Vector2(maxOffset+w-32,0);
             for(int i=0;i<cards.Length;i++)
+            {
                 FigmaScreenLayout.Place(cards[i],worlds[i]*stride+(slots[i]/2)*(cell+gap),slots[i]%2*(cell+gap),cell,cell);
+                if(cardMaterial[i])cardMaterial[i].SetVector("_Size",new Vector4(cell,cell,0,0));
+            }
             FigmaScreenLayout.Place(tracing,3*stride,0,w-32,h-header-43);
             FigmaScreenLayout.Place(parents,w-170,4,155,42);
             scroll.StopMovement();moving=false;SetOffset(oldPosition*maxOffset);
@@ -159,6 +168,11 @@ namespace Kido.Coloring
                 total+=tabWidths[i];
             }
             float x=margin,tabH=header*.50f,tabY=header-tabH-44;
+            // Every mascot shares one height and one baseline (standing on the tab's lower edge);
+            // a single common shrink keeps the widest one inside the narrow tab.
+            float mh=tabH*1.30f,fit=1;
+            for(int i=0;i<4;i++)if(mascots[i])fit=Mathf.Min(fit,(available/5.25f-16)/(mh*mascots[i].texture.width/mascots[i].texture.height));
+            mh*=fit;
             for(int i=0;i<4;i++)
             {
                 float w=available*tabWidths[i]/total;
@@ -168,13 +182,10 @@ namespace Kido.Coloring
                 bool showText=!mascots[i]||i==selected;text.gameObject.SetActive(showText);
                 if(mascots[i])
                 {
-                    float mh=tabH*1.50f,mw=mh*mascots[i].texture.width/mascots[i].texture.height;
-                    // All four supplied exports, including the square Santa,
-                    // must fit the narrow tab without touching its neighbours.
-                    float fit=Mathf.Min(1,(available/5.25f-16)/mw);mw*=fit;mh*=fit;
+                    float mw=mh*mascots[i].texture.width/mascots[i].texture.height;
                     float expansion=Mathf.Clamp01((tabWidths[i]-1)/1.25f);
-                    float iconX=Mathf.Lerp((w-mw)*.5f,8,expansion);
-                    FigmaScreenLayout.Place(mascots[i].rectTransform,iconX,tabH-mh,mw,mh);
+                    float iconX=Mathf.Lerp((w-mw)*.5f,14,expansion);
+                    FigmaScreenLayout.Place(mascots[i].rectTransform,iconX,tabH-6-mh,mw,mh);
                     KidoUI.Place(text.rectTransform,Mathf.Min(.96f,(iconX+mw+12)/w),.10f,.97f,.91f);
                     var labelColor=text.color;labelColor.a=Mathf.Clamp01((w-mw-36)/110);text.color=labelColor;
                 }
@@ -187,7 +198,7 @@ namespace Kido.Coloring
             }
             tabsDirty=stillMoving;
         }
-        void OnDestroy(){foreach(var texture in ownedTextures)if(texture)Resources.UnloadAsset(texture);if(menuFont)Resources.UnloadAsset(menuFont);}
+        void OnDestroy(){foreach(var material in cardMaterials)if(material)Destroy(material);foreach(var texture in ownedTextures)if(texture)Resources.UnloadAsset(texture);if(menuFont)Resources.UnloadAsset(menuFont);}
     }
     public sealed class GalleryScrollRect:ScrollRect,IPointerDownHandler
     {

@@ -53,7 +53,7 @@ namespace Kido.Coloring
                         throw new InvalidDataException("Saved artwork revision does not match.");
                     if(result.painting==null || item.sequence>result.painting.sequence) result.painting=item;
                 }
-                catch(Exception e) when(e is IOException || e is ArgumentException || e is OverflowException || e is UnauthorizedAccessException)
+                catch(Exception e) when(e is IOException || e is InvalidDataException || e is ArgumentException || e is OverflowException || e is UnauthorizedAccessException)
                 { invalid=true; result.error=e.Message; }
             }
             if(result.painting!=null)
@@ -67,6 +67,33 @@ namespace Kido.Coloring
         {
             return new SavedPainting {id=id,artRevision=artRevision,width=document.Map.Width,height=document.Map.Height,
                 coverage=document.Coverage,paint=(Color32[])document.Paint.Clone(),effects=(byte[])document.Effects.Clone()};
+        }
+        // Centers a saved painting in a larger page. Paint, glitter and coverage are preserved.
+        public static SavedPainting Reframe(SavedPainting original,int width,int height,string id)
+        {
+            if(original==null)return null;
+            if(width<original.width||height<original.height||width>2048||height>2048)throw new ArgumentOutOfRangeException(nameof(width));
+            int offX=(width-original.width)/2,offY=(height-original.height)/2;
+            var result=new SavedPainting{id=id,sequence=original.sequence,artRevision=original.artRevision,
+                width=width,height=height,paint=new Color32[width*height],effects=new byte[width*height]};
+            for(int y=0;y<original.height;y++)
+            {
+                Array.Copy(original.paint,y*original.width,result.paint,(y+offY)*width+offX,original.width);
+                if(original.effects!=null)Array.Copy(original.effects,y*original.width,result.effects,(y+offY)*width+offX,original.width);
+            }
+            result.coverage=original.coverage*original.width*original.height/((float)width*height);return result;
+        }
+        // Current format "<id>_page2" (2048x1536). Older "<id>_page" (1536 square) and original
+        // "<id>" saves are read and reframed in memory; their files are never modified or deleted.
+        public LoadResult LoadPage(string id,int artRevision,int artWidth,int artHeight)
+        {
+            const int W=RegionMap.PageWidth,H=RegionMap.PageHeight;string target=id+"_page2";
+            var current=Load(target,W,H,artRevision);
+            if(current.filesExist)return current;
+            var legacy=Load(id+"_page",artWidth+512,artHeight+512,artRevision);
+            if(legacy.filesExist){legacy.painting=Reframe(legacy.painting,W,H,target);return legacy;}
+            var original=Load(id,artWidth,artHeight,artRevision);
+            original.painting=Reframe(original.painting,W,H,target);return original;
         }
         public static SavedPainting ExpandToPage(SavedPainting original,int margin=256)
         {
@@ -111,7 +138,7 @@ namespace Kido.Coloring
                 if(File.Exists(target)) File.Delete(target);
                 File.Move(temp,target);sequences[generation]=sequence;return true;
             }
-            catch(Exception e) when(e is IOException || e is UnauthorizedAccessException || e is ArgumentException || e is OverflowException)
+            catch(Exception e) when(e is IOException || e is InvalidDataException || e is UnauthorizedAccessException || e is ArgumentException || e is OverflowException)
             {error=e.Message;return false;}
         }
         public static byte[] Encode(SavedPainting item)

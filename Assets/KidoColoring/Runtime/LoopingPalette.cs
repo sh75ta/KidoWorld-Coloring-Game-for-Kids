@@ -13,13 +13,17 @@ namespace Kido.Coloring
         float cellHeight=100,position,velocity,target;
         int current=-1,pointer=int.MinValue;
         bool dragging,seeking,inputEnabled=true;
+        // A tapped entry is already selected. While the list glides to centre it, the entries that
+        // pass the centre must not become the selection (or tick, or recolour the brush).
+        bool programmatic;
         public int SelectedIndex=>current;
         public void SetInputEnabled(bool value)
         {if(!value)Settle();inputEnabled=value;}
         public void Settle()
         {
             dragging=false;pointer=int.MinValue;velocity=0;seeking=false;
-            position=target=Mathf.Round(position);Arrange(false);
+            // Finish a pending tap selection instantly so the centred entry is the selected one.
+            position=target=programmatic?target:Mathf.Round(position);programmatic=false;Arrange(false);
         }
         public void Configure(RectTransform content,Action<int> onChanged)
         {
@@ -33,13 +37,14 @@ namespace Kido.Coloring
         {
             if(cells==null||cells.Length==0)return;
             target=position+WrappedDelta(index-position,cells.Length);velocity=0;
-            seeking=animate&&!dragging;
-            if(!seeking){position=target;Arrange();}
+            seeking=animate&&!dragging;programmatic=seeking;
+            if(seeking)current=WrappedIndex(index,cells.Length);
+            else{position=target;Arrange();}
         }
         public static float WrappedDelta(float delta,int count)=>Mathf.Repeat(delta+count*.5f,count)-count*.5f;
         public static int WrappedIndex(int value,int count)=>((value%count)+count)%count;
         public void OnBeginDrag(PointerEventData e)
-        {if(!inputEnabled||pointer!=int.MinValue)return;pointer=e.pointerId;dragging=true;seeking=false;velocity=0;}
+        {if(!inputEnabled||pointer!=int.MinValue)return;pointer=e.pointerId;dragging=true;seeking=false;programmatic=false;velocity=0;}
         public void OnDrag(PointerEventData e)
         {
             if(!inputEnabled||!dragging||e.pointerId!=pointer)return;
@@ -50,7 +55,7 @@ namespace Kido.Coloring
         }
         public void OnEndDrag(PointerEventData e){if(e.pointerId!=pointer)return;pointer=int.MinValue;dragging=false;}
         public void OnScroll(PointerEventData e)
-        {if(!inputEnabled||cells==null)return;target=Mathf.Round(position-e.scrollDelta.y);seeking=true;velocity=0;}
+        {if(!inputEnabled||cells==null)return;programmatic=false;target=Mathf.Round(position-e.scrollDelta.y);seeking=true;velocity=0;}
         void Update()
         {
             if(cells==null||dragging||!inputEnabled)return;
@@ -77,6 +82,7 @@ namespace Kido.Coloring
                 var cell=cells[i];cell.anchorMin=new Vector2(0,.5f);cell.anchorMax=new Vector2(1,.5f);cell.pivot=new Vector2(.5f,.5f);
                 cell.sizeDelta=new Vector2(0,cellHeight);cell.anchoredPosition=new Vector2(0,-WrappedDelta(i-position,cells.Length)*cellHeight);
             }
+            if(programmatic){if(!seeking)programmatic=false;else return;}
             int index=WrappedIndex(Mathf.RoundToInt(position),cells.Length);
             if(index!=current){bool tick=current>=0;current=index;changed?.Invoke(index);if(tick&&sound)Feedback.Current?.PaletteTick();}
         }

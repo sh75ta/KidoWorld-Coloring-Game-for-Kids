@@ -1,6 +1,8 @@
 # Kido Coloring — handoff to local Codex
 
-## Latest checkpoint — 20 October 2026
+## Latest checkpoint — 20 October 2026 (v4)
+
+Read `docs/UPDATE_2026-10-20_v4.md` first: it supersedes the statements below on audio (Christmas Fun replaces Jingle Bells; intro chorus integrated), the saved-page size (now 2048x1536, `_page2` saves), the painting cursor (removed) and gallery progress bars (removed).
 
 Read `docs/RECHECK_2026-10-20.md` and `docs/MENU_UPDATE_2026-10-20.md` first. They supersede historical statements
 below about the menu, tintable patterns, reset confirmation and page dimensions.

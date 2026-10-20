@@ -9,7 +9,7 @@ The new horizontally scrolling menu uses the supplied original Santa, lion,
 rocket and tracing-A exports plus embedded League Gothic. Native compilation and
 phone/tablet visual validation have not run here.
 
-This package contains the rebuilt Unity source, approved artwork, supplied original Figma UI, and the supplied 30-second Jingle Bells background track. Phone/tablet coloring layouts are implemented in source. The macOS Metal shader keyword errors reported during the first native run were corrected; the updated build still needs a clean Unity compile and visual confirmation.
+This package contains the rebuilt Unity source, approved artwork, supplied original Figma UI, and the supplied "Christmas Fun (Short)" background track and "KidoWorld SFX" intro chorus. Phone/tablet coloring layouts are implemented in source. The macOS Metal shader keyword errors reported during the first native run were corrected; the updated build still needs a clean Unity compile and visual confirmation.
 
 ## Open the current rebuild
 
@@ -25,7 +25,7 @@ This package contains the rebuilt Unity source, approved artwork, supplied origi
 - All 15 patterns retain their original source colors, independent of the selected palette color.
 - Fill, brush, eraser, pattern and rainbow tools; Fairy Dust texture and slow white twinkles restricted to glitter-painted pixels.
 - The outside white page/background can be colored with every tool and restored through save/undo.
-- Looping Jingle Bells background music plays across splash, gallery and coloring screens and follows the existing parent Sound setting.
+- The children's chorus (KidoWorld SFX) plays once during the intro; "Christmas Fun (Short)" then fades in and loops across the menu and coloring screens, following the parent Sound setting.
 - Gallery: four original mascot tabs, two-row picture cards, live background blending and a Tracing Coming Soon section.
 - Undo restores both color and glitter; reset requires two taps within three seconds and is undoable. Done is green at top-left; Undo and Reset remain at upper-right. Done saves, celebrates and fades to the menu.
 - Compressed, checksummed alternating save slots, a single background save writer, pause/focus/Done flushes, and cached gallery previews.

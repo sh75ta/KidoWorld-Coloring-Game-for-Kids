@@ -6,7 +6,9 @@ namespace Kido.Tests
 {
     public sealed class InteractionTests
     {
-        [Test] public void DisablingPaletteCancelsPendingSelectionAndRestoresCenteredCell()
+        // Behaviours do not run in EditMode; drive the palette's Update directly.
+        static void Tick(LoopingPalette loop)=>typeof(LoopingPalette).GetMethod("Update",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).Invoke(loop,null);
+        [Test] public void DisablingPaletteFinishesTappedSelectionAndRestoresCenteredCell()
         {
             var root=new GameObject("Palette regression",typeof(RectTransform));
             try
@@ -17,10 +19,27 @@ namespace Kido.Tests
                 int selected=-1;var loop=root.AddComponent<LoopingPalette>();loop.Configure(content,i=>selected=i);
                 loop.Select(29,false);Assert.AreEqual(29,selected);
                 loop.Select(4,true);loop.SetInputEnabled(false);
-                root.SendMessage("Update");Assert.AreEqual(29,selected);
+                Tick(loop);Assert.AreEqual(29,selected);
                 root.SetActive(false);root.SetActive(true);loop.SetInputEnabled(true);
-                Assert.AreEqual(0,((RectTransform)content.GetChild(29)).anchoredPosition.y,.001f);
-                Assert.AreEqual(29,loop.SelectedIndex);
+                Assert.AreEqual(0,((RectTransform)content.GetChild(4)).anchoredPosition.y,.001f);
+                Assert.AreEqual(4,loop.SelectedIndex);
+            }
+            finally{Object.DestroyImmediate(root);}
+        }
+        [Test] public void TappedEntryIsNotReplacedByEntriesPassingTheCentre()
+        {
+            var root=new GameObject("Palette tap",typeof(RectTransform));
+            try
+            {
+                var viewport=(RectTransform)root.transform;viewport.sizeDelta=new Vector2(100,800);
+                var content=KidoUI.Rect("content",viewport);KidoUI.Place(content,0,0,1,1);
+                for(int i=0;i<30;i++)KidoUI.Rect("cell",content);
+                var reported=new System.Collections.Generic.List<int>();
+                var loop=root.AddComponent<LoopingPalette>();loop.Configure(content,i=>reported.Add(i));
+                loop.Select(0,false);reported.Clear();
+                loop.Select(12,true);
+                for(int i=0;i<5;i++)Tick(loop);
+                Assert.IsEmpty(reported);Assert.AreEqual(12,loop.SelectedIndex);
             }
             finally{Object.DestroyImmediate(root);}
         }
@@ -42,13 +61,49 @@ namespace Kido.Tests
             Assert.AreEqual(0,LoopingPalette.WrappedIndex(30,30));
             Assert.AreEqual(14,LoopingPalette.WrappedIndex(-31,15));
         }
-        [Test] public void PageMappingPreservesArtworkAndBothWhiteMargins()
+        [Test] public void PageMappingIsUniformSoGutterStrokesStayRound()
         {
-            Assert.AreEqual(0,DrawingSurface.PageAxis(0,.2f,.8f),.00001f);
-            Assert.AreEqual(1f/6,DrawingSurface.PageAxis(.2f,.2f,.8f),.00001f);
-            Assert.AreEqual(.5f,DrawingSurface.PageAxis(.5f,.2f,.8f),.00001f);
-            Assert.AreEqual(5f/6,DrawingSurface.PageAxis(.8f,.2f,.8f),.00001f);
-            Assert.AreEqual(1,DrawingSurface.PageAxis(1,.2f,.8f),.00001f);
+            var map=new RegionMap(4,4,1,new ushort[]{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}).WithPage(8,6);
+            var host=new GameObject("Surface",typeof(RectTransform),typeof(UnityEngine.UI.RawImage));
+            try
+            {
+                var surface=host.AddComponent<DrawingSurface>();
+                surface.Initialize(new PaintDocument(map),null,4,4);
+                surface.SetArtworkLayout(new Vector2(100,80),new Rect(30,20,40,40));
+                Assert.AreEqual(new Vector2(2,1),surface.ToPage(new Vector2(30,20)));
+                Assert.AreEqual(new Vector2(6,5),surface.ToPage(new Vector2(70,60)));
+                var step=surface.ToPage(new Vector2(40,30))-surface.ToPage(new Vector2(30,20));
+                Assert.AreEqual(1,step.x,.0001f);Assert.AreEqual(1,step.y,.0001f);
+                var corner=surface.ToPage(new Vector2(-500,-500));
+                Assert.AreEqual(0,corner.x);Assert.AreEqual(0,corner.y);
+            }
+            finally{Object.DestroyImmediate(host);}
+        }
+        [Test] public void PatternToolFootprintIsDoubleTheBrush()
+        {
+            Assert.AreEqual(DrawingSurface.BrushRadius*2,DrawingSurface.RadiusFor(PaintTool.Pattern));
+            Assert.AreEqual(DrawingSurface.BrushRadius,DrawingSurface.RadiusFor(PaintTool.Brush));
+            Assert.AreEqual(DrawingSurface.BrushRadius,DrawingSurface.RadiusFor(PaintTool.Glitter));
+            Assert.LessOrEqual(DrawingSurface.PatternRadius,PaintDocument.MaxRadius);
+        }
+        [Test] public void LegacyPageSaveIsReframedIntoTheWiderPageWithoutTouchingTheFile()
+        {
+            string dir=System.IO.Path.Combine(System.IO.Path.GetTempPath(),"kido-test-"+System.Guid.NewGuid().ToString("N"));
+            try
+            {
+                var store=new PaintStore(dir);int legacy=2+512;
+                var item=new SavedPainting{id="art_page",width=legacy,height=legacy,artRevision=2,coverage=.5f,
+                    paint=new Color32[legacy*legacy],effects=new byte[legacy*legacy]};
+                item.paint[0]=Color.red;item.effects[0]=255;
+                Assert.IsTrue(store.TrySaveSnapshot(item,out var error),error);
+                var loaded=store.LoadPage("art",2,2,2);
+                Assert.IsNotNull(loaded.painting);Assert.AreEqual(RegionMap.PageWidth,loaded.painting.width);
+                Assert.AreEqual("art_page2",loaded.painting.id);
+                int index=((RegionMap.PageHeight-legacy)/2)*RegionMap.PageWidth+(RegionMap.PageWidth-legacy)/2;
+                Assert.AreEqual((Color32)Color.red,loaded.painting.paint[index]);Assert.AreEqual(255,loaded.painting.effects[index]);
+                Assert.IsTrue(System.IO.File.Exists(System.IO.Path.Combine(dir,"art_page.a.kido")));
+            }
+            finally{if(System.IO.Directory.Exists(dir))System.IO.Directory.Delete(dir,true);}
         }
         [Test] public void PageMigrationKeepsPaintGlitterAndOriginalBuffers()
         {

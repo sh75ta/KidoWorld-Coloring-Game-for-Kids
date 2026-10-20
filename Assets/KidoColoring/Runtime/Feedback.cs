@@ -5,8 +5,10 @@ namespace Kido.Coloring
     public sealed class Feedback:MonoBehaviour
     {
         public static Feedback Current {get;private set;}
-        AudioSource source,musicSource;AudioClip tap,finish,music,tick,paintChime,voice;
-        float lastTap=-10,lastTick=-10,lastPaint=-10;
+        AudioSource source,voiceSource,musicSource;AudioClip tap,finish,music,tick,paintChime,voice;
+        float lastTap=-10,lastTick=-10,lastPaint=-10,musicVolume;
+        bool musicStarted;
+        const float MusicLevel=.14f;
         public bool Sound {get;private set;}
         public bool Motion {get;private set;}
         public float IntroVoiceLength=>Sound&&voice?voice.length:0;
@@ -15,18 +17,43 @@ namespace Kido.Coloring
             Current=this;
             Sound=PlayerPrefs.GetInt("kido.sound",1)==1;Motion=PlayerPrefs.GetInt("kido.motion",1)==1;
             source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.volume=.48f;
-            tap=Tone("soft tap",620,.11f);finish=Tone("finished",880,.65f);
+            tap=Tone("soft tap",620,.11f);finish=Fanfare();
             tick=Tone("palette detent",1050,.035f);paintChime=Tone("paint sparkle",930,.3f);
             voice=Resources.Load<AudioClip>("Kido/Audio/KidoWorldChorus");
-            music=Resources.Load<AudioClip>("Kido/Audio/JingleBellsKids30s");
+            music=Resources.Load<AudioClip>("Kido/Audio/ChristmasFunShort");
+            if(voice){voiceSource=gameObject.AddComponent<AudioSource>();voiceSource.playOnAwake=false;voiceSource.clip=voice;voiceSource.volume=.9f;}
             if(music)
             {
                 musicSource=gameObject.AddComponent<AudioSource>();musicSource.playOnAwake=false;musicSource.loop=true;
-                musicSource.volume=.14f;musicSource.clip=music;musicSource.ignoreListenerPause=false;
-                if(Sound)musicSource.Play();
+                musicSource.volume=0;musicSource.clip=music;musicSource.ignoreListenerPause=false;
             }
         }
-        public void PlayIntroVoice(){if(voice&&Sound)source.PlayOneShot(voice);}
+        // The children's chorus owns the intro; the background track fades in once the intro ends
+        // so the two never play over each other.
+        public void PlayIntroVoice(){if(voiceSource&&Sound){voiceSource.Stop();voiceSource.Play();}}
+        public void StartMusic(){musicStarted=true;if(musicSource&&Sound&&!musicSource.isPlaying)musicSource.Play();}
+        void Update()
+        {
+            if(!musicSource||!musicStarted)return;
+            musicVolume=Mathf.MoveTowards(musicVolume,Sound?MusicLevel:0,Time.unscaledDeltaTime*MusicLevel/1.5f);
+            musicSource.volume=musicVolume;
+        }
+        // Rising sparkle arpeggio for Done / completion.
+        AudioClip Fanfare()
+        {
+            const int rate=22050;float[] notes={523.25f,659.25f,783.99f,1046.5f,1318.5f};float length=1.25f;
+            var data=new float[(int)(rate*length)];
+            for(int n=0;n<notes.Length;n++)
+            {
+                int start=(int)(n*.11f*rate);
+                for(int i=start;i<data.Length;i++)
+                {
+                    float t=(float)(i-start)/rate,env=Mathf.Exp(-t*4.5f)*Mathf.Min(1,t*200);
+                    data[i]+=(Mathf.Sin(2*Mathf.PI*notes[n]*t)+.35f*Mathf.Sin(4*Mathf.PI*notes[n]*t))*env*.16f;
+                }
+            }
+            var clip=AudioClip.Create("done fanfare",data.Length,1,rate,false);clip.SetData(data,0);return clip;
+        }
         AudioClip Tone(string name,float hz,float duration)
         {
             const int rate=22050;var data=new float[(int)(rate*duration)];
@@ -43,10 +70,10 @@ namespace Kido.Coloring
         public void SetSound(bool enabled)
         {
             Sound=enabled;PlayerPrefs.SetInt("kido.sound",enabled?1:0);PlayerPrefs.Save();
-            if(!enabled)source.Stop();
-            if(!musicSource)return;
+            if(!enabled){source.Stop();if(voiceSource)voiceSource.Stop();}
+            if(!musicSource||!musicStarted)return;
             if(enabled){if(!musicSource.isPlaying)musicSource.UnPause();if(!musicSource.isPlaying)musicSource.Play();}
-            else musicSource.Pause();
+            else{musicVolume=0;musicSource.volume=0;musicSource.Pause();}
         }
         public void SetMotion(bool enabled)
         {

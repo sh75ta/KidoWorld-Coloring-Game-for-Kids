@@ -17,6 +17,7 @@ namespace Kido.Coloring
         public int UndoBytes => historyBytes;
         public const int UndoBudgetBytes = 16 * 1024 * 1024;
         const int TileSize = 64;
+        public const float MaxRadius = 224;
         sealed class Tile { public int x,y,w,h; public Color32[] paint; public byte[] effects; public int Bytes => paint.Length * 5; }
         sealed class Edit { public readonly List<Tile> tiles = new List<Tile>(); public int bytes; }
         readonly List<Edit> history = new List<Edit>();
@@ -88,7 +89,7 @@ namespace Kido.Coloring
         }
         public void Stroke(Vector2 from,Vector2 to,float radius,ushort region,Color32 color,PaintTool tool,float rainbowPhase,PatternData pattern=null)
         {
-            radius=Mathf.Clamp(radius,2,100);
+            radius=Mathf.Clamp(radius,2,MaxRadius);
             int steps=Mathf.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/Mathf.Max(1,radius*.3f)));
             for(int s=0;s<=steps;s++)
             {

@@ -4,10 +4,13 @@ using UnityEngine.UI;
 namespace Kido.Coloring
 {
     // One bounded mesh for all particles, no GameObjects or arrays per gesture.
+    // A custom Graphic must declare its renderer (Image/RawImage do; Graphic itself does not).
+    [RequireComponent(typeof(CanvasRenderer))]
     public sealed class KidsEffects:MaskableGraphic
     {
         struct Particle {public Vector2 origin,velocity;public Color color;public float born,life,size,spin;public bool shower;}
-        readonly Particle[] pool=new Particle[128];int cursor;
+        public const float ShowerSeconds=1.6f;
+        readonly Particle[] pool=new Particle[192];int cursor;
         public void Clear(){System.Array.Clear(pool,0,pool.Length);SetVerticesDirty();}
         public static KidsEffects Get(RectTransform parent)
         {
@@ -27,8 +30,8 @@ namespace Kido.Coloring
         public void Shower()
         {
             transform.SetAsLastSibling();var r=rectTransform.rect;
-            for(int i=0;i<64;i++)Add(new Vector2(Random.Range(r.xMin,r.xMax),r.yMax+Random.Range(0,130)),
-                new Vector2(Random.Range(-65,65),Random.Range(-520,-290)),KidoUI.Hex(KidoUI.HexColors[i%18]),1.5f,Random.Range(6,13),true);
+            for(int i=0;i<96;i++)Add(new Vector2(Random.Range(r.xMin,r.xMax),r.yMax+Random.Range(0,160)),
+                new Vector2(Random.Range(-65,65),Random.Range(-640,-340)),KidoUI.Hex(KidoUI.HexColors[i%18]),ShowerSeconds,Random.Range(7,15),true);
         }
         void Add(Vector2 origin,Vector2 velocity,Color color,float life,float size,bool shower)
         {
