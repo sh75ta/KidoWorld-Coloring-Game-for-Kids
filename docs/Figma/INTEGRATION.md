@@ -20,7 +20,7 @@ Source file: `ORpZoUySkEUioAZ7bU0ULd`. Phone frames `6:36` / `6:99`; tablet fram
 
 ## Asset completion and visual follow-up
 
-The second ZIP supplies Done (`6:114`), Undo (`6:115`) and Reset (`6:128`). All three retain their original PNG bytes and exact 229×98, 95×97 and 102×99 frame dimensions. They are bound to save-and-return, undo, and reset confirmation respectively. Button state feedback targets the actual artwork; no text or substitute shapes cover it.
+The second ZIP supplies Done (`6:114`), Undo (`6:115`) and Reset (`6:128`). All three retain their original PNG bytes and exact 229×98, 95×97 and 102×99 frame dimensions. They are bound to save-and-return, undo, and the current two-taps-within-three-seconds reset safeguard. Button state feedback targets the actual artwork; no text or substitute shapes cover it.
 
 The separate transparent logo attachment is now integrated as `Kido/UI/Figma/Logo`. Its 1154×914 dimensions exactly match the aspect ratio of the 577×457 Figma logo slot. The splash text placeholder has been removed. Native visual sign-off remains pending.
 

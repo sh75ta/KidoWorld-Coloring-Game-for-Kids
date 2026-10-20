@@ -46,7 +46,7 @@ Thirty coloring canvases in three worlds, ten each:
 
 Required flow: animated loading/splash → gallery/progress screen → coloring canvas → Done saves and returns. Gallery has category tabs, continuous horizontal discovery, and a two-row grid. Persist every picture's coloring state and show progress/completion on gallery cards.
 
-Coloring: Fill, Brush, Eraser, Glitter, Pattern and Rainbow tools; 30 approved vibrant colors; Undo; reset confirmation; green Done. No separate Back button. Feedback includes sound, visual responses and completion celebration. Confirmation dialogs still use earlier prototype styling because no final dialog frame has been supplied.
+Coloring: Fill, Brush, Eraser, Glitter, Pattern and Rainbow tools; 30 approved vibrant colors; Undo; two-tap Reset safeguard; green Done. No separate Back button. Feedback includes sound, visual responses and completion celebration.
 
 Later native feedback added these approved implementation changes: the white page/background is paintable; Fairy Dust sparkles are more visible while remaining soft; the supplied 30-second Jingle Bells MP3 loops across the whole game; gallery source thumbnails are 384px; and the gallery was re-themed to match the splash/coloring pink and purple visual language. The gallery has no final dedicated Figma frame, so it still needs user visual approval in Unity.
 
