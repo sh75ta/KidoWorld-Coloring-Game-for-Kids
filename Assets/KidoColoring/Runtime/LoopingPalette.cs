@@ -12,7 +12,15 @@ namespace Kido.Coloring
         Action<int> changed;
         float cellHeight=100,position,velocity,target;
         int current=-1,pointer=int.MinValue;
-        bool dragging,seeking;
+        bool dragging,seeking,inputEnabled=true;
+        public int SelectedIndex=>current;
+        public void SetInputEnabled(bool value)
+        {if(!value)Settle();inputEnabled=value;}
+        public void Settle()
+        {
+            dragging=false;pointer=int.MinValue;velocity=0;seeking=false;
+            position=target=Mathf.Round(position);Arrange(false);
+        }
         public void Configure(RectTransform content,Action<int> onChanged)
         {
             viewport=(RectTransform)transform;changed=onChanged;
@@ -31,10 +39,10 @@ namespace Kido.Coloring
         public static float WrappedDelta(float delta,int count)=>Mathf.Repeat(delta+count*.5f,count)-count*.5f;
         public static int WrappedIndex(int value,int count)=>((value%count)+count)%count;
         public void OnBeginDrag(PointerEventData e)
-        {if(pointer!=int.MinValue)return;pointer=e.pointerId;dragging=true;seeking=false;velocity=0;}
+        {if(!inputEnabled||pointer!=int.MinValue)return;pointer=e.pointerId;dragging=true;seeking=false;velocity=0;}
         public void OnDrag(PointerEventData e)
         {
-            if(!dragging||e.pointerId!=pointer)return;
+            if(!inputEnabled||!dragging||e.pointerId!=pointer)return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(viewport,e.position,e.pressEventCamera,out var now);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(viewport,e.position-e.delta,e.pressEventCamera,out var before);
             float delta=(now.y-before.y)/cellHeight;position+=delta;
@@ -42,10 +50,10 @@ namespace Kido.Coloring
         }
         public void OnEndDrag(PointerEventData e){if(e.pointerId!=pointer)return;pointer=int.MinValue;dragging=false;}
         public void OnScroll(PointerEventData e)
-        {if(cells==null)return;target=position-e.scrollDelta.y;seeking=true;velocity=0;Feedback.Current?.PaletteTick();}
+        {if(!inputEnabled||cells==null)return;target=Mathf.Round(position-e.scrollDelta.y);seeking=true;velocity=0;}
         void Update()
         {
-            if(cells==null||dragging)return;
+            if(cells==null||dragging||!inputEnabled)return;
             float dt=Mathf.Min(Time.unscaledDeltaTime,.05f);
             if(seeking)
             {
@@ -58,7 +66,7 @@ namespace Kido.Coloring
             else if(Mathf.Abs(position-Mathf.Round(position))>.002f)
             {velocity=0;target=Mathf.Round(position);seeking=true;}
         }
-        void Arrange()
+        void Arrange(bool sound=true)
         {
             if(cells==null||cells.Length==0)return;
             // Rebase both targets together to avoid floating-point drift after
@@ -70,8 +78,9 @@ namespace Kido.Coloring
                 cell.sizeDelta=new Vector2(0,cellHeight);cell.anchoredPosition=new Vector2(0,-WrappedDelta(i-position,cells.Length)*cellHeight);
             }
             int index=WrappedIndex(Mathf.RoundToInt(position),cells.Length);
-            if(index!=current){bool tick=current>=0;current=index;changed?.Invoke(index);if(tick)Feedback.Current?.PaletteTick();}
+            if(index!=current){bool tick=current>=0;current=index;changed?.Invoke(index);if(tick&&sound)Feedback.Current?.PaletteTick();}
         }
-        void OnDisable(){dragging=false;pointer=int.MinValue;velocity=0;seeking=false;position=Mathf.Round(position);}
+        void OnDisable(){Settle();}
+        void OnEnable(){if(cells!=null)Arrange(false);}
     }
 }

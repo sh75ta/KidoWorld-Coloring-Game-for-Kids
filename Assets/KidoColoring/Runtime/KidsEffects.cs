@@ -8,6 +8,7 @@ namespace Kido.Coloring
     {
         struct Particle {public Vector2 origin,velocity;public Color color;public float born,life,size,spin;public bool shower;}
         readonly Particle[] pool=new Particle[128];int cursor;
+        public void Clear(){System.Array.Clear(pool,0,pool.Length);SetVerticesDirty();}
         public static KidsEffects Get(RectTransform parent)
         {
             var existing=parent.Find("Feedback particles");if(existing)return existing.GetComponent<KidsEffects>();

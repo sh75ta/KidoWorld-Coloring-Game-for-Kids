@@ -25,7 +25,7 @@ namespace Kido.Coloring
         Action<float,int> changed;
         Font menuFont;
         float width,height,header,stride,maxOffset,targetOffset;
-        int selected=-1;bool moving,layingOut;
+        int selected=-1;bool moving,layingOut,tabsDirty=true;
 
         public void Initialize(ContentCatalog catalog,Func<CanvasEntry,Texture2D> preview,
             Func<CanvasEntry,float> progress,Func<CanvasEntry,bool> allowed,Action<CanvasEntry> open,
@@ -120,7 +120,8 @@ namespace Kido.Coloring
         void RefreshPosition()
         {
             if(stride<=0)return;float x=Mathf.Clamp(Offset,0,maxOffset),view=viewport.rect.width;
-            selected=CategoryAt(x,view,stride);
+            int nextSelected=CategoryAt(x,view,stride);
+            if(nextSelected!=selected){selected=nextSelected;tabsDirty=true;}
             // Blend only while two worlds share the viewport. A world at its tab
             // destination has its own solid background, including the final page.
             int first=Mathf.Clamp(Mathf.FloorToInt(x/stride),0,3),next=Mathf.Min(first+1,3);
@@ -131,7 +132,7 @@ namespace Kido.Coloring
         public void JumpToCategory(int index)
         {
             if(!scroll)return;scroll.StopMovement();targetOffset=Destination(index,stride);moving=true;
-            Feedback.Current?.Tap();
+            if(Feedback.Current&&!Feedback.Current.Motion){SetOffset(targetOffset);moving=false;RefreshPosition();}
         }
         void Update()
         {
@@ -146,13 +147,15 @@ namespace Kido.Coloring
         }
         void LayoutTabs(bool immediate)
         {
-            if(width<=0)return;const float margin=42,gap=34;
+            if(width<=0||(!immediate&&!tabsDirty))return;const float margin=42,gap=34;
+            bool stillMoving=false;
             float available=width-2*margin-3*gap,total=0;
             for(int i=0;i<4;i++)
             {
                 float weight=mascots[i]?(i==selected?2.25f:1):1.45f;
                 float desired=weight;
                 tabWidths[i]=immediate?desired:Mathf.Lerp(tabWidths[i],desired,1-Mathf.Exp(-Time.unscaledDeltaTime*16));
+                if(Mathf.Abs(tabWidths[i]-desired)<.001f)tabWidths[i]=desired;else stillMoving=true;
                 total+=tabWidths[i];
             }
             float x=margin,tabH=header*.50f,tabY=header-tabH-44;
@@ -166,8 +169,14 @@ namespace Kido.Coloring
                 if(mascots[i])
                 {
                     float mh=tabH*1.50f,mw=mh*mascots[i].texture.width/mascots[i].texture.height;
-                    FigmaScreenLayout.Place(mascots[i].rectTransform,6,tabH-mh,mw,mh);
-                    KidoUI.Place(text.rectTransform,Mathf.Min(.6f,(mw+12)/w),.10f,.97f,.91f);
+                    // All four supplied exports, including the square Santa,
+                    // must fit the narrow tab without touching its neighbours.
+                    float fit=Mathf.Min(1,(available/5.25f-16)/mw);mw*=fit;mh*=fit;
+                    float expansion=Mathf.Clamp01((tabWidths[i]-1)/1.25f);
+                    float iconX=Mathf.Lerp((w-mw)*.5f,8,expansion);
+                    FigmaScreenLayout.Place(mascots[i].rectTransform,iconX,tabH-mh,mw,mh);
+                    KidoUI.Place(text.rectTransform,Mathf.Min(.96f,(iconX+mw+12)/w),.10f,.97f,.91f);
+                    var labelColor=text.color;labelColor.a=Mathf.Clamp01((w-mw-36)/110);text.color=labelColor;
                 }
                 else
                 {
@@ -176,6 +185,7 @@ namespace Kido.Coloring
                 }
                 x+=w+gap;
             }
+            tabsDirty=stillMoving;
         }
         void OnDestroy(){foreach(var texture in ownedTextures)if(texture)Resources.UnloadAsset(texture);if(menuFont)Resources.UnloadAsset(menuFont);}
     }
@@ -183,7 +193,7 @@ namespace Kido.Coloring
     {
         public Action Interrupted;
         public void OnPointerDown(PointerEventData e){Interrupted?.Invoke();StopMovement();Feedback.Current?.Tap();}
-        public override void OnBeginDrag(PointerEventData e){Interrupted?.Invoke();Feedback.Current?.Tap();base.OnBeginDrag(e);}
+        public override void OnBeginDrag(PointerEventData e){Interrupted?.Invoke();base.OnBeginDrag(e);}
         public override void OnScroll(PointerEventData e){Interrupted?.Invoke();base.OnScroll(e);}
     }
 }

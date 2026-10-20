@@ -8,6 +8,26 @@ namespace Kido.Tests
 {
     public sealed class PaintTests
     {
+        [Test] public void ExpandedPaintingSavesAndReopensWithoutChangingOriginalSave()
+        {
+            var path=Path.Combine(Path.GetTempPath(),"kido-"+Guid.NewGuid());
+            try
+            {
+                var store=new PaintStore(path);var old=new PaintDocument(Map());old.BeginAction();old.Fill(1,Color.red);old.EndAction();
+                Assert.IsTrue(store.TrySave("picture",2,old,out _));
+                var originalBytes=File.ReadAllBytes(Path.Combine(path,"picture.a.kido"));
+                var expanded=PaintStore.ExpandToPage(store.Load("picture",4,2,2).painting,1);
+                var document=new PaintDocument(Map().WithPageMargins(1),expanded.paint,expanded.effects);
+                document.BeginAction();document.Fill(0,Color.blue);document.EndAction();
+                Assert.IsTrue(store.TrySave("picture_page",2,document,out _));
+                var reopened=new PaintStore(path).Load("picture_page",6,4,2);
+                CollectionAssert.AreEqual(document.Paint,reopened.painting.paint);
+                CollectionAssert.AreEqual(document.Effects,reopened.painting.effects);
+                Assert.AreEqual(document.Coverage,reopened.painting.coverage);
+                CollectionAssert.AreEqual(originalBytes,File.ReadAllBytes(Path.Combine(path,"picture.a.kido")));
+            }
+            finally{if(Directory.Exists(path))Directory.Delete(path,true);}
+        }
         RegionMap Map()=>new RegionMap(4,2,2,new ushort[]{0,1,1,0,0,2,2,0});
         [Test] public void FillIsBoundedAndUndoRestoresBlank()
         {

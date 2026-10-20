@@ -47,6 +47,7 @@ namespace Kido.Coloring
                 result.filesExist=true;
                 try
                 {
+                    if(new FileInfo(path).Length>22000000)throw new InvalidDataException("Saved file is too large.");
                     var item=Decode(File.ReadAllBytes(path));
                     if (item.id != id || (width>0 && item.width!=width) || (height>0 && item.height!=height) || (artRevision>0 && item.artRevision!=artRevision))
                         throw new InvalidDataException("Saved artwork revision does not match.");
@@ -116,7 +117,6 @@ namespace Kido.Coloring
         public static byte[] Encode(SavedPainting item)
         {
             if(item.paint==null || (item.effects!=null && item.effects.Length!=item.paint.Length))throw new ArgumentException("Invalid painting buffers.");
-            byte[] body;
             using(var stream=new MemoryStream(256+item.paint.Length*5))
             {
                 using(var writer=new BinaryWriter(stream,Encoding.UTF8,true))
@@ -127,17 +127,19 @@ namespace Kido.Coloring
                     foreach(var c in item.paint){writer.Write(c.r);writer.Write(c.g);writer.Write(c.b);writer.Write(c.a);}
                     writer.Write(item.effects ?? new byte[item.paint.Length]);
                 }
-                body=stream.ToArray();
-            }
-            using(var sha=SHA256.Create())
-            {
-                var hash=sha.ComputeHash(body);var all=new byte[body.Length+hash.Length];
-                Buffer.BlockCopy(body,0,all,0,body.Length);Buffer.BlockCopy(hash,0,all,body.Length,hash.Length);
-                using(var packed=new MemoryStream())
+                // Hash and compress the stream's owned buffer directly. Avoid
+                // two extra full-page byte arrays (~22.5 MiB at 1536 square).
+                using(var sha=SHA256.Create())
                 {
-                    byte[] header=Encoding.ASCII.GetBytes("KIDOZIP2");packed.Write(header,0,header.Length);
-                    using(var zip=new DeflateStream(packed,System.IO.Compression.CompressionLevel.Fastest,true))zip.Write(all,0,all.Length);
-                    return packed.ToArray();
+                    var buffer=stream.GetBuffer();int length=checked((int)stream.Length);
+                    var hash=sha.ComputeHash(buffer,0,length);
+                    using(var packed=new MemoryStream())
+                    {
+                        byte[] header=Encoding.ASCII.GetBytes("KIDOZIP2");packed.Write(header,0,header.Length);
+                        using(var zip=new DeflateStream(packed,System.IO.Compression.CompressionLevel.Fastest,true))
+                        {zip.Write(buffer,0,length);zip.Write(hash,0,hash.Length);}
+                        return packed.ToArray();
+                    }
                 }
             }
         }

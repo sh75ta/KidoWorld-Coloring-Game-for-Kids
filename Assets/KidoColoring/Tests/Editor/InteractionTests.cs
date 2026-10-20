@@ -6,6 +6,24 @@ namespace Kido.Tests
 {
     public sealed class InteractionTests
     {
+        [Test] public void DisablingPaletteCancelsPendingSelectionAndRestoresCenteredCell()
+        {
+            var root=new GameObject("Palette regression",typeof(RectTransform));
+            try
+            {
+                var viewport=(RectTransform)root.transform;viewport.sizeDelta=new Vector2(100,800);
+                var content=KidoUI.Rect("content",viewport);KidoUI.Place(content,0,0,1,1);
+                for(int i=0;i<30;i++)KidoUI.Rect("cell",content);
+                int selected=-1;var loop=root.AddComponent<LoopingPalette>();loop.Configure(content,i=>selected=i);
+                loop.Select(29,false);Assert.AreEqual(29,selected);
+                loop.Select(4,true);loop.SetInputEnabled(false);
+                root.SendMessage("Update");Assert.AreEqual(29,selected);
+                root.SetActive(false);root.SetActive(true);loop.SetInputEnabled(true);
+                Assert.AreEqual(0,((RectTransform)content.GetChild(29)).anchoredPosition.y,.001f);
+                Assert.AreEqual(29,loop.SelectedIndex);
+            }
+            finally{Object.DestroyImmediate(root);}
+        }
         [TestCase(1600,900)] [TestCase(1422,1067)] [TestCase(2000,900)]
         public void EveryTabDestinationReachesItsOwnWorld(float width,float height)
         {

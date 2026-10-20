@@ -3,47 +3,62 @@ using UnityEngine.UI;
 
 namespace Kido.Coloring
 {
-    // Uses non-overlapping UV slices of the supplied original logo texture.
-    // At rest the slices reproduce the source pixels exactly; animation does
-    // not redraw, recolor or allocate new textures.
-    public sealed class SplashLogoAnimator:MonoBehaviour
+    // A continuous mesh keeps the flattened sticker intact. Independent letters
+    // cannot be recovered by rectangular cuts: those cuts crossed the artwork.
+    // This is a sequential letter-region bounce, not separate letter layers.
+    [RequireComponent(typeof(RawImage))]
+    public sealed class SplashLogoAnimator:BaseMeshEffect
     {
-        // Pixel cuts follow the nine letters: K i d o / W o r l d.
-        static readonly RectInt[] Cuts={
-            new RectInt(0,0,330,560),new RectInt(330,0,160,560),
-            new RectInt(490,0,300,560),new RectInt(790,0,364,560),
-            new RectInt(0,560,380,354),new RectInt(380,560,225,354),
-            new RectInt(605,560,155,354),new RectInt(760,560,105,354),
-            new RectInt(865,560,289,354)};
-        readonly RectTransform[] letters=new RectTransform[Cuts.Length];
+        public const float Duration=1.3f;
+        const int Columns=40,Rows=32;
+        static readonly Vector2[] Centers={
+            new Vector2(.19f,.65f),new Vector2(.38f,.65f),
+            new Vector2(.57f,.65f),new Vector2(.83f,.63f),
+            new Vector2(.19f,.21f),new Vector2(.43f,.21f),
+            new Vector2(.60f,.21f),new Vector2(.73f,.23f),new Vector2(.87f,.23f)};
+        readonly float[] bounces=new float[9];
         float started;
-        bool configured;
-
+        bool configured,animating;
         public void Configure(Texture texture)
         {
-            if(!texture)return;
-            float width=texture.width,height=texture.height;
-            for(int i=0;i<Cuts.Length;i++)
-            {
-                var cut=Cuts[i];var rect=KidoUI.Rect("Logo letter "+(i+1),transform);
-                var image=rect.gameObject.AddComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
-                float left=cut.x/width,right=cut.xMax/width,top=1-cut.y/height,bottom=1-cut.yMax/height;
-                KidoUI.Place(rect,left,bottom,right,top);
-                image.uvRect=new Rect(left,bottom,right-left,top-bottom);letters[i]=rect;
-            }
-            started=Time.unscaledTime;configured=true;
+            var image=GetComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
+            started=Time.unscaledTime;configured=texture;animating=configured;
+            if(graphic)graphic.SetVerticesDirty();
         }
         void Update()
         {
-            if(!configured)return;bool motion=!Feedback.Current||Feedback.Current.Motion;
+            if(!configured)return;
+            bool moving=(!Feedback.Current||Feedback.Current.Motion)&&Time.unscaledTime-started<Duration;
+            if(moving||animating){animating=moving;graphic.SetVerticesDirty();}
+        }
+        public override void ModifyMesh(VertexHelper vh)
+        {
+            if(!IsActive()||!configured)return;
             float elapsed=Time.unscaledTime-started;
-            for(int i=0;i<letters.Length;i++)
+            bool motion=!Feedback.Current||Feedback.Current.Motion;
+            for(int i=0;i<bounces.Length;i++)
             {
-                var rect=letters[i];if(!rect)continue;
-                float t=motion?Mathf.Clamp01((elapsed-i*.085f)/.38f):1;
-                float bounce=t>0&&t<1?Mathf.Sin(t*Mathf.PI):0;
-                rect.localScale=Vector3.one*(1+bounce*.13f);
-                rect.anchoredPosition=new Vector2(0,bounce*24);
+                float t=Mathf.Clamp01((elapsed-i*.10f)/.42f);
+                bounces[i]=motion&&t>0&&t<1?Mathf.Sin(t*Mathf.PI):0;
+            }
+            if(elapsed>=Duration||!motion)return; // Original quad, exact source at rest.
+            vh.Clear();var rect=graphic.rectTransform.rect;
+            for(int y=0;y<=Rows;y++)for(int x=0;x<=Columns;x++)
+            {
+                var uv=new Vector2((float)x/Columns,(float)y/Rows);
+                float lift=0;
+                for(int i=0;i<Centers.Length;i++)
+                {
+                    float dx=(uv.x-Centers[i].x)/.20f,dy=(uv.y-Centers[i].y)/.30f;
+                    float weight=Mathf.Clamp01(1-dx*dx-dy*dy);
+                    lift+=bounces[i]*weight*weight;
+                }
+                vh.AddVert(new Vector3(rect.x+uv.x*rect.width,rect.y+uv.y*rect.height+lift*16,0),graphic.color,uv);
+            }
+            for(int y=0;y<Rows;y++)for(int x=0;x<Columns;x++)
+            {
+                int a=y*(Columns+1)+x,b=a+1,c=a+Columns+1,d=c+1;
+                vh.AddTriangle(a,c,b);vh.AddTriangle(b,c,d);
             }
         }
     }

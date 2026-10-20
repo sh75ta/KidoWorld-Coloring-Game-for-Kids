@@ -1,5 +1,8 @@
 # Menu and interaction update — 20 October 2026
 
+Read `RECHECK_2026-10-20.md` for subsequent defects found and fixed. Native
+runtime validation is still pending.
+
 This is a source update, not a verified Unity build. It continues the earlier
 interaction work and implements the menu behaviour in the supplied prototype.
 
@@ -56,7 +59,7 @@ or native visual approval against the user's prototype.
 | White area paintable up to palette | Stable 1536-square page around original 1024-square art; screen margins map to page gutters |
 | Preserve existing paintings | Old saves copied into centered page coordinates on load; original save files remain untouched; new saves use `_page` IDs |
 | Reset twice within three seconds | Inline prompt, no confirmation dialog; reset remains undoable |
-| Bigger brush | Paint radius doubled from 28 to 56; no separate draggable cursor artwork was added |
+| Bigger brush | Paint radius doubled from 28 to 56; recheck adds a painting cursor at twice the original tool-icon dimensions |
 | Circular fill reveal | 0.38-second shader reveal from touch, aspect-correct on the display; logical painting/saves update immediately |
 | Lift-off sparkle + SFX | Bounded 128-particle mesh, selected-color stars lasting 1.4 seconds, including no-change touches |
 | Color/pattern palettes | Circular positioning of existing cells; drag/inertia, soft detent tick, nearest-center snapping; no cloned texture sets |
@@ -66,7 +69,7 @@ or native visual approval against the user's prototype.
 | Done | Save first; top-down bounded confetti and SFX, then quick fade to menu |
 | Intro decorations | Subtle float/rotation, resize-safe, follows Motion setting |
 | BGM | Previously supplied Jingle Bells track continues globally |
-| Letter-by-letter logo bounce | Nine non-overlapping UV slices of the original texture bounce in sequence; source pixels are unchanged and no extra textures are allocated |
+| Letter-by-letter logo bounce | Rectangular slices were defective and removed; continuous letter-area bounce now preserves the sticker. Independent letter layers are still needed for exact separate-letter motion |
 | Kids' “KidoWorld” chorus | **No recording supplied**: optional `Kido/Audio/KidoWorldChorus` resource hookup exists; no synthesized children recording claimed |
 
 ## Technical/design audit and corrections

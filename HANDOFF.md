@@ -2,12 +2,13 @@
 
 ## Latest checkpoint — 20 October 2026
 
-Read `docs/MENU_UPDATE_2026-10-20.md` first. It supersedes historical statements
+Read `docs/RECHECK_2026-10-20.md` and `docs/MENU_UPDATE_2026-10-20.md` first. They supersede historical statements
 below about the menu, tintable patterns, reset confirmation and page dimensions.
 Menu logic, League Gothic, scrolling palettes, full-page painting and interaction
 feedback are updated in source. The four original menu mascots supplied in
 `Game Icon (2).zip` are integrated. The flattened original logo is animated as
-nine UV slices; the kids' chorus recording is still absent. Offline checks pass; no native compile/test/profile
+a continuous mesh with sequential letter-area bounce; independent letter layers
+and the kids' chorus recording are absent. Offline checks pass; no native compile/test/profile
 claim is made. `Packages/` and `ProjectSettings/` remain unchanged.
 
 Prepared 19 October 2026. This is a project-and-decisions handoff, not a verbatim chat transcript. The complete current Unity source, assets, documentation and local Git history are included in this folder.

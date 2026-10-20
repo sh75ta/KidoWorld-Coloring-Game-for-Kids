@@ -65,6 +65,7 @@ namespace Kido.Coloring
             var scaler=canvasObject.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.matchWidthOrHeight=.5f;
             var bg=KidoUI.Panel("Background",canvasObject.transform,KidoUI.Cream,false);KidoUI.Place(bg,0,0,1,1);background=bg.GetComponent<Image>();
             root=KidoUI.Rect("Safe area",canvasObject.transform);root.gameObject.AddComponent<SafeArea>();
+            float introStarted=Time.unscaledTime;
             ShowSplash();feedback.PlayIntroVoice();yield return null;
             Exception failure=null;
             try
@@ -80,6 +81,8 @@ namespace Kido.Coloring
             {
                 LoadPreview(entry);SetLoadingProgress((Array.IndexOf(catalog.canvases,entry)+1f)/catalog.canvases.Length);yield return null;
             }
+            float introLength=Mathf.Max(feedback.Motion?SplashLogoAnimator.Duration:0,feedback.IntroVoiceLength);
+            while(Time.unscaledTime-introStarted<introLength)yield return null;
             yield return FadeToMenu();
         }
         IEnumerator FadeToMenu()=>FadeTo(ShowMenu);
@@ -99,6 +102,7 @@ namespace Kido.Coloring
         void ClearScreen()
         {
             CloseModal();
+            if(surface)surface.FinishStroke();
             surface=null;saveBuffer=null;refreshPreview=false;saveLabel=null;progressLabel=null;loadingFill=null;tools.Clear();swatches.Clear();patternButtons.Clear();
             foreach(var texture in patternTextures)if(texture)Resources.UnloadAsset(texture);
             patternTextures.Clear();patternSamples.Clear();colorPicker=null;patternPicker=null;colorLoop=null;patternLoop=null;
@@ -283,6 +287,7 @@ namespace Kido.Coloring
                     float factor=max/Mathf.Max(icon.texture.width,icon.texture.height);
                     icon.rectTransform.sizeDelta=new Vector2(icon.texture.width*factor,icon.texture.height*factor);
                 }
+                surface.SetCursor(tools[(int)surface.Tool].GetComponentInChildren<RawImage>());
                 pickerCellHeight=h/8;
                 ResizePicker(colorPicker,swatches);ResizePicker(patternPicker,patternButtons);
             };
@@ -321,11 +326,10 @@ namespace Kido.Coloring
             surface.Pattern=sample;
             for(int i=0;i<patternButtons.Count;i++)patternButtons[i].GetComponent<Image>().color=i==index?KidoUI.Purple:Color.white;
             if(center&&patternLoop)patternLoop.Select(index,sound);
-            if(sound)feedback.Tap();
         }
         void SelectColor(int index,bool sound=true,bool center=true)
         {
-            if(!surface)return;surface.FinishStroke();surface.SelectedColor=KidoUI.Hex(KidoUI.HexColors[index]);if(sound)feedback.Tap();
+            if(!surface)return;surface.FinishStroke();surface.SelectedColor=KidoUI.Hex(KidoUI.HexColors[index]);
             for(int i=0;i<swatches.Count;i++)
             {
                 var mark=swatches[i].transform.Find("Selected");mark.gameObject.SetActive(i==index);
@@ -335,10 +339,13 @@ namespace Kido.Coloring
         }
         void SelectTool(PaintTool tool,bool sound=true)
         {
-            if(!surface)return;surface.FinishStroke();surface.Tool=tool;if(sound)feedback.Tap();
+            if(!surface)return;surface.FinishStroke();surface.Tool=tool;
             colorPicker.parent.gameObject.SetActive(tool!=PaintTool.Pattern);patternPicker.parent.gameObject.SetActive(tool==PaintTool.Pattern);
             bool usesPalette=tool!=PaintTool.Eraser&&tool!=PaintTool.Rainbow;
+            colorLoop.SetInputEnabled(usesPalette&&tool!=PaintTool.Pattern);
+            patternLoop.SetInputEnabled(tool==PaintTool.Pattern);
             paletteGroup.alpha=usesPalette?1:.3f;paletteGroup.interactable=usesPalette;paletteGroup.blocksRaycasts=usesPalette;
+            surface.SetCursor(tools[(int)tool].GetComponentInChildren<RawImage>());
             for(int i=0;i<tools.Count;i++)
             {
                 bool selected=i==(int)tool;
@@ -347,7 +354,7 @@ namespace Kido.Coloring
                 tools[i].GetComponent<PressBounce>().BaseScale=selected?1.10f:.88f;
             }
         }
-        void OnPaintChanged(){dirty=true;nextSave=Time.unscaledTime+1.5f;feedback.Tap();RefreshPaintStatus();}
+        void OnPaintChanged(){dirty=true;nextSave=Time.unscaledTime+1.5f;RefreshPaintStatus();}
         void RefreshPaintStatus()
         {
             if(!surface)return;undoButton.interactable=surface.Document.CanUndo;
@@ -361,7 +368,7 @@ namespace Kido.Coloring
             if(!surface)return;surface.FinishStroke();surface.CompleteFillReveal();
             if(Time.unscaledTime-lastResetTap<=3)
             {lastResetTap=-10;resetHint.gameObject.SetActive(false);surface.Document.Clear();OnPaintChanged();}
-            else {lastResetTap=Time.unscaledTime;resetHint.gameObject.SetActive(true);feedback.Tap();}
+            else {lastResetTap=Time.unscaledTime;resetHint.gameObject.SetActive(true);}
         }
         void BeginBackgroundSave()
         {
@@ -408,34 +415,44 @@ namespace Kido.Coloring
             if(!CompleteBackgroundSave(true))return false;
             if(!dirty)
             {
-                if(!progress.TryGetValue(active.id,out var amount)||Mathf.Abs(amount-surface.Document.Coverage)>.0001f)UpdateSavedPreview();
+                if(refreshPreview||!previews.ContainsKey(active.id)||!progress.TryGetValue(active.id,out var amount)||Mathf.Abs(amount-surface.Document.Coverage)>.0001f)UpdateSavedPreview();
                 return true;
             }
             BeginBackgroundSave();return CompleteBackgroundSave(true);
         }
         void LeaveCanvas()
         {
-            if(!surface||leaving)return;surface.FinishStroke();feedback.Tap();
-            if(!SavePainting()){Message("Let's keep your colors","We couldn't save this picture yet. Please check available storage and try again. Your drawing is still open.");return;}
+            if(!surface||leaving||transitioning)return;surface.FinishStroke();
             StartCoroutine(DoneCelebration());
         }
         IEnumerator DoneCelebration()
         {
             leaving=true;
+            var leavingScreen=screen;
+            var group=screen.GetComponent<CanvasGroup>()??screen.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
             try
             {
-                var group=screen.GetComponent<CanvasGroup>()??screen.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;
+                // Await the existing writer without blocking UI/audio. Input is
+                // locked so the saved revision remains stable until navigation.
+                do
+                {
+                    if(pendingSave==null&&dirty)BeginBackgroundSave();
+                    while(pendingSave!=null&&!pendingSave.IsCompleted)yield return null;
+                    if(!CompleteBackgroundSave(false))
+                    {Message("Let's keep your colors","We couldn't save this picture yet. Please check available storage and try again. Your drawing is still open.");yield break;}
+                }while(dirty);
+                if(refreshPreview||!previews.ContainsKey(active.id)||!progress.ContainsKey(active.id))UpdateSavedPreview();
                 feedback.Celebrate(screen);yield return new WaitForSecondsRealtime(feedback.Motion?1.25f:.2f);
                 yield return FadeToMenu();
             }
-            finally{leaving=false;}
+            finally{if(group&&screen==leavingScreen)group.blocksRaycasts=true;leaving=false;}
         }
         void Update()
         {
             if(resetHint&&resetHint.gameObject.activeSelf&&Time.unscaledTime-lastResetTap>3)resetHint.gameObject.SetActive(false);
             if(refreshPreview&&!backgrounded&&surface&&!surface.Document.ActionOpen)UpdateSavedPreview();
-            if(pendingSave!=null&&pendingSave.IsCompleted)CompleteBackgroundSave(false);
-            if(dirty&&surface&&!surface.Document.ActionOpen&&Time.unscaledTime>=nextSave)BeginBackgroundSave();
+            if(!leaving&&pendingSave!=null&&pendingSave.IsCompleted)CompleteBackgroundSave(false);
+            if(!leaving&&dirty&&surface&&!surface.Document.ActionOpen&&Time.unscaledTime>=nextSave)BeginBackgroundSave();
             if(!transitioning&&!leaving&&Input.GetKeyDown(KeyCode.Escape)) {if(modalRoot)CloseModal();else if(surface)LeaveCanvas();}
         }
         void OnApplicationPause(bool paused){backgrounded=paused;if(paused&&surface){surface.FinishStroke();SavePainting();}}
@@ -464,7 +481,7 @@ namespace Kido.Coloring
         }
         void ParentGate()
         {
-            if(surface)surface.FinishStroke();feedback.Tap();string[] words={"zero","one","two","three","four","five","six","seven","eight","nine"};int a=UnityEngine.Random.Range(1,10),b=UnityEngine.Random.Range(0,10),c=UnityEngine.Random.Range(0,10);string expected=$"{a}{b}{c}";
+            if(surface)surface.FinishStroke();string[] words={"zero","one","two","three","four","five","six","seven","eight","nine"};int a=UnityEngine.Random.Range(1,10),b=UnityEngine.Random.Range(0,10),c=UnityEngine.Random.Range(0,10);string expected=$"{a}{b}{c}";
             var box=Modal("For grown-ups",$"Type these numbers in order:\n{words[a]} • {words[b]} • {words[c]}");
             var fieldRect=KidoUI.Panel("Answer",box,Color.white);KidoUI.Place(fieldRect,.33f,.30f,.67f,.43f);fieldRect.GetComponent<Image>().raycastTarget=true;
             var input=fieldRect.gameObject.AddComponent<InputField>();var text=KidoUI.Label("",fieldRect,30,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(text.rectTransform,0,0,1,1);input.textComponent=text;input.targetGraphic=fieldRect.GetComponent<Image>();input.contentType=InputField.ContentType.IntegerNumber;input.characterLimit=3;

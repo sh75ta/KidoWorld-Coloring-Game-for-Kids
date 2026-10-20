@@ -4,7 +4,7 @@ For continuation in a new local Codex session, read `AGENTS.md` and `HANDOFF.md`
 
 Updated 20 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
 
-**Latest:** [Menu and interaction update](docs/MENU_UPDATE_2026-10-20.md).
+**Latest:** [Recheck and fixes](docs/RECHECK_2026-10-20.md), then [Menu and interaction update](docs/MENU_UPDATE_2026-10-20.md).
 The new horizontally scrolling menu uses the supplied original Santa, lion,
 rocket and tracing-A exports plus embedded League Gothic. Native compilation and
 phone/tablet visual validation have not run here.

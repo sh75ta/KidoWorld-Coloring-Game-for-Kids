@@ -16,6 +16,7 @@ namespace Kido.Coloring
         public event Action Changed;
         public event Action<Vector2,Color32,bool> TouchCompleted;
         Texture2D paintTexture,effectTexture,outline;
+        RawImage cursor;
         Material material;
         RenderTexture beforeFill;
         Rect artworkRect=new Rect(1f/6,1f/6,2f/3,2f/3);
@@ -58,12 +59,28 @@ namespace Kido.Coloring
             if(material)material.SetVector("_ArtRect",new Vector4(rect.x,rect.y,rect.width,rect.height));
         }
         public void CompleteFillReveal(){fillStarted=-10;if(material)material.SetFloat("_FillRadius",100);}
+        public void SetCursor(RawImage source)
+        {
+            if(!cursor){cursor=KidoUI.Picture(transform,source.texture);cursor.name="Drag tool cursor";cursor.raycastTarget=false;cursor.gameObject.SetActive(false);}
+            cursor.texture=source.texture;var rect=cursor.rectTransform;
+            rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
+            rect.sizeDelta=source.rectTransform.sizeDelta*2;
+            rect.localRotation=source.rectTransform.localRotation;rect.localScale=source.rectTransform.localScale;
+        }
+        void MoveCursor(PointerEventData e,bool visible)
+        {
+            if(!cursor)return;cursor.gameObject.SetActive(visible);
+            if(!visible)return;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,e.position,e.pressEventCamera,out var local);
+            cursor.rectTransform.anchoredPosition=local+new Vector2(38,48);
+        }
         public void OnPointerDown(PointerEventData e)
         {
             if(Document==null||pointer!=int.MinValue||e.button!=PointerEventData.InputButton.Left||!Locate(e,out var p))return;
             CompleteFillReveal();
             region=Document.RegionAt((int)p.x,(int)p.y);
             pointer=e.pointerId;last=p;contact=e.position;phase=Mathf.Repeat(Time.unscaledTime*.11f,1);Document.BeginAction();
+            MoveCursor(e,Tool!=PaintTool.Fill);
             if(Tool==PaintTool.Fill)
             {
                 Render();
@@ -84,17 +101,19 @@ namespace Kido.Coloring
         public void OnDrag(PointerEventData e)
         {
             if(e.pointerId!=pointer||Tool==PaintTool.Fill)return;
-            contact=e.position;if(!Locate(e,out var p)){last=new Vector2(float.NaN,float.NaN);return;}
+            contact=e.position;bool inside=Locate(e,out var p);MoveCursor(e,inside);
+            if(!inside){last=new Vector2(float.NaN,float.NaN);return;}
             if(float.IsNaN(last.x))last=p;
             Document.Stroke(last,p,Radius,region,SelectedColor,Tool,phase,Pattern);last=p;
         }
-        public void OnPointerUp(PointerEventData e){if(e.pointerId==pointer){contact=e.position;FinishStroke();}}
-        public void FinishStroke()
+        public void OnPointerUp(PointerEventData e){if(e.pointerId==pointer){contact=e.position;FinishStroke(true);}}
+        public void FinishStroke(bool released=false)
         {
             if(pointer==int.MinValue)return;
             pointer=int.MinValue;
+            if(cursor)cursor.gameObject.SetActive(false);
             if(Document!=null)
-            {if(Document.EndAction())Changed?.Invoke();TouchCompleted?.Invoke(contact,SelectedColor,Tool==PaintTool.Fill);}
+            {if(Document.EndAction())Changed?.Invoke();if(released)TouchCompleted?.Invoke(contact,SelectedColor,Tool==PaintTool.Fill);}
         }
         void LateUpdate()
         {

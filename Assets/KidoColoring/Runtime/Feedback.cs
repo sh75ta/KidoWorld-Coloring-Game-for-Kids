@@ -9,6 +9,7 @@ namespace Kido.Coloring
         float lastTap=-10,lastTick=-10,lastPaint=-10;
         public bool Sound {get;private set;}
         public bool Motion {get;private set;}
+        public float IntroVoiceLength=>Sound&&voice?voice.length:0;
         void Awake()
         {
             Current=this;
@@ -42,11 +43,16 @@ namespace Kido.Coloring
         public void SetSound(bool enabled)
         {
             Sound=enabled;PlayerPrefs.SetInt("kido.sound",enabled?1:0);PlayerPrefs.Save();
+            if(!enabled)source.Stop();
             if(!musicSource)return;
             if(enabled){if(!musicSource.isPlaying)musicSource.UnPause();if(!musicSource.isPlaying)musicSource.Play();}
             else musicSource.Pause();
         }
-        public void SetMotion(bool enabled){Motion=enabled;PlayerPrefs.SetInt("kido.motion",enabled?1:0);PlayerPrefs.Save();}
+        public void SetMotion(bool enabled)
+        {
+            Motion=enabled;PlayerPrefs.SetInt("kido.motion",enabled?1:0);PlayerPrefs.Save();
+            if(!enabled)foreach(var effect in FindObjectsByType<KidsEffects>(FindObjectsSortMode.None))effect.Clear();
+        }
         public void Celebrate(RectTransform parent)
         {
             if(Sound)source.PlayOneShot(finish);
