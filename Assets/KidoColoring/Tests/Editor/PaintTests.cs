@@ -110,8 +110,8 @@ namespace Kido.Tests
         }
         [Test] public void UndoMemoryIsBoundedForShippedResolution()
         {
-            var labels=new ushort[1024*1024];for(int i=0;i<labels.Length;i++)labels[i]=1;
-            var d=new PaintDocument(new RegionMap(1024,1024,1,labels));
+            var labels=new ushort[1536*1536];for(int i=0;i<labels.Length;i++)labels[i]=1;
+            var d=new PaintDocument(new RegionMap(1536,1536,1,labels));
             for(int i=0;i<8;i++){d.BeginAction();d.Fill(1,i%2==0?Color.red:Color.blue);d.EndAction();Assert.LessOrEqual(d.UndoBytes,PaintDocument.UndoBudgetBytes);}
             Assert.IsTrue(d.Undo());Assert.AreEqual(255,d.Paint[0].r);
         }

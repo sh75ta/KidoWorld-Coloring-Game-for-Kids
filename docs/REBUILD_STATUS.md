@@ -1,5 +1,8 @@
 # Rebuild status — 19 October 2026
 
+For the current 20 October source and validation status, read
+`MENU_UPDATE_2026-10-20.md`. This file preserves the earlier checkpoint.
+
 ## Approved decisions
 
 - Thirty transparent canvases in three worlds; scalable vector masters retained.

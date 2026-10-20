@@ -73,11 +73,23 @@ namespace Kido.Coloring
     }
     public sealed class PressBounce:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler
     {
-        Vector3 target=Vector3.one;
-        public void OnPointerDown(PointerEventData e){target=Vector3.one*.96f;}
-        public void OnPointerUp(PointerEventData e){target=Vector3.one;}
-        public void OnPointerExit(PointerEventData e){target=Vector3.one;}
-        void Update(){if((transform.localScale-target).sqrMagnitude>.00001f)transform.localScale=Vector3.Lerp(transform.localScale,target,Time.unscaledDeltaTime*22);}
+        public float BaseScale=1;
+        bool pressed;float released=-10;
+        public void OnPointerDown(PointerEventData e)
+        {
+            var button=GetComponent<Button>();if(button&&!button.IsInteractable())return;
+            pressed=true;Feedback.Current?.Tap();
+        }
+        public void OnPointerUp(PointerEventData e){pressed=false;released=Time.unscaledTime;}
+        public void OnPointerExit(PointerEventData e){pressed=false;}
+        void Update()
+        {
+            if(Feedback.Current&&!Feedback.Current.Motion){transform.localScale=Vector3.one*BaseScale;return;}
+            float age=Time.unscaledTime-released;
+            float bump=!pressed&&age<.24f?Mathf.Sin(age/.24f*Mathf.PI)*.09f:0;
+            var target=Vector3.one*BaseScale*(pressed ? .88f : 1+bump);
+            transform.localScale=Vector3.Lerp(transform.localScale,target,1-Mathf.Exp(-Time.unscaledDeltaTime*28));
+        }
     }
     public sealed class SafeArea:MonoBehaviour
     {

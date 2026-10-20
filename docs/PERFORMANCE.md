@@ -2,13 +2,13 @@
 
 ## Chosen architecture
 
-Keep authoritative painting state in a 1024 × 1024 CPU color buffer and a byte-per-pixel effect mask. A 2048 × 2048 transparent outline is composited on the GPU; the original SVG master remains available for future export sizes without adding a vector-rendering package. The gallery uses separate 192px textures.
+The 20 October update keeps authoritative painting state in a 1536 × 1536 CPU color buffer and byte-per-pixel effect mask. The original 1024 × 1024 artwork region map sits inside 256px page gutters; screen margins map to these gutters so white space up to the palette is drawable without changing old artwork coordinates. A 2048 × 2048 transparent outline is composited on the GPU. SVG masters remain unchanged. The gallery uses separate 384px textures.
 
 The shader keeps glitter grain in artwork coordinates and adds sparse white four-point highlights with roughly four-second phases. It runs only inside the paint effect mask, below the black outlines. Motion-off freezes twinkle time while retaining the texture. No particle GameObjects, allocations, paint writes, or GPU readbacks are needed to animate glitter.
 
-Painting uploads are limited to 30 per second while changed, and zero while idle. Unity Texture2D.Apply still uploads the full paint/effect textures: this is a deliberate simple baseline, NOT a claim of partial GPU uploads. At 1024 square, paint plus effect data is about 5 MiB per upload. Profile bandwidth and latency; if necessary introduce measured GPU stamping/dirty-tile rendering without changing the save model.
+Painting uploads are limited to 30 per second while changed, and zero while idle. Unity Texture2D.Apply still uploads full paint/effect textures, not dirty tiles. At 1536 square this is about 11.25 MiB per upload: roughly 337.5 MiB/s at the maximum rate, before driver overhead. This increase is a material cost of preserving original art coordinates while adding drawable margins. Profile bandwidth/latency on the chosen minimum devices before release; GPU stamping or measured resolution changes may be necessary.
 
-Undo copies only touched 64px tiles. Retained snapshots are capped at 16 MiB and 24 gestures for the shipped resolution, evicting oldest gestures as a new gesture grows. A whole-page gesture requires up to 5 MiB. Small allocations occur when a new tile is first touched, not for every paint pixel.
+Undo copies touched 64px tiles. Retained snapshots are capped at 16 MiB and 24 gestures for the shipped resolution. A whole-page gesture can require 11.25 MiB, so only one such gesture fits in the budget. Small brush gestures retain deeper undo. Allocations occur when a tile is first touched, not for every paint pixel.
 
 Only one save worker runs. Its owned snapshot is copied into reusable buffers on the main thread before background compression, checksum and disk IO. No Unity objects are accessed by the worker. Pause, focus loss and Done flush outstanding writes before leaving. A temporary file is flushed/verified before replacing the older of two slots. A failed write preserves the other generation. Preview PNGs are disposable caches and cannot invalidate a valid painting.
 
@@ -18,17 +18,21 @@ Startup reads cached previews, not thirty full painting buffers. Outlines and ga
 
 | Data | Approximate size |
 | --- | --- |
-| Active region labels | 2 MiB CPU |
-| Paint and effect arrays | 5 MiB CPU |
-| Reusable save snapshot | 5 MiB CPU |
-| Dynamic texture CPU copies | 5 MiB CPU |
+| Active region labels | 4.5 MiB CPU; original 2 MiB map temporarily exists while expanding |
+| Paint and effect arrays | 11.25 MiB CPU |
+| Reusable save snapshot | 11.25 MiB CPU |
+| Dynamic texture CPU copies | About 11.25 MiB CPU |
 | Undo snapshots | At most 16 MiB retained at shipped resolution |
 | Active uncompressed outline | 16 MiB GPU |
-| Paint and effect textures | 5 MiB GPU |
-| Fifteen 256px patterns | About 3.75 MiB each on CPU and GPU, plus selected sample buffer |
-| Thirty 384px gallery images | Up to about 16.9 MiB GPU per set; only visible loaded resources should be confirmed in the Profiler; saved previews may form a second set |
+| Paint and effect textures | About 11.25 MiB GPU; actual format allocation is platform-dependent |
+| Fill reveal snapshot | 9 MiB GPU, allocated on first animated fill and released with canvas |
+| Fifteen 256px patterns | About 3.75 MiB each on CPU/GPU, plus up to 3.75 MiB cached samples per canvas |
+| Thirty 384px gallery images | Up to about 16.9 MiB GPU per set; menu-owned source thumbs explicitly released on navigation; app-owned saved previews may form another set |
+| Palette cells and feedback | 30 color + 15 pattern cells reused; fixed 128-particle mesh; no per-gesture particle GameObjects |
 
 Compression/hash/readback create temporary buffers. Unity, driver, audio, UI, managed heap capacity and retained GC generations add overhead not included above. Track peak resident memory, not just texture estimates. Device data should determine platform texture compression and painting resolution changes.
+
+Do not describe these estimates as profiling results. The menu/font implementation, native tests and mobile frame time/memory remain unverified in Unity. See `MENU_UPDATE_2026-10-20.md` for the current acceptance pass and missing assets.
 
 ## Device test gates
 

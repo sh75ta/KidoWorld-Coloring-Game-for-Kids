@@ -1,19 +1,23 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Kido.Coloring
 {
     public sealed class Feedback:MonoBehaviour
     {
-        AudioSource source,musicSource;AudioClip tap,finish,music;
+        public static Feedback Current {get;private set;}
+        AudioSource source,musicSource;AudioClip tap,finish,music,tick,paintChime,voice;
+        float lastTap=-10,lastTick=-10,lastPaint=-10;
         public bool Sound {get;private set;}
         public bool Motion {get;private set;}
         void Awake()
         {
+            Current=this;
             Sound=PlayerPrefs.GetInt("kido.sound",1)==1;Motion=PlayerPrefs.GetInt("kido.motion",1)==1;
-            source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.volume=.18f;
-            tap=Tone("soft tap",520,.075f);finish=Tone("finished",780,.22f);
+            source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.volume=.48f;
+            tap=Tone("soft tap",620,.11f);finish=Tone("finished",880,.65f);
+            tick=Tone("palette detent",1050,.035f);paintChime=Tone("paint sparkle",930,.3f);
+            voice=Resources.Load<AudioClip>("Kido/Audio/KidoWorldChorus");
+            if(voice&&Sound)source.PlayOneShot(voice);
             music=Resources.Load<AudioClip>("Kido/Audio/JingleBellsKids30s");
             if(music)
             {
@@ -28,7 +32,13 @@ namespace Kido.Coloring
             for(int i=0;i<data.Length;i++){float t=(float)i/rate;data[i]=Mathf.Sin(2*Mathf.PI*hz*t)*Mathf.Exp(-t*22)*Mathf.Min(1,t*180)*.35f;}
             var clip=AudioClip.Create(name,data.Length,1,rate,false);clip.SetData(data,0);return clip;
         }
-        public void Tap(){if(Sound)source.PlayOneShot(tap);}
+        public void Tap(){if(Sound&&Time.unscaledTime-lastTap>.065f){lastTap=Time.unscaledTime;source.PlayOneShot(tap);}}
+        public void PaletteTick(){if(Sound&&Time.unscaledTime-lastTick>.075f){lastTick=Time.unscaledTime;source.PlayOneShot(tick,.5f);}}
+        public void PaintBurst(RectTransform parent,Vector2 position,Color color)
+        {
+            if(Sound&&Time.unscaledTime-lastPaint>.09f){lastPaint=Time.unscaledTime;source.PlayOneShot(paintChime,.7f);}
+            if(Motion&&parent)KidsEffects.Get(parent).Burst(position,color);
+        }
         public void SetSound(bool enabled)
         {
             Sound=enabled;PlayerPrefs.SetInt("kido.sound",enabled?1:0);PlayerPrefs.Save();
@@ -40,22 +50,8 @@ namespace Kido.Coloring
         public void Celebrate(RectTransform parent)
         {
             if(Sound)source.PlayOneShot(finish);
-            if(Motion)StartCoroutine(Confetti(parent));
+            if(Motion&&parent)KidsEffects.Get(parent).Shower();
         }
-        IEnumerator Confetti(RectTransform parent)
-        {
-            const int count=18;var pieces=new RectTransform[count];var starts=new Vector2[count];
-            for(int i=0;i<count;i++)
-            {
-                pieces[i]=KidoUI.Panel("Confetti",parent,KidoUI.Hex(KidoUI.HexColors[i%11]));pieces[i].anchorMin=pieces[i].anchorMax=new Vector2(.5f,.65f);pieces[i].sizeDelta=new Vector2(12,20);starts[i]=new Vector2(Random.Range(-320,320),Random.Range(80,230));
-            }
-            float t=0;
-            while(t<1.1f && parent)
-            {
-                t+=Time.unscaledDeltaTime;for(int i=0;i<count;i++)if(pieces[i]){pieces[i].anchoredPosition=new Vector2(starts[i].x*t,starts[i].y*t-320*t*t);pieces[i].localRotation=Quaternion.Euler(0,0,i*23+t*160);pieces[i].GetComponent<Image>().color=new Color(KidoUI.Hex(KidoUI.HexColors[i%11]).r,KidoUI.Hex(KidoUI.HexColors[i%11]).g,KidoUI.Hex(KidoUI.HexColors[i%11]).b,1-t/1.1f);}yield return null;
-            }
-            foreach(var piece in pieces)if(piece)Destroy(piece.gameObject);
-        }
-        void OnDestroy(){if(tap)Destroy(tap);if(finish)Destroy(finish);}
+        void OnDestroy(){if(Current==this)Current=null;if(tap)Destroy(tap);if(finish)Destroy(finish);if(tick)Destroy(tick);if(paintChime)Destroy(paintChime);}
     }
 }

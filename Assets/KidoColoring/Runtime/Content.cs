@@ -94,5 +94,15 @@ namespace Kido.Coloring
                 return new RegionMap(w, h, n, labels);
             }
         }
+        // Keep the original 1024px artwork coordinates intact inside a stable page.
+        // The outer gutter is drawable; presentation maps it to each device's margins.
+        public RegionMap WithPageMargins(int margin=256)
+        {
+            if(margin<0||margin>(2048-Math.Max(Width,Height))/2)throw new ArgumentOutOfRangeException(nameof(margin));
+            int w=Width+margin*2,h=Height+margin*2;
+            var labels=new ushort[w*h];
+            for(int y=0;y<Height;y++)Array.Copy(Labels,y*Width,labels,(y+margin)*w+margin,Width);
+            return new RegionMap(w,h,Count,labels);
+        }
     }
 }

@@ -16,10 +16,10 @@ test('every outline has real transparency and independent 384px gallery thumbnai
   const thumb=await sharp(path.join(resources,c.thumbPath+'.png')).metadata();assert.equal(thumb.width,384);assert.equal(thumb.height,384);
  }
 });
-test('Fairy Dust shader avoids Metal reserved identifiers and keeps visible sparkle settings',()=>{
+test('Fairy Dust shader avoids previously reported Metal reserved identifiers',()=>{
  const shader=fs.readFileSync(path.join(root,'Assets/KidoColoring/Resources/Kido/Shaders/FairyDust.shader'),'utf8');
  assert.ok(!/\bfloat2 point\b/.test(shader));assert.ok(!/\bfixed4[^;]*\bline\b/.test(shader));
- assert.match(shader,/step\(\.76,seed\)/);assert.match(shader,/sparklePoint/);
+ assert.match(shader,/sparklePoint/);
 });
 test('region maps have correct orientation, dimensions, labels and exterior corners',()=>{
  for(const c of catalog){

@@ -1,5 +1,15 @@
 # Kido Coloring — handoff to local Codex
 
+## Latest checkpoint — 20 October 2026
+
+Read `docs/MENU_UPDATE_2026-10-20.md` first. It supersedes historical statements
+below about the menu, tintable patterns, reset confirmation and page dimensions.
+Menu logic, League Gothic, scrolling palettes, full-page painting and interaction
+feedback are updated in source. Exact menu mascot assets remain inaccessible
+through the Figma connector. Logo letter layers and the kids' chorus recording
+are also still absent. Six offline checks pass; no native compile/test/profile
+claim is made. `Packages/` and `ProjectSettings/` remain unchanged.
+
 Prepared 19 October 2026. This is a project-and-decisions handoff, not a verbatim chat transcript. The complete current Unity source, assets, documentation and local Git history are included in this folder.
 
 ## Start here

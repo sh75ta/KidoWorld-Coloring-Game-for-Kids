@@ -67,6 +67,20 @@ namespace Kido.Coloring
             return new SavedPainting {id=id,artRevision=artRevision,width=document.Map.Width,height=document.Map.Height,
                 coverage=document.Coverage,paint=(Color32[])document.Paint.Clone(),effects=(byte[])document.Effects.Clone()};
         }
+        public static SavedPainting ExpandToPage(SavedPainting original,int margin=256)
+        {
+            if(original==null)return null;
+            if(margin<0||margin>(2048-Math.Max(original.width,original.height))/2)throw new ArgumentOutOfRangeException(nameof(margin));
+            int w=original.width+margin*2,h=original.height+margin*2;
+            var result=new SavedPainting{id=original.id+"_page",sequence=original.sequence,artRevision=original.artRevision,
+                width=w,height=h,paint=new Color32[w*h],effects=new byte[w*h]};
+            for(int y=0;y<original.height;y++)
+            {
+                Array.Copy(original.paint,y*original.width,result.paint,(y+margin)*w+margin,original.width);
+                if(original.effects!=null)Array.Copy(original.effects,y*original.width,result.effects,(y+margin)*w+margin,original.width);
+            }
+            result.coverage=original.coverage*original.width*original.height/(w*h);return result;
+        }
         public bool TrySave(string id,int artRevision,PaintDocument document,out string error)
             => TrySaveSnapshot(Snapshot(id,artRevision,document),out error);
         // Only managed data and filesystem operations: safe for a single background writer.
