@@ -29,3 +29,24 @@ Thumbs.db
 *.p12
 *.mobileprovision
 
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+.utmp/
+KidoWorldbuild/
+Assets/_Recovery/
+Assets/_Recovery.meta
+mono_crash*.json
+.DS_Store
+.idea/
+.vscode/
+Kidoworldbuild/
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+.env
