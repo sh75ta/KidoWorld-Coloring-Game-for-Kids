@@ -6,6 +6,8 @@ namespace Kido.Tests
 {
     public sealed class InteractionTests
     {
+        sealed class FakeEntitlement:IEntitlementSource
+        {public bool HasFullAccess{get;set;}public bool PurchasesAvailable{get;set;}}
         // Behaviours do not run in EditMode; drive the palette's Update directly.
         static void Tick(LoopingPalette loop)=>typeof(LoopingPalette).GetMethod("Update",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).Invoke(loop,null);
         [Test] public void DisablingPaletteFinishesTappedSelectionAndRestoresCenteredCell()
@@ -133,6 +135,21 @@ namespace Kido.Tests
                 Assert.AreEqual((Color32)Color.green,pattern.Sample(0,0,Color.blue));
             }
             finally{Object.DestroyImmediate(texture);}
+        }
+        [Test] public void AccessPolicyUnlocksOnlyFreePicturesUntilOwnershipIsVerified()
+        {
+            var settings=new GameSettings{previewAllCanvases=false,freeCanvasIds=new[]{"free"}};
+            var entitlement=new FakeEntitlement{HasFullAccess=false,PurchasesAvailable=true};
+            var policy=new AccessPolicy(settings,entitlement);
+            Assert.IsTrue(policy.CanOpen("free"));Assert.IsFalse(policy.CanOpen("locked"));
+            Assert.IsTrue(policy.PurchasesAvailable);Assert.IsFalse(policy.AdsAvailable);
+            entitlement.HasFullAccess=true;
+            Assert.IsTrue(policy.CanOpen("locked"));Assert.IsTrue(policy.HasFullAccess);
+        }
+        [Test] public void PreviewModeDoesNotPretendThatPurchasesOrAdsExist()
+        {
+            var policy=new AccessPolicy(new GameSettings{previewAllCanvases=true});
+            Assert.IsTrue(policy.CanOpen("anything"));Assert.IsFalse(policy.PurchasesAvailable);Assert.IsFalse(policy.AdsAvailable);
         }
     }
 }
