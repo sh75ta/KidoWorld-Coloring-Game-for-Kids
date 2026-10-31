@@ -2,7 +2,7 @@
 
 For continuation in a new local Codex session, read `AGENTS.md` and `HANDOFF.md` first.
 
-Updated 20 October 2026. Unity **6000.3.14f1**. Branch `rebuild/approved-art-v2`.
+Updated 31 October 2026. Unity **6000.3.14f1**.
 
 **Latest:** [Recheck and fixes](docs/RECHECK_2026-10-20.md), then [Menu and interaction update](docs/MENU_UPDATE_2026-10-20.md).
 The new horizontally scrolling menu uses the supplied original Santa, lion,
@@ -16,7 +16,7 @@ This package contains the rebuilt Unity source, approved artwork, supplied origi
 1. Extract the complete `KidoColoring` folder and open it using the existing Unity 6000.3.14f1 installation.
 2. Open `Assets/KidoColoring/Scenes/KidoGame.unity` directly and press Play after import.
 3. Run **Window → General → Test Runner → EditMode → Kido.Tests**. Record compilation errors and results before mobile builds.
-4. Use the existing Editor menu to verify installed build modules. No Editor installation, package addition, or project-setting change was made in this rebuild. The older Configure menu changes project settings and is not required just to open this scene.
+4. Use the existing Editor menu to verify installed build modules. The Play Store preparation sets the permanent package identity and non-secret Android release defaults; signing secrets are never stored in Git.
 
 ## Implemented in source
 
@@ -44,7 +44,7 @@ Seven offline content checks passed, including catalog/vector masters, transpare
 - Run native visual validation against Figma file `ORpZoUySkEUioAZ7bU0ULd`. Full unclipped or phone-specific splash decorations would allow the phone crop to match exactly.
 - Close remaining open decorative region boundaries and review very small coloring regions. The diagnostic contact sheet is `docs/ArtQA/regions-contact-sheet.png`; its bright colors are diagnostic labels, not prescribed coloring.
 - Run Unity and physical-device validation, then fix findings before release.
-- Finish the previously scoped store purchase/restore and child-appropriate advertising decisions/integration. No commerce SDK or live transaction was added.
+- Complete the live Google Play Billing adapter, privacy-policy URL, local upload signing, Play Console declarations and native device validation. Version one is intentionally advertising-free. See [the Play Store release checklist](docs/PLAY_STORE_RELEASE.md) and [privacy-policy draft](docs/PRIVACY_POLICY_DRAFT.md).
 
 Artwork revision 2 uses a separate `KidoPaintings-v2` save directory. Old prototype paintings are left untouched because their outlines and region coordinates differ; they are not silently applied to new artwork. There is no cloud save sync.
 

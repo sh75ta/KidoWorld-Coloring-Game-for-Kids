@@ -1,7 +1,22 @@
 {
-  "previewAllCanvases": true,
-  "freeCanvasIds": [],
-  "appleProductId": "",
-  "googleProductId": "",
+  "previewAllCanvases": false,
+  "freeCanvasIds": [
+    "christmas_winter_santa_gift_sack",
+    "christmas_winter_reindeer_big_nose",
+    "christmas_winter_christmas_tree",
+    "animals_dinosaurs_lion_cub",
+    "animals_dinosaurs_elephant_bath",
+    "animals_dinosaurs_puppy_play",
+    "vehicles_adventures_racing_car",
+    "vehicles_adventures_monster_truck",
+    "vehicles_adventures_airplane"
+  ],
+  "appleProductId": "kidoworld_full_access",
+  "googleProductId": "kidoworld_full_access",
+  "billingProvider": "none",
+  "privacyPolicyUrl": "",
+  "developmentPrice": "Store price",
+  "developmentPurchaseSimulation": true,
+  "adsEnabled": false,
   "completionThreshold": 0.90
 }

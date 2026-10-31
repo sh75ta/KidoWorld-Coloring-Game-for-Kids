@@ -16,6 +16,11 @@ namespace Kido.Coloring
         public bool previewAllCanvases = true;
         public string[] freeCanvasIds = Array.Empty<string>();
         public string appleProductId = "", googleProductId = "";
+        public string billingProvider = "none";
+        public string privacyPolicyUrl = "";
+        public string developmentPrice = "Store price";
+        public bool developmentPurchaseSimulation;
+        public bool adsEnabled;
         public float completionThreshold = .90f;
     }
     public static class Content

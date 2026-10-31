@@ -15,11 +15,11 @@ namespace Kido.Coloring
         RectTransform root,screen,modalRoot;
         Image background;
         Feedback feedback;
-        ContentCatalog catalog;GameSettings settings;AccessPolicy access;PaintStore store;
+        ContentCatalog catalog;GameSettings settings;AccessPolicy access;PurchaseService purchases;PaintStore store;
         readonly Dictionary<string,Texture2D> previews=new Dictionary<string,Texture2D>();
         readonly Dictionary<string,float> progress=new Dictionary<string,float>();
         readonly HashSet<string> unavailableSaves=new HashSet<string>();
-        DrawingSurface surface;CanvasEntry active;
+        DrawingSurface surface;CanvasEntry active,requestedLockedCanvas;
         Text saveLabel,progressLabel;
         Button undoButton,resetButton;Text resetHint;readonly List<Button> tools=new List<Button>(),swatches=new List<Button>();
         CanvasGroup paletteGroup;
@@ -73,7 +73,7 @@ namespace Kido.Coloring
             Exception failure=null;
             try
             {
-                catalog=Content.Load();settings=Content.Settings();access=new AccessPolicy(settings);
+                catalog=Content.Load();settings=Content.Settings();purchases=PurchaseService.Create(settings);access=new AccessPolicy(settings,purchases);
                 store=new PaintStore(Path.Combine(Application.persistentDataPath,"KidoPaintings-v2"));
                 patternCatalog=JsonUtility.FromJson<PatternCatalog>(Resources.Load<TextAsset>("Kido/patterns").text);
             }
@@ -244,7 +244,7 @@ namespace Kido.Coloring
         }
         void OpenCanvas(CanvasEntry entry)
         {
-            if(!access.CanOpen(entry.id)){ParentGate();return;}
+            if(!access.CanOpen(entry.id)){requestedLockedCanvas=entry;ParentGate();return;}
             PaintDocument document;Texture2D art=null;TextAsset bytes=null;LoadResult loaded;int artWidth,artHeight;
             try
             {
@@ -543,8 +543,8 @@ namespace Kido.Coloring
         {
             CloseModal();modalRoot=KidoUI.Panel("Dialog shade",root,new Color(.1f,.14f,.24f,.46f),false);KidoUI.Place(modalRoot,0,0,1,1);modalRoot.GetComponent<Image>().raycastTarget=true;
             var box=KidoUI.Panel("Dialog",modalRoot,KidoUI.Cream);KidoUI.Place(box,.22f,.16f,.78f,.84f);
-            var heading=KidoUI.Label(title,box,38,KidoUI.Ink,TextAnchor.MiddleCenter);heading.fontStyle=FontStyle.Bold;KidoUI.Place(heading.rectTransform,.06f,.73f,.94f,.92f);
-            var message=KidoUI.Label(body,box,24,KidoUI.Muted,TextAnchor.MiddleCenter);KidoUI.Place(message.rectTransform,.08f,.39f,.92f,.72f);return box;
+            var heading=KidoUI.Label(title,box,38,KidoUI.Ink,TextAnchor.MiddleCenter);heading.name="Dialog heading";heading.fontStyle=FontStyle.Bold;KidoUI.Place(heading.rectTransform,.06f,.73f,.94f,.92f);
+            var message=KidoUI.Label(body,box,24,KidoUI.Muted,TextAnchor.MiddleCenter);message.name="Dialog body";KidoUI.Place(message.rectTransform,.08f,.39f,.92f,.72f);return box;
         }
         void CloseModal(){if(modalRoot){modalRoot.gameObject.SetActive(false);Destroy(modalRoot.gameObject);modalRoot=null;}}
         void Message(string title,string body)
@@ -560,15 +560,41 @@ namespace Kido.Coloring
             var box=Modal("For grown-ups",$"Type these numbers in order:\n{words[a]} • {words[b]} • {words[c]}");
             var fieldRect=KidoUI.Panel("Answer",box,Color.white);KidoUI.Place(fieldRect,.33f,.30f,.67f,.43f);fieldRect.GetComponent<Image>().raycastTarget=true;
             var input=fieldRect.gameObject.AddComponent<InputField>();var text=KidoUI.Label("",fieldRect,30,KidoUI.Ink,TextAnchor.MiddleCenter);KidoUI.Place(text.rectTransform,0,0,1,1);input.textComponent=text;input.targetGraphic=fieldRect.GetComponent<Image>();input.contentType=InputField.ContentType.IntegerNumber;input.characterLimit=3;
-            var cancel=KidoUI.Button("Back",box,Color.white,CloseModal,23);KidoUI.Place((RectTransform)cancel.transform,.08f,.09f,.46f,.25f);
+            var cancel=KidoUI.Button("Back",box,Color.white,CancelParentGate,23);KidoUI.Place((RectTransform)cancel.transform,.08f,.09f,.46f,.25f);
             var go=KidoUI.Button("Continue",box,KidoUI.Purple,()=>{if(input.text==expected)ShowParents();else{input.text="";text.text="";}},23,Color.white);KidoUI.Place((RectTransform)go.transform,.54f,.09f,.92f,.25f);
         }
+        void CancelParentGate(){requestedLockedCanvas=null;CloseModal();}
         void ShowParents()
         {
-            var box=Modal("A little space for parents","This first-play version opens all 30 pictures. Purchases and advertising are not available yet.");
-            var sound=KidoUI.Button(feedback.Sound?"Sound: on":"Sound: off",box,Color.white,()=>{feedback.SetSound(!feedback.Sound);ShowParents();},22);KidoUI.Place((RectTransform)sound.transform,.07f,.27f,.47f,.40f);
-            var motion=KidoUI.Button(feedback.Motion?"Motion: on":"Motion: off",box,Color.white,()=>{feedback.SetMotion(!feedback.Motion);if(surface)surface.AnimateGlitter=feedback.Motion;ShowParents();},21);KidoUI.Place((RectTransform)motion.transform,.53f,.27f,.93f,.40f);
-            var close=KidoUI.Button("Back to coloring",box,KidoUI.Purple,CloseModal,24,Color.white);KidoUI.Place((RectTransform)close.transform,.20f,.07f,.80f,.22f);
+            string body=access.HasFullAccess?"All 30 coloring pictures are unlocked on this device.":"Nine pictures are free. A one-time purchase will unlock all 30 pictures. Version one contains no advertising.";
+            var box=Modal("A little space for parents",body);
+            var bodyLabel=box.Find("Dialog body") as RectTransform;if(bodyLabel)KidoUI.Place(bodyLabel,.08f,.59f,.92f,.72f);
+            string buyLabel=access.HasFullAccess?"Everything unlocked ✓":purchases.PurchasesAvailable?"Unlock all • "+purchases.LocalizedPrice:"Store setup required";
+            var buy=KidoUI.Button(buyLabel,box,KidoUI.Hex("56C870"),()=>BeginStoreAction(false),20,Color.white);buy.interactable=!access.HasFullAccess&&purchases.PurchasesAvailable;KidoUI.Place((RectTransform)buy.transform,.07f,.42f,.55f,.56f);
+            var restore=KidoUI.Button("Restore purchase",box,Color.white,()=>BeginStoreAction(true),19);restore.interactable=!access.HasFullAccess&&purchases.PurchasesAvailable;KidoUI.Place((RectTransform)restore.transform,.59f,.42f,.93f,.56f);
+            var sound=KidoUI.Button(feedback.Sound?"Sound: on":"Sound: off",box,Color.white,()=>{feedback.SetSound(!feedback.Sound);ShowParents();},20);KidoUI.Place((RectTransform)sound.transform,.07f,.24f,.47f,.37f);
+            var motion=KidoUI.Button(feedback.Motion?"Motion: on":"Motion: off",box,Color.white,()=>{feedback.SetMotion(!feedback.Motion);if(surface)surface.AnimateGlitter=feedback.Motion;ShowParents();},20);KidoUI.Place((RectTransform)motion.transform,.53f,.24f,.93f,.37f);
+            var privacy=KidoUI.Button("Privacy",box,Color.white,OpenPrivacy,20);privacy.interactable=Uri.TryCreate(settings.privacyPolicyUrl,UriKind.Absolute,out _);KidoUI.Place((RectTransform)privacy.transform,.07f,.07f,.47f,.20f);
+            var close=KidoUI.Button("Back",box,KidoUI.Purple,CancelParentGate,21,Color.white);KidoUI.Place((RectTransform)close.transform,.53f,.07f,.93f,.20f);
+        }
+        void OpenPrivacy(){if(Uri.TryCreate(settings.privacyPolicyUrl,UriKind.Absolute,out var uri)&&(uri.Scheme==Uri.UriSchemeHttps))Application.OpenURL(uri.AbsoluteUri);}
+        void BeginStoreAction(bool restore)
+        {
+            if(!purchases.PurchasesAvailable){Message("Store not ready","The store connection has not been configured yet.");return;}
+            Action<StoreOutcome> finished=FinishStoreAction;
+            if(restore)purchases.Restore(finished);else purchases.Purchase(finished);
+        }
+        void FinishStoreAction(StoreOutcome outcome)
+        {
+            if(outcome!=null&&outcome.GrantsAccess)
+            {
+                var requested=requestedLockedCanvas;requestedLockedCanvas=null;CloseModal();
+                if(requested!=null&&access.CanOpen(requested.id)){StartCoroutine(FadeTo(()=>OpenCanvas(requested)));return;}
+                Message("Everything is unlocked","All 30 coloring pictures are ready to enjoy.");return;
+            }
+            if(outcome!=null&&outcome.kind==StoreOutcomeKind.Cancelled){ShowParents();return;}
+            if(outcome!=null&&outcome.kind==StoreOutcomeKind.Pending){Message("Purchase pending","Google Play is still processing this purchase. Access will unlock after the store confirms payment.");return;}
+            Message("Store unavailable",string.IsNullOrWhiteSpace(outcome?.message)?"Please check the connection and try again.":outcome.message);
         }
         void OnDestroy(){Application.lowMemory-=OnLowMemory;backgrounded=true;if(pendingSave!=null)CompleteBackgroundSave(true);foreach(var texture in previews.Values)if(texture)Destroy(texture);foreach(var texture in uiTextures)if(texture)Resources.UnloadAsset(texture);}
     }

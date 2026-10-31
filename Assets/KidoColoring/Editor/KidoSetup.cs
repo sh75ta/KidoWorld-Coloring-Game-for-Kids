@@ -37,13 +37,13 @@ namespace Kido.Editor
         public static void Configure()
         {
             Verify();
-            PlayerSettings.productName="Kido Coloring";PlayerSettings.companyName="KidoColoringPrototype";
+            PlayerSettings.productName="KidoWorld Coloring for Kids";PlayerSettings.companyName="KidoWorld";
             PlayerSettings.defaultInterfaceOrientation=UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft=true;PlayerSettings.allowedAutorotateToLandscapeRight=true;
             PlayerSettings.allowedAutorotateToPortrait=false;PlayerSettings.allowedAutorotateToPortraitUpsideDown=false;
             PlayerSettings.defaultScreenWidth=1600;PlayerSettings.defaultScreenHeight=900;
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.example.kidocoloring");
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS,"com.example.kidocoloring");
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.kidoworld.coloring");
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS,"com.kidoworld.coloring");
             // This project deliberately uses the built-in input backend, with no Input System package.
             var playerAssets=AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset");
             if(playerAssets.Length>0)
@@ -85,8 +85,8 @@ namespace Kido.Editor
         public int callbackOrder=>0;
         public void OnPreprocessBuild(BuildReport report)
         {
-            if((report.summary.options&BuildOptions.Development)==0)
-                throw new BuildFailedException("Kido is a first-play prototype. Live purchase/restore, eligible ad integration, final access/pricing, child-privacy review, and device validation are unfinished. Production builds are intentionally blocked. Complete those integrations and replace this guard with explicit release validation.");
+            if((report.summary.options&BuildOptions.Development)==0&&report.summary.platform!=BuildTarget.Android)
+                throw new BuildFailedException("Production builds for this platform have not completed release validation. Use a Development build until its store checklist is approved.");
         }
     }
 }
